@@ -1,0 +1,23 @@
+{
+    "printWidth": 120,
+    "tabWidth": 4,
+    "semi": true,
+    "singleQuote": false,
+    "trailingComma": "all",
+    "endOfLine": "auto",
+    "plugins": ["prettier-plugin-solidity"],
+    "overrides": [
+        {
+            "files": ["**/*.json", "**/*.yml"],
+            "options": {
+                "tabWidth": 2
+            }
+        },
+        {
+            "files": "*.sol",
+            "options": {
+                "printWidth": 100
+            }
+        }
+    ]
+}
