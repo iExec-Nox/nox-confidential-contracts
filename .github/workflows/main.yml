@@ -16,16 +16,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-        
+
       - uses: actions/setup-node@v6
         with:
           node-version-file: ".nvmrc"
           # cache: 'pnpm' TODO
 
       - run: corepack enable # Use package manager defined in package.json
-        
+
       - run: pnpm install --frozen-lockfile
-        
+
       - name: Check code formatting
         run: pnpm run format:check
 
@@ -57,7 +57,7 @@ jobs:
             --filter-paths "node_modules/|contracts/.*\.t\.sol"
           fail-on: high
           sarif: results.sarif
-          
+
       # TODO when repo is public
       # - name: Upload SARIF file
       #   uses: github/codeql-action/upload-sarif@v4
