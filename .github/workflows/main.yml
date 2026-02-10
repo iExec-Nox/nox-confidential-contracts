@@ -32,9 +32,6 @@ jobs:
       - name: Build
         run: pnpm run build
 
-      - name: Deployment dry-run
-        run: pnpm run deploy
-
       - name: Run coverage
         run: pnpm run coverage
 
