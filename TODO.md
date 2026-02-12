@@ -1,0 +1,4 @@
+- Linter: JS with imports sorting
+- Linter: Sol with imports sorting if relevant
+- Configure Solidity Solcover if required
+- Update license
