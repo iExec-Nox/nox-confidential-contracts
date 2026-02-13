@@ -6,7 +6,6 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {euint64} from "encrypted-types/EncryptedTypes.sol";
 import {IERC7984} from "@openzeppelin/confidential-contracts/interfaces/IERC7984.sol";
-import {ERC7984} from "../../contracts/token/ERC7984.sol";
 import {ERC7984Mock} from "../../contracts/mocks/token/ERC7984Mock.sol";
 
 contract ERC7984Test is Test {
@@ -106,20 +105,6 @@ contract ERC7984Test is Test {
 
         vm.warp(block.timestamp + 2 hours);
         assertFalse(token.isOperator(user1, operator));
-    }
-
-    // ============ confidentialTransfer (not implemented) ============
-
-    function test_RevertWhen_ConfidentialTransfer_NotImplemented() public {
-        vm.expectRevert(ERC7984.ERC7984NotImplemented.selector);
-        token.confidentialTransfer(user1, euint64.wrap(bytes32(uint256(100))));
-    }
-
-    // ============ confidentialTransferFrom (not implemented) ============
-
-    function test_RevertWhen_ConfidentialTransferFrom_NotImplemented() public {
-        vm.expectRevert(ERC7984.ERC7984NotImplemented.selector);
-        token.confidentialTransferFrom(user1, user2, euint64.wrap(bytes32(uint256(100))));
     }
 
     // ============ owner ============
