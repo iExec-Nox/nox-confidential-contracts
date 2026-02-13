@@ -10,8 +10,6 @@ import {IERC7984} from "@openzeppelin/confidential-contracts/interfaces/IERC7984
 /**
  * @title ERC7984
  * @notice Confidential fungible token implementing ERC-7984 with Nox TEE infrastructure.
- * @dev Confidential transfer functions are not yet implemented and will revert.
- *      They require the nox-protocol-contracts Nox library (not yet on NPM).
  */
 abstract contract ERC7984 is IERC7984, ERC165, Ownable {
     mapping(address holder => euint64) private _balances;
