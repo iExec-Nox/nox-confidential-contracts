@@ -47,5 +47,14 @@
   },
   "bugs": {
     "url": "https://github.com/iExec-Nox/nox-confidential-contracts/issues"
+  },
+  "__dependenciesComments": {
+    "@fhevm/solidity": "Required by @openzeppelin/confidential-contracts (IERC7984 imports from @fhevm/solidity/lib/FHE.sol)"
+  },
+  "dependencies": {
+    "@fhevm/solidity": "0.9.1",
+    "@openzeppelin/confidential-contracts": "^0.3.1",
+    "@openzeppelin/contracts": "^5.4.0",
+    "encrypted-types": "^0.0.4"
   }
 }
