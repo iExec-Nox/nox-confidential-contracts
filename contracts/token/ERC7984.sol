@@ -13,7 +13,7 @@ import {IERC7984} from "@openzeppelin/confidential-contracts/interfaces/IERC7984
  */
 abstract contract ERC7984 is IERC7984, ERC165, Ownable {
     mapping(address holder => euint64) private _balances;
-    mapping(address holder => mapping(address spender => uint48)) private _operators;
+    mapping(address holder => mapping(address spender => uint48 until)) private _operators;
     euint64 private _totalSupply;
     string private _name;
     string private _symbol;
