@@ -3,15 +3,13 @@ pragma solidity ^0.8.28;
 
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import {IERC7984} from "../interfaces/IERC7984.sol";
 import {
-    euint64,
-    externalEuint64,
+    Nox,
     euint256,
     externalEuint256,
     ebool
-} from "encrypted-types/EncryptedTypes.sol";
-import {IERC7984} from "@openzeppelin/confidential-contracts/interfaces/IERC7984.sol";
-import {Nox} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
+} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 
 /**
  * @dev Reference implementation for {IERC7984}.
@@ -27,16 +25,6 @@ import {Nox} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
  * - Support for operators (delegated transfer capabilities with time bounds)
  * - Safe overflow/underflow handling for TEE operations
  *
- * @dev Amounts are stored as `euint256` for direct compatibility with the Nox library typed functions
- *      (`Nox.safeAdd`, `Nox.safeSub`, etc.). The {IERC7984} interface uses `euint64`, so casts happen
- *      at the interface boundary.
- *
- * TODO(Nox euint64 support): When the Nox library adds `euint64` typed function support, remove all
- *      `euint256` internal usage and replace with `euint64` throughout. This includes:
- *      - Switching `_balances` and `_totalSupply` storage from `euint256` to `euint64`
- *      - Removing all `euint256.wrap(euint64.unwrap(...))` and `euint64.wrap(euint256.unwrap(...))` casts
- *      - Accepting `euint64` / `externalEuint64` directly in `_update`, `_mint`, `_burn`, `_transfer`
- *      - Removing the `externalEuint256` / `euint256` / `ebool` imports
  */
 abstract contract ERC7984 is IERC7984, ERC165 {
     mapping(address holder => euint256) private _balances;
@@ -60,7 +48,7 @@ abstract contract ERC7984 is IERC7984, ERC165 {
      *
      * NOTE: Try using the equivalent transfer function with an input proof.
      */
-    error ERC7984UnauthorizedUseOfEncryptedAmount(euint64 amount, address user);
+    error ERC7984UnauthorizedUseOfEncryptedAmount(euint256 amount, address user);
 
     /// @dev The holder `holder` is trying to send tokens but has a balance of 0.
     error ERC7984ZeroBalance(address holder);
@@ -101,13 +89,13 @@ abstract contract ERC7984 is IERC7984, ERC165 {
     }
 
     /// @inheritdoc IERC7984
-    function confidentialTotalSupply() public view virtual returns (euint64) {
-        return euint64.wrap(euint256.unwrap(_totalSupply));
+    function confidentialTotalSupply() public view virtual returns (euint256) {
+        return _totalSupply;
     }
 
     /// @inheritdoc IERC7984
-    function confidentialBalanceOf(address account) public view virtual returns (euint64) {
-        return euint64.wrap(euint256.unwrap(_balances[account]));
+    function confidentialBalanceOf(address account) public view virtual returns (euint256) {
+        return _balances[account];
     }
 
     /// @inheritdoc IERC7984
@@ -127,98 +115,81 @@ abstract contract ERC7984 is IERC7984, ERC165 {
     /// @inheritdoc IERC7984
     function confidentialTransfer(
         address to,
-        externalEuint64 encryptedAmount,
+        externalEuint256 encryptedAmount,
         bytes calldata inputProof
-    ) public virtual returns (euint64) {
-        euint256 transferred = _transfer(
-            msg.sender,
-            to,
-            Nox.fromExternal(
-                externalEuint256.wrap(externalEuint64.unwrap(encryptedAmount)),
-                inputProof
-            )
-        );
-        return euint64.wrap(euint256.unwrap(transferred));
+    ) public virtual returns (euint256) {
+        return _transfer(msg.sender, to, Nox.fromExternal(encryptedAmount, inputProof));
     }
 
     /// @inheritdoc IERC7984
-    function confidentialTransfer(address to, euint64 amount) public virtual returns (euint64) {
-        euint256 amount256 = euint256.wrap(euint64.unwrap(amount));
+    function confidentialTransfer(address to, euint256 amount) public virtual returns (euint256) {
         require(
-            Nox.isAllowed(amount256, msg.sender),
+            Nox.isAllowed(amount, msg.sender),
             ERC7984UnauthorizedUseOfEncryptedAmount(amount, msg.sender)
         );
-        return euint64.wrap(euint256.unwrap(_transfer(msg.sender, to, amount256)));
+        return _transfer(msg.sender, to, amount);
     }
 
     /// @inheritdoc IERC7984
     function confidentialTransferFrom(
         address from,
         address to,
-        externalEuint64 encryptedAmount,
+        externalEuint256 encryptedAmount,
         bytes calldata inputProof
-    ) public virtual returns (euint64) {
+    ) public virtual returns (euint256) {
         require(isOperator(from, msg.sender), ERC7984UnauthorizedSpender(from, msg.sender));
-        euint256 transferred = _transfer(
-            from,
-            to,
-            Nox.fromExternal(
-                externalEuint256.wrap(externalEuint64.unwrap(encryptedAmount)),
-                inputProof
-            )
-        );
+        euint256 transferred = _transfer(from, to, Nox.fromExternal(encryptedAmount, inputProof));
         Nox.allowTransient(transferred, msg.sender);
-        return euint64.wrap(euint256.unwrap(transferred));
+        return transferred;
     }
 
     /// @inheritdoc IERC7984
     function confidentialTransferFrom(
         address from,
         address to,
-        euint64 amount
-    ) public virtual returns (euint64) {
-        euint256 amount256 = euint256.wrap(euint64.unwrap(amount));
+        euint256 amount
+    ) public virtual returns (euint256) {
         require(
-            Nox.isAllowed(amount256, msg.sender),
+            Nox.isAllowed(amount, msg.sender),
             ERC7984UnauthorizedUseOfEncryptedAmount(amount, msg.sender)
         );
         require(isOperator(from, msg.sender), ERC7984UnauthorizedSpender(from, msg.sender));
-        euint256 transferred = _transfer(from, to, amount256);
+        euint256 transferred = _transfer(from, to, amount);
         Nox.allowTransient(transferred, msg.sender);
-        return euint64.wrap(euint256.unwrap(transferred));
+        return transferred;
     }
 
     /// @inheritdoc IERC7984
     function confidentialTransferAndCall(
         address,
-        externalEuint64,
+        externalEuint256,
         bytes calldata,
         bytes calldata
-    ) public virtual returns (euint64) {}
+    ) public virtual returns (euint256) {}
 
     /// @inheritdoc IERC7984
     function confidentialTransferAndCall(
         address,
-        euint64,
+        euint256,
         bytes calldata
-    ) public virtual returns (euint64) {}
+    ) public virtual returns (euint256) {}
 
     /// @inheritdoc IERC7984
     function confidentialTransferFromAndCall(
         address,
         address,
-        externalEuint64,
+        externalEuint256,
         bytes calldata,
         bytes calldata
-    ) public virtual returns (euint64) {}
+    ) public virtual returns (euint256) {}
 
     /// @inheritdoc IERC7984
     function confidentialTransferFromAndCall(
         address,
         address,
-        euint64,
+        euint256,
         bytes calldata
-    ) public virtual returns (euint64) {}
+    ) public virtual returns (euint256) {}
 
     // ============ Internal Functions ============
 
@@ -321,6 +292,6 @@ abstract contract ERC7984 is IERC7984, ERC165 {
         if (from != address(0)) Nox.allow(transferred, from);
         if (to != address(0)) Nox.allow(transferred, to);
         Nox.allowThis(transferred);
-        emit ConfidentialTransfer(from, to, euint64.wrap(euint256.unwrap(transferred)));
+        emit ConfidentialTransfer(from, to, transferred);
     }
 }

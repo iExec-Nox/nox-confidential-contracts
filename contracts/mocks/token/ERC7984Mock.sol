@@ -2,7 +2,7 @@
 pragma solidity ^0.8.28;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import {euint256} from "encrypted-types/EncryptedTypes.sol";
+import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {ERC7984} from "../../token/ERC7984.sol";
 
 /// @dev Concrete implementation of ERC7984 for testing purposes.
