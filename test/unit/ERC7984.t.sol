@@ -137,7 +137,11 @@ contract ERC7984Test is Test {
         // The contract casts euint64 → euint256 before isAllowed; mock the euint256 handle.
         vm.mockCall(
             address(Nox.ACL),
-            abi.encodeWithSignature("isAllowed(bytes32,address)", euint256.unwrap(euint256.wrap(euint64.unwrap(amount))), user1),
+            abi.encodeWithSignature(
+                "isAllowed(bytes32,address)",
+                euint256.unwrap(euint256.wrap(euint64.unwrap(amount))),
+                user1
+            ),
             abi.encode(true)
         );
         vm.expectRevert(abi.encodeWithSelector(ERC7984.ERC7984ZeroBalance.selector, user1));
@@ -152,7 +156,11 @@ contract ERC7984Test is Test {
         // The contract casts euint64 → euint256 before isAllowed; mock the euint256 handle.
         vm.mockCall(
             address(Nox.ACL),
-            abi.encodeWithSignature("isAllowed(bytes32,address)", euint256.unwrap(euint256.wrap(euint64.unwrap(amount))), operator),
+            abi.encodeWithSignature(
+                "isAllowed(bytes32,address)",
+                euint256.unwrap(euint256.wrap(euint64.unwrap(amount))),
+                operator
+            ),
             abi.encode(true)
         );
         vm.expectRevert(

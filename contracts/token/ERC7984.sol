@@ -4,7 +4,13 @@ pragma solidity ^0.8.28;
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import {euint64, externalEuint64, euint256, externalEuint256, ebool} from "encrypted-types/EncryptedTypes.sol";
+import {
+    euint64,
+    externalEuint64,
+    euint256,
+    externalEuint256,
+    ebool
+} from "encrypted-types/EncryptedTypes.sol";
 import {IERC7984} from "@openzeppelin/confidential-contracts/interfaces/IERC7984.sol";
 import {Nox} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 
@@ -131,7 +137,10 @@ abstract contract ERC7984 is IERC7984, ERC165, Ownable {
         euint256 transferred = _transfer(
             msg.sender,
             to,
-            Nox.fromExternal(externalEuint256.wrap(externalEuint64.unwrap(encryptedAmount)), inputProof)
+            Nox.fromExternal(
+                externalEuint256.wrap(externalEuint64.unwrap(encryptedAmount)),
+                inputProof
+            )
         );
         return euint64.wrap(euint256.unwrap(transferred));
     }
@@ -140,7 +149,10 @@ abstract contract ERC7984 is IERC7984, ERC165, Ownable {
     function confidentialTransfer(address to, euint64 amount) external virtual returns (euint64) {
         // TODO: accept euint256 directly when IERC7984 adopts euint256.
         euint256 amount256 = euint256.wrap(euint64.unwrap(amount));
-        require(Nox.isAllowed(amount256, msg.sender), ERC7984UnauthorizedUseOfEncryptedAmount(amount, msg.sender));
+        require(
+            Nox.isAllowed(amount256, msg.sender),
+            ERC7984UnauthorizedUseOfEncryptedAmount(amount, msg.sender)
+        );
         return euint64.wrap(euint256.unwrap(_transfer(msg.sender, to, amount256)));
     }
 
@@ -156,7 +168,10 @@ abstract contract ERC7984 is IERC7984, ERC165, Ownable {
         euint256 transferred = _transfer(
             from,
             to,
-            Nox.fromExternal(externalEuint256.wrap(externalEuint64.unwrap(encryptedAmount)), inputProof)
+            Nox.fromExternal(
+                externalEuint256.wrap(externalEuint64.unwrap(encryptedAmount)),
+                inputProof
+            )
         );
         Nox.allowTransient(transferred, msg.sender);
         return euint64.wrap(euint256.unwrap(transferred));
@@ -170,7 +185,10 @@ abstract contract ERC7984 is IERC7984, ERC165, Ownable {
     ) external virtual returns (euint64) {
         // TODO: accept euint256 directly when IERC7984 adopts euint256.
         euint256 amount256 = euint256.wrap(euint64.unwrap(amount));
-        require(Nox.isAllowed(amount256, msg.sender), ERC7984UnauthorizedUseOfEncryptedAmount(amount, msg.sender));
+        require(
+            Nox.isAllowed(amount256, msg.sender),
+            ERC7984UnauthorizedUseOfEncryptedAmount(amount, msg.sender)
+        );
         require(isOperator(from, msg.sender), ERC7984UnauthorizedSpender(from, msg.sender));
         euint256 transferred = _transfer(from, to, amount256);
         Nox.allowTransient(transferred, msg.sender);
@@ -186,7 +204,11 @@ abstract contract ERC7984 is IERC7984, ERC165, Ownable {
     ) external virtual returns (euint64) {}
 
     /// @inheritdoc IERC7984
-    function confidentialTransferAndCall(address, euint64, bytes calldata) external virtual returns (euint64) {}
+    function confidentialTransferAndCall(
+        address,
+        euint64,
+        bytes calldata
+    ) external virtual returns (euint64) {}
 
     /// @inheritdoc IERC7984
     function confidentialTransferFromAndCall(
@@ -265,7 +287,11 @@ abstract contract ERC7984 is IERC7984, ERC165, Ownable {
      *
      * Emits a {ConfidentialTransfer} event.
      */
-    function _update(address from, address to, euint256 amount) internal virtual returns (euint256 transferred) {
+    function _update(
+        address from,
+        address to,
+        euint256 amount
+    ) internal virtual returns (euint256 transferred) {
         ebool success;
         euint256 ptr;
 
