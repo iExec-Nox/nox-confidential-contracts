@@ -4,9 +4,8 @@ pragma solidity ^0.8.28;
 import {Test} from "forge-std/Test.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import {euint256} from "encrypted-types/EncryptedTypes.sol";
 import {IERC7984} from "../../contracts/interfaces/IERC7984.sol";
-import {Nox} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
+import {Nox, euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {ERC7984} from "../../contracts/token/ERC7984.sol";
 import {ERC7984Mock} from "../../contracts/mocks/token/ERC7984Mock.sol";
 

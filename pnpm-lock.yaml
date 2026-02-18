@@ -14,9 +14,6 @@ importers:
       '@openzeppelin/contracts':
         specifier: ^5.4.0
         version: 5.4.0
-      encrypted-types:
-        specifier: ^0.0.4
-        version: 0.0.4
     devDependencies:
       '@nomicfoundation/hardhat-ignition':
         specifier: ^3.0.7

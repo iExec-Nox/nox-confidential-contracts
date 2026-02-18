@@ -48,12 +48,8 @@
   "bugs": {
     "url": "https://github.com/iExec-Nox/nox-confidential-contracts/issues"
   },
-  "__dependenciesComments": {
-    "@iexec-nox/nox-protocol-contracts": "Nox TEE library - provides NOX_COMPUTE and ACL singletons for confidential operations"
-  },
   "dependencies": {
     "@iexec-nox/nox-protocol-contracts": "0.1.0-beta.2",
-    "@openzeppelin/contracts": "^5.4.0",
-    "encrypted-types": "^0.0.4"
+    "@openzeppelin/contracts": "^5.4.0"
   }
 }
