@@ -30,10 +30,15 @@ import {Nox} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
  * @dev Amounts are stored as `euint256` for direct compatibility with the Nox library typed functions
  *      (`Nox.safeAdd`, `Nox.safeSub`, etc.). The {IERC7984} interface uses `euint64`, so casts happen
  *      at the interface boundary.
- *      TODO: Remove boundary casts when Nox adds `euint64` support.
+ *
+ * TODO(Nox euint64 support): When the Nox library adds `euint64` typed function support, remove all
+ *      `euint256` internal usage and replace with `euint64` throughout. This includes:
+ *      - Switching `_balances` and `_totalSupply` storage from `euint256` to `euint64`
+ *      - Removing all `euint256.wrap(euint64.unwrap(...))` and `euint64.wrap(euint256.unwrap(...))` casts
+ *      - Accepting `euint64` / `externalEuint64` directly in `_update`, `_mint`, `_burn`, `_transfer`
+ *      - Removing the `externalEuint256` / `euint256` / `ebool` imports
  */
 abstract contract ERC7984 is IERC7984, ERC165 {
-    // TODO: switch to euint64 when Nox lib adds euint64 typed function support.
     mapping(address holder => euint256) private _balances;
     mapping(address holder => mapping(address spender => uint48 until)) private _operators;
     euint256 private _totalSupply;
@@ -97,13 +102,11 @@ abstract contract ERC7984 is IERC7984, ERC165 {
 
     /// @inheritdoc IERC7984
     function confidentialTotalSupply() public view virtual returns (euint64) {
-        // TODO: return euint256 directly when IERC7984 adopts euint256.
         return euint64.wrap(euint256.unwrap(_totalSupply));
     }
 
     /// @inheritdoc IERC7984
     function confidentialBalanceOf(address account) public view virtual returns (euint64) {
-        // TODO: return euint256 directly when IERC7984 adopts euint256.
         return euint64.wrap(euint256.unwrap(_balances[account]));
     }
 
@@ -127,7 +130,6 @@ abstract contract ERC7984 is IERC7984, ERC165 {
         externalEuint64 encryptedAmount,
         bytes calldata inputProof
     ) public virtual returns (euint64) {
-        // TODO: accept externalEuint256 directly when IERC7984 adopts euint256.
         euint256 transferred = _transfer(
             msg.sender,
             to,
@@ -141,7 +143,6 @@ abstract contract ERC7984 is IERC7984, ERC165 {
 
     /// @inheritdoc IERC7984
     function confidentialTransfer(address to, euint64 amount) public virtual returns (euint64) {
-        // TODO: accept euint256 directly when IERC7984 adopts euint256.
         euint256 amount256 = euint256.wrap(euint64.unwrap(amount));
         require(
             Nox.isAllowed(amount256, msg.sender),
@@ -157,7 +158,6 @@ abstract contract ERC7984 is IERC7984, ERC165 {
         externalEuint64 encryptedAmount,
         bytes calldata inputProof
     ) public virtual returns (euint64) {
-        // TODO: accept externalEuint256 directly when IERC7984 adopts euint256.
         require(isOperator(from, msg.sender), ERC7984UnauthorizedSpender(from, msg.sender));
         euint256 transferred = _transfer(
             from,
@@ -177,7 +177,6 @@ abstract contract ERC7984 is IERC7984, ERC165 {
         address to,
         euint64 amount
     ) public virtual returns (euint64) {
-        // TODO: accept euint256 directly when IERC7984 adopts euint256.
         euint256 amount256 = euint256.wrap(euint64.unwrap(amount));
         require(
             Nox.isAllowed(amount256, msg.sender),
@@ -322,7 +321,6 @@ abstract contract ERC7984 is IERC7984, ERC165 {
         if (from != address(0)) Nox.allow(transferred, from);
         if (to != address(0)) Nox.allow(transferred, to);
         Nox.allowThis(transferred);
-        // TODO: emit euint256 directly when IERC7984 adopts euint256.
         emit ConfidentialTransfer(from, to, euint64.wrap(euint256.unwrap(transferred)));
     }
 }
