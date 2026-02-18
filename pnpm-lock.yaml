@@ -11,6 +11,9 @@ importers:
       '@fhevm/solidity':
         specifier: 0.9.1
         version: 0.9.1
+      '@iexec-nox/nox-protocol-contracts':
+        specifier: 0.1.0-beta.2
+        version: 0.1.0-beta.2
       '@openzeppelin/confidential-contracts':
         specifier: ^0.3.1
         version: 0.3.1(@fhevm/solidity@0.9.1)(@openzeppelin/contracts-upgradeable@5.4.0(@openzeppelin/contracts@5.4.0))(@openzeppelin/contracts@5.4.0)
@@ -298,6 +301,9 @@ packages:
   '@fhevm/solidity@0.9.1':
     resolution: {integrity: sha512-QxP+R+6v3aHA/rzgH9cDsiYOwRBB6zLAL3qNI4YfRewKA6ZB01cdkYvrB80FkJyddzxRNsT1jHIvJvSRS8XZ+Q==}
     engines: {node: '>=20.0.0'}
+
+  '@iexec-nox/nox-protocol-contracts@0.1.0-beta.2':
+    resolution: {integrity: sha512-1lmBQAwIk7B22DnSpdfPNmhFtVx6nFuenfYyQAEByk8OBXd0+TnOVLrAjJ2uQV7Xn8uC93ehvJLPEH9vBdIv4Q==}
 
   '@jest/schemas@29.6.3':
     resolution: {integrity: sha512-mo5j5X+jIZmJQveBKeS/clAueipV7KgiX1vMgCxam1RNYiqE1w62n0/tJJnHtjW8ZHcQco5gY85jA3mi0L+nSA==}
@@ -1312,6 +1318,12 @@ snapshots:
     optionalDependencies:
       solidity-comments-darwin-arm64: 0.1.1
       solidity-comments-linux-x64-gnu: 0.1.1
+
+  '@iexec-nox/nox-protocol-contracts@0.1.0-beta.2':
+    dependencies:
+      '@openzeppelin/contracts': 5.4.0
+      '@openzeppelin/contracts-upgradeable': 5.4.0(@openzeppelin/contracts@5.4.0)
+      encrypted-types: 0.0.4
 
   '@jest/schemas@29.6.3':
     dependencies:
