@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 import {Test} from "forge-std/Test.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import {euint64} from "encrypted-types/EncryptedTypes.sol";
+import {euint64, euint256} from "encrypted-types/EncryptedTypes.sol";
 import {IERC7984} from "@openzeppelin/confidential-contracts/interfaces/IERC7984.sol";
 import {Nox} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {ERC7984} from "../../contracts/token/ERC7984.sol";
@@ -115,29 +115,29 @@ contract ERC7984Test is Test {
         vm.expectRevert(
             abi.encodeWithSelector(ERC7984.ERC7984InvalidReceiver.selector, address(0))
         );
-        token.mint(address(0), euint64.wrap(bytes32(uint256(1))));
+        token.mint(address(0), euint256.wrap(bytes32(uint256(1))));
     }
 
     // ============ _burn ============
 
     function test_RevertWhen_Burn_InvalidSender() public {
         vm.expectRevert(abi.encodeWithSelector(ERC7984.ERC7984InvalidSender.selector, address(0)));
-        token.burn(address(0), euint64.wrap(bytes32(uint256(1))));
+        token.burn(address(0), euint256.wrap(bytes32(uint256(1))));
     }
 
     function test_RevertWhen_Burn_ZeroBalance() public {
         vm.expectRevert(abi.encodeWithSelector(ERC7984.ERC7984ZeroBalance.selector, user1));
-        token.burn(user1, euint64.wrap(bytes32(uint256(1))));
+        token.burn(user1, euint256.wrap(bytes32(uint256(1))));
     }
 
     // ============ confidentialTransfer ============
 
     function test_RevertWhen_ConfidentialTransfer_ZeroBalance() public {
         euint64 amount = euint64.wrap(bytes32(uint256(1)));
-        // Mock ACL.isAllowed to return true so the zero balance check is reached
+        // The contract casts euint64 → euint256 before isAllowed; mock the euint256 handle.
         vm.mockCall(
             address(Nox.ACL),
-            abi.encodeWithSignature("isAllowed(bytes32,address)", euint64.unwrap(amount), user1),
+            abi.encodeWithSignature("isAllowed(bytes32,address)", euint256.unwrap(euint256.wrap(euint64.unwrap(amount))), user1),
             abi.encode(true)
         );
         vm.expectRevert(abi.encodeWithSelector(ERC7984.ERC7984ZeroBalance.selector, user1));
@@ -149,10 +149,10 @@ contract ERC7984Test is Test {
 
     function test_RevertWhen_ConfidentialTransferFrom_UnauthorizedSpender() public {
         euint64 amount = euint64.wrap(bytes32(uint256(1)));
-        // Mock ACL.isAllowed to return true so the operator check is reached
+        // The contract casts euint64 → euint256 before isAllowed; mock the euint256 handle.
         vm.mockCall(
             address(Nox.ACL),
-            abi.encodeWithSignature("isAllowed(bytes32,address)", euint64.unwrap(amount), operator),
+            abi.encodeWithSignature("isAllowed(bytes32,address)", euint256.unwrap(euint256.wrap(euint64.unwrap(amount))), operator),
             abi.encode(true)
         );
         vm.expectRevert(
