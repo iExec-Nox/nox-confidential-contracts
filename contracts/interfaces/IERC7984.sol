@@ -6,12 +6,6 @@ import {IERC165} from "@openzeppelin/contracts/interfaces/IERC165.sol";
 
 /**
  * @dev Interface for a confidential fungible token standard.
- *
- * Adapted from OpenZeppelin Confidential Contracts IERC7984 (last updated v0.3.0),
- * using `euint256` instead of `euint64` for direct compatibility with the Nox TEE library.
- *
- * TODO(Nox euint64 support): When the Nox library adds `euint64` typed function support,
- *      switch to `euint64` / `externalEuint64` throughout and align with the upstream OZ interface.
  */
 interface IERC7984 is IERC165 {
     /**
@@ -22,14 +16,6 @@ interface IERC7984 is IERC165 {
 
     /// @dev Emitted when a confidential transfer is made from `from` to `to` of encrypted amount `amount`.
     event ConfidentialTransfer(address indexed from, address indexed to, euint256 indexed amount);
-
-    /**
-     * @dev Emitted when an encrypted amount is disclosed.
-     *
-     * Accounts with access to the encrypted amount `encryptedAmount` that is also accessible to this contract
-     * should be able to disclose the amount. This functionality is implementation specific.
-     */
-    event AmountDisclosed(euint256 indexed encryptedAmount, uint256 amount);
 
     /// @dev Returns the name of the token.
     function name() external view returns (string memory);
