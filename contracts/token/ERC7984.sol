@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.28;
 
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {
@@ -33,7 +32,7 @@ import {Nox} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
  *      at the interface boundary.
  *      TODO: Remove boundary casts when Nox adds `euint64` support.
  */
-abstract contract ERC7984 is IERC7984, ERC165, Ownable {
+abstract contract ERC7984 is IERC7984, ERC165 {
     // TODO: switch to euint64 when Nox lib adds euint64 typed function support.
     mapping(address holder => euint256) private _balances;
     mapping(address holder => mapping(address spender => uint48 until)) private _operators;
@@ -61,12 +60,7 @@ abstract contract ERC7984 is IERC7984, ERC165, Ownable {
     /// @dev The holder `holder` is trying to send tokens but has a balance of 0.
     error ERC7984ZeroBalance(address holder);
 
-    constructor(
-        string memory name_,
-        string memory symbol_,
-        string memory contractURI_,
-        address owner_
-    ) Ownable(owner_) {
+    constructor(string memory name_, string memory symbol_, string memory contractURI_) {
         _name = name_;
         _symbol = symbol_;
         _contractURI = contractURI_;
@@ -132,7 +126,7 @@ abstract contract ERC7984 is IERC7984, ERC165, Ownable {
         address to,
         externalEuint64 encryptedAmount,
         bytes calldata inputProof
-    ) external virtual returns (euint64) {
+    ) public virtual returns (euint64) {
         // TODO: accept externalEuint256 directly when IERC7984 adopts euint256.
         euint256 transferred = _transfer(
             msg.sender,
@@ -146,7 +140,7 @@ abstract contract ERC7984 is IERC7984, ERC165, Ownable {
     }
 
     /// @inheritdoc IERC7984
-    function confidentialTransfer(address to, euint64 amount) external virtual returns (euint64) {
+    function confidentialTransfer(address to, euint64 amount) public virtual returns (euint64) {
         // TODO: accept euint256 directly when IERC7984 adopts euint256.
         euint256 amount256 = euint256.wrap(euint64.unwrap(amount));
         require(
@@ -162,7 +156,7 @@ abstract contract ERC7984 is IERC7984, ERC165, Ownable {
         address to,
         externalEuint64 encryptedAmount,
         bytes calldata inputProof
-    ) external virtual returns (euint64) {
+    ) public virtual returns (euint64) {
         // TODO: accept externalEuint256 directly when IERC7984 adopts euint256.
         require(isOperator(from, msg.sender), ERC7984UnauthorizedSpender(from, msg.sender));
         euint256 transferred = _transfer(
@@ -182,7 +176,7 @@ abstract contract ERC7984 is IERC7984, ERC165, Ownable {
         address from,
         address to,
         euint64 amount
-    ) external virtual returns (euint64) {
+    ) public virtual returns (euint64) {
         // TODO: accept euint256 directly when IERC7984 adopts euint256.
         euint256 amount256 = euint256.wrap(euint64.unwrap(amount));
         require(
@@ -201,14 +195,14 @@ abstract contract ERC7984 is IERC7984, ERC165, Ownable {
         externalEuint64,
         bytes calldata,
         bytes calldata
-    ) external virtual returns (euint64) {}
+    ) public virtual returns (euint64) {}
 
     /// @inheritdoc IERC7984
     function confidentialTransferAndCall(
         address,
         euint64,
         bytes calldata
-    ) external virtual returns (euint64) {}
+    ) public virtual returns (euint64) {}
 
     /// @inheritdoc IERC7984
     function confidentialTransferFromAndCall(
@@ -217,7 +211,7 @@ abstract contract ERC7984 is IERC7984, ERC165, Ownable {
         externalEuint64,
         bytes calldata,
         bytes calldata
-    ) external virtual returns (euint64) {}
+    ) public virtual returns (euint64) {}
 
     /// @inheritdoc IERC7984
     function confidentialTransferFromAndCall(
@@ -225,7 +219,7 @@ abstract contract ERC7984 is IERC7984, ERC165, Ownable {
         address,
         euint64,
         bytes calldata
-    ) external virtual returns (euint64) {}
+    ) public virtual returns (euint64) {}
 
     // ============ Internal Functions ============
 
