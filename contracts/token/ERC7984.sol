@@ -261,6 +261,10 @@ abstract contract ERC7984 is IERC7984, ERC165 {
 
         if (from == address(0)) {
             // Mint: safely increase total supply.
+            if (!Nox.isInitialized(_totalSupply)) {
+                _totalSupply = Nox.toEuint256(0);
+                Nox.allowThis(_totalSupply);
+            }
             (success, ptr) = Nox.safeAdd(_totalSupply, amount);
             Nox.allowThis(ptr);
             _totalSupply = ptr;
@@ -283,6 +287,11 @@ abstract contract ERC7984 is IERC7984, ERC165 {
             _totalSupply = ptr;
         } else {
             // Mint/transfer: increase recipient balance by actually transferred amount.
+            if (!Nox.isInitialized(_balances[to])) {
+                _balances[to] = Nox.toEuint256(0);
+                Nox.allowThis(_balances[to]);
+                Nox.allow(_balances[to], to);
+            }
             ptr = Nox.add(_balances[to], transferred);
             Nox.allowThis(ptr);
             Nox.allow(ptr, to);

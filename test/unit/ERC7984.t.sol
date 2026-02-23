@@ -5,12 +5,15 @@ import {Test} from "forge-std/Test.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {IERC7984} from "../../contracts/interfaces/IERC7984.sol";
-import {Nox, euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
+import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {ERC7984} from "../../contracts/token/ERC7984.sol";
 import {ERC7984Mock} from "../../contracts/mocks/token/ERC7984Mock.sol";
 
 contract ERC7984Test is Test {
     ERC7984Mock internal token;
+
+    // ACL address on local dev chain (chainid 31337) - from Nox._acl()
+    address internal constant ACL = 0x3219A802B61028Fc29848863268FE17d750E5701;
 
     address internal owner = makeAddr("owner");
     address internal user1 = makeAddr("user1");
@@ -134,7 +137,7 @@ contract ERC7984Test is Test {
     function test_RevertWhen_ConfidentialTransfer_ZeroBalance() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
         vm.mockCall(
-            address(Nox.ACL),
+            ACL,
             abi.encodeWithSignature("isAllowed(bytes32,address)", euint256.unwrap(amount), user1),
             abi.encode(true)
         );
@@ -148,7 +151,7 @@ contract ERC7984Test is Test {
     function test_RevertWhen_ConfidentialTransferFrom_UnauthorizedSpender() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
         vm.mockCall(
-            address(Nox.ACL),
+            ACL,
             abi.encodeWithSignature(
                 "isAllowed(bytes32,address)",
                 euint256.unwrap(amount),
