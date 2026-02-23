@@ -12,7 +12,8 @@ import {ERC7984Mock} from "../../contracts/mocks/token/ERC7984Mock.sol";
 contract ERC7984Test is Test {
     ERC7984Mock internal token;
 
-    // ACL address on local dev chain (chainid 31337) - from Nox._acl()
+    // TODO: Replace hardcoded address with Nox._acl() when exposed publicly from the lib.
+    // ACL address on local dev chain (chainid 31337)
     address internal constant ACL = 0x3219A802B61028Fc29848863268FE17d750E5701;
 
     address internal owner = makeAddr("owner");
