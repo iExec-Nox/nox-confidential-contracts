@@ -153,7 +153,9 @@ contract ERC7984Test is Test {
 
     function test_RevertWhen_Transfer_InvalidReceiver() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
-        vm.expectRevert(abi.encodeWithSelector(ERC7984.ERC7984InvalidReceiver.selector, address(0)));
+        vm.expectRevert(
+            abi.encodeWithSelector(ERC7984.ERC7984InvalidReceiver.selector, address(0))
+        );
         token.transfer(user1, address(0), amount);
     }
 
@@ -168,7 +170,9 @@ contract ERC7984Test is Test {
         );
         vm.expectRevert(
             abi.encodeWithSelector(
-                ERC7984.ERC7984UnauthorizedUseOfEncryptedAmount.selector, amount, user1
+                ERC7984.ERC7984UnauthorizedUseOfEncryptedAmount.selector,
+                amount,
+                user1
             )
         );
         vm.prank(user1);
@@ -208,13 +212,17 @@ contract ERC7984Test is Test {
         vm.mockCall(
             ACL,
             abi.encodeWithSignature(
-                "isAllowed(bytes32,address)", euint256.unwrap(amount), operator
+                "isAllowed(bytes32,address)",
+                euint256.unwrap(amount),
+                operator
             ),
             abi.encode(false)
         );
         vm.expectRevert(
             abi.encodeWithSelector(
-                ERC7984.ERC7984UnauthorizedUseOfEncryptedAmount.selector, amount, operator
+                ERC7984.ERC7984UnauthorizedUseOfEncryptedAmount.selector,
+                amount,
+                operator
             )
         );
         vm.prank(operator);
