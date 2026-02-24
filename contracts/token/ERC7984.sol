@@ -274,6 +274,7 @@ abstract contract ERC7984 is IERC7984, ERC165 {
             euint256 fromBalance = _balances[from];
             require(Nox.isInitialized(fromBalance), ERC7984ZeroBalance(from));
             (success, ptr) = Nox.safeSub(fromBalance, amount);
+            ptr = Nox.select(success, ptr, fromBalance);
             Nox.allowThis(ptr);
             Nox.allow(ptr, from);
             _balances[from] = ptr;
