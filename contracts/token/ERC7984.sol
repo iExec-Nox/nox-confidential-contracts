@@ -80,7 +80,7 @@ abstract contract ERC7984 is IERC7984, ERC165 {
 
     /// @inheritdoc IERC7984
     function decimals() public view virtual returns (uint8) {
-        return 6;
+        return 18;
     }
 
     /// @inheritdoc IERC7984
@@ -266,6 +266,7 @@ abstract contract ERC7984 is IERC7984, ERC165 {
                 Nox.allowThis(_totalSupply);
             }
             (success, ptr) = Nox.safeAdd(_totalSupply, amount);
+            ptr = Nox.select(success, ptr, _totalSupply);
             Nox.allowThis(ptr);
             _totalSupply = ptr;
         } else {

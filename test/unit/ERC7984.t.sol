@@ -39,7 +39,7 @@ contract ERC7984Test is Test {
     function test_Constructor() public view {
         assertEq(token.name(), NAME);
         assertEq(token.symbol(), SYMBOL);
-        assertEq(token.decimals(), 6);
+        assertEq(token.decimals(), 18);
         assertEq(token.contractURI(), CONTRACT_URI);
         assertEq(token.owner(), owner);
     }
