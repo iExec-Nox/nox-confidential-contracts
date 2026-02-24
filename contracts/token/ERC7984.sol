@@ -80,7 +80,7 @@ abstract contract ERC7984 is IERC7984, ERC165 {
 
     /// @inheritdoc IERC7984
     function decimals() public view virtual returns (uint8) {
-        return 6;
+        return 18;
     }
 
     /// @inheritdoc IERC7984
@@ -262,10 +262,13 @@ abstract contract ERC7984 is IERC7984, ERC165 {
         if (from == address(0)) {
             // Mint: safely increase total supply.
             if (!Nox.isInitialized(_totalSupply)) {
-                _totalSupply = Nox.toEuint256(0);
-                Nox.allowThis(_totalSupply);
+                // totalSupply is 0: no addition needed, amount becomes the new supply.
+                success = Nox.toEbool(true);
+                ptr = amount;
+            } else {
+                (success, ptr) = Nox.safeAdd(_totalSupply, amount);
+                ptr = Nox.select(success, ptr, _totalSupply);
             }
-            (success, ptr) = Nox.safeAdd(_totalSupply, amount);
             Nox.allowThis(ptr);
             _totalSupply = ptr;
         } else {
@@ -273,6 +276,7 @@ abstract contract ERC7984 is IERC7984, ERC165 {
             euint256 fromBalance = _balances[from];
             require(Nox.isInitialized(fromBalance), ERC7984ZeroBalance(from));
             (success, ptr) = Nox.safeSub(fromBalance, amount);
+            ptr = Nox.select(success, ptr, fromBalance);
             Nox.allowThis(ptr);
             Nox.allow(ptr, from);
             _balances[from] = ptr;
@@ -288,11 +292,11 @@ abstract contract ERC7984 is IERC7984, ERC165 {
         } else {
             // Mint/transfer: increase recipient balance by actually transferred amount.
             if (!Nox.isInitialized(_balances[to])) {
-                _balances[to] = Nox.toEuint256(0);
-                Nox.allowThis(_balances[to]);
-                Nox.allow(_balances[to], to);
+                // balance is 0: no addition needed, transferred becomes the new balance.
+                ptr = transferred;
+            } else {
+                ptr = Nox.add(_balances[to], transferred);
             }
-            ptr = Nox.add(_balances[to], transferred);
             Nox.allowThis(ptr);
             Nox.allow(ptr, to);
             _balances[to] = ptr;
