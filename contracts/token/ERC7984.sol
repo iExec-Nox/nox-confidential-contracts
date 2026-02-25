@@ -282,15 +282,14 @@ abstract contract ERC7984 is IERC7984, ERC165 {
         euint256 amount,
         bytes calldata data
     ) internal returns (euint256 transferred) {
+        // Try to transfer amount + replace input with actually transferred amount.
         euint256 sent = _transfer(from, to, amount);
+        // Perform callback
         ebool success = ERC7984Utils.checkOnTransferReceived(msg.sender, from, to, sent, data);
 
         // Refund `from` if callback returned false (encrypted).
-        euint256 refundAmount = Nox.select(success, Nox.toEuint256(0), sent);
-        Nox.allowThis(refundAmount);
-        euint256 refund = _update(to, from, refundAmount);
+        euint256 refund = _update(to, from, Nox.select(success, Nox.toEuint256(0), sent));
         transferred = Nox.sub(sent, refund);
-        Nox.allowThis(transferred);
     }
 
     /**
