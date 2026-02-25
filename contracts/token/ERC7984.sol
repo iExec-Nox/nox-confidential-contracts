@@ -302,8 +302,12 @@ abstract contract ERC7984 is IERC7984, ERC165 {
             _balances[to] = ptr;
         }
 
-        if (from != address(0)) Nox.allow(transferred, from);
-        if (to != address(0)) Nox.allow(transferred, to);
+        if (from != address(0)) {
+            Nox.allow(transferred, from);
+        }
+        if (to != address(0)) {
+            Nox.allow(transferred, to);
+        }
         Nox.allowThis(transferred);
         emit ConfidentialTransfer(from, to, transferred);
     }
