@@ -10,13 +10,38 @@ import {IERC7984} from "../../contracts/interfaces/IERC7984.sol";
 import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {ERC7984} from "../../contracts/token/ERC7984.sol";
 import {ERC7984Mock} from "../../contracts/mocks/token/ERC7984Mock.sol";
+import {ERC7984ReceiverMock} from "../../contracts/mocks/token/ERC7984ReceiverMock.sol";
+
+/// @dev ERC7984Mock that bypasses TEE computations in _update for testing callback behavior.
+contract ERC7984BypassTEEMock is ERC7984Mock {
+    constructor(
+        string memory name_,
+        string memory symbol_,
+        string memory contractURI_,
+        address owner_
+    ) ERC7984Mock(name_, symbol_, contractURI_, owner_) {}
+
+    function _update(
+        address from,
+        address to,
+        euint256 amount
+    ) internal override returns (euint256) {
+        emit ConfidentialTransfer(from, to, amount);
+        return amount;
+    }
+}
 
 contract ERC7984Test is Test {
     ERC7984Mock internal token;
+    ERC7984BypassTEEMock internal bypassToken;
 
-    // TODO: Replace hardcoded address with Nox._acl() when exposed publicly from the lib.
-    // ACL address on local dev chain (chainid 31337)
+    // TODO: Replace hardcoded addresses with Nox._acl() / Nox._compute() when exposed publicly.
+    // Contract addresses on local dev chain (chainid 31337)
     address internal constant ACL = 0x3219A802B61028Fc29848863268FE17d750E5701;
+    address internal constant COMPUTE = 0x463Bdd46031353138713a47D7056F7c85024a4A6;
+
+    // Fake handle returned by mocked compute operations.
+    bytes32 internal constant MOCK_HANDLE = bytes32(uint256(999));
 
     address internal owner = makeAddr("owner");
     address internal user1 = makeAddr("user1");
@@ -29,7 +54,9 @@ contract ERC7984Test is Test {
 
     function setUp() public {
         token = new ERC7984Mock(NAME, SYMBOL, CONTRACT_URI, owner);
+        bypassToken = new ERC7984BypassTEEMock(NAME, SYMBOL, CONTRACT_URI, owner);
         vm.label(address(token), "ERC7984Mock");
+        vm.label(address(bypassToken), "ERC7984BypassTEEMock");
         vm.label(owner, "owner");
         vm.label(user1, "user1");
         vm.label(user2, "user2");
@@ -259,5 +286,220 @@ contract ERC7984Test is Test {
         vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, user1));
         vm.prank(user1);
         token.transferOwnership(user2);
+    }
+
+    // ============ confidentialTransferAndCall Tests ============
+
+    function test_RevertWhen_ConfidentialTransferAndCall_UnauthorizedUseOfEncryptedAmount() public {
+        euint256 amount = euint256.wrap(bytes32(uint256(1)));
+        vm.mockCall(
+            ACL,
+            abi.encodeWithSignature("isAllowed(bytes32,address)", euint256.unwrap(amount), user1),
+            abi.encode(false)
+        );
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ERC7984.ERC7984UnauthorizedUseOfEncryptedAmount.selector,
+                amount,
+                user1
+            )
+        );
+        vm.prank(user1);
+        token.confidentialTransferAndCall(user2, amount, "");
+    }
+
+    function test_RevertWhen_ConfidentialTransferAndCall_InvalidReceiver() public {
+        euint256 amount = euint256.wrap(bytes32(uint256(1)));
+        vm.mockCall(
+            ACL,
+            abi.encodeWithSignature("isAllowed(bytes32,address)", euint256.unwrap(amount), user1),
+            abi.encode(true)
+        );
+        vm.expectRevert(
+            abi.encodeWithSelector(ERC7984.ERC7984InvalidReceiver.selector, address(0))
+        );
+        vm.prank(user1);
+        token.confidentialTransferAndCall(address(0), amount, "");
+    }
+
+    function test_RevertWhen_ConfidentialTransferAndCall_ZeroBalance() public {
+        euint256 amount = euint256.wrap(bytes32(uint256(1)));
+        vm.mockCall(
+            ACL,
+            abi.encodeWithSignature("isAllowed(bytes32,address)", euint256.unwrap(amount), user1),
+            abi.encode(true)
+        );
+        vm.expectRevert(abi.encodeWithSelector(ERC7984.ERC7984ZeroBalance.selector, user1));
+        vm.prank(user1);
+        token.confidentialTransferAndCall(user2, amount, "");
+    }
+
+    function test_RevertWhen_ConfidentialTransferAndCall_ReceiverRevertsEmptyReason() public {
+        // Passing empty data causes abi.decode to fail with no reason: ERC7984InvalidReceiver should be raised.
+        ERC7984ReceiverMock receiver = new ERC7984ReceiverMock();
+        euint256 amount = euint256.wrap(bytes32(uint256(1)));
+        vm.mockCall(ACL, abi.encodeWithSignature("isAllowed(bytes32,address)"), abi.encode(true));
+        vm.expectRevert(
+            abi.encodeWithSelector(ERC7984.ERC7984InvalidReceiver.selector, address(receiver))
+        );
+        vm.prank(user1);
+        bypassToken.confidentialTransferAndCall(address(receiver), amount, "");
+    }
+
+    function test_RevertWhen_ConfidentialTransferAndCall_ReceiverRevertsWithReason() public {
+        // Passing an invalid input (> 1) triggers InvalidInput: reason is bubbled up as-is.
+        ERC7984ReceiverMock receiver = new ERC7984ReceiverMock();
+        euint256 amount = euint256.wrap(bytes32(uint256(1)));
+        vm.mockCall(ACL, abi.encodeWithSignature("isAllowed(bytes32,address)"), abi.encode(true));
+        vm.expectRevert(
+            abi.encodeWithSelector(ERC7984ReceiverMock.InvalidInput.selector, uint8(2))
+        );
+        vm.prank(user1);
+        bypassToken.confidentialTransferAndCall(address(receiver), amount, abi.encode(uint8(2)));
+    }
+
+    function test_ConfidentialTransferAndCall_ToEOA() public {
+        euint256 amount = euint256.wrap(bytes32(uint256(1)));
+        // Mock TEE compute operations (toEbool, toEuint256, select, sub).
+        vm.mockCall(
+            COMPUTE,
+            abi.encodeWithSignature("plaintextToEncrypted(bytes32,uint8)"),
+            abi.encode(MOCK_HANDLE)
+        );
+        vm.mockCall(
+            COMPUTE,
+            abi.encodeWithSignature("select(bytes32,bytes32,bytes32)"),
+            abi.encode(MOCK_HANDLE)
+        );
+        vm.mockCall(
+            COMPUTE,
+            abi.encodeWithSignature("sub(bytes32,bytes32)"),
+            abi.encode(MOCK_HANDLE)
+        );
+        vm.mockCall(ACL, abi.encodeWithSignature("isAllowed(bytes32,address)"), abi.encode(true));
+        vm.mockCall(ACL, abi.encodeWithSignature("allow(bytes32,address)"), "");
+        vm.mockCall(ACL, abi.encodeWithSignature("allowTransient(bytes32,address)"), "");
+        vm.prank(user1);
+        // user2 is an EOA: checkOnTransferReceived skips the callback and returns toEbool(true).
+        bypassToken.confidentialTransferAndCall(user2, amount, "");
+    }
+
+    function test_ConfidentialTransferAndCall_ToValidReceiver() public {
+        ERC7984ReceiverMock receiver = new ERC7984ReceiverMock();
+        euint256 amount = euint256.wrap(bytes32(uint256(1)));
+        bytes memory data = abi.encode(uint8(1));
+        // Mock TEE compute operations (toEbool, toEuint256, select, sub).
+        vm.mockCall(
+            COMPUTE,
+            abi.encodeWithSignature("plaintextToEncrypted(bytes32,uint8)"),
+            abi.encode(MOCK_HANDLE)
+        );
+        vm.mockCall(
+            COMPUTE,
+            abi.encodeWithSignature("select(bytes32,bytes32,bytes32)"),
+            abi.encode(MOCK_HANDLE)
+        );
+        vm.mockCall(
+            COMPUTE,
+            abi.encodeWithSignature("sub(bytes32,bytes32)"),
+            abi.encode(MOCK_HANDLE)
+        );
+        vm.mockCall(ACL, abi.encodeWithSignature("isAllowed(bytes32,address)"), abi.encode(true));
+        vm.mockCall(ACL, abi.encodeWithSignature("allow(bytes32,address)"), "");
+        vm.mockCall(ACL, abi.encodeWithSignature("allowTransient(bytes32,address)"), "");
+        vm.expectEmit(address(receiver));
+        emit ERC7984ReceiverMock.ConfidentialTransferCallback(true);
+        vm.prank(user1);
+        bypassToken.confidentialTransferAndCall(address(receiver), amount, data);
+    }
+
+    // ============ confidentialTransferFromAndCall Tests ============
+
+    function test_RevertWhen_ConfidentialTransferFromAndCall_UnauthorizedUseOfEncryptedAmount()
+        public
+    {
+        euint256 amount = euint256.wrap(bytes32(uint256(1)));
+        vm.mockCall(
+            ACL,
+            abi.encodeWithSignature(
+                "isAllowed(bytes32,address)",
+                euint256.unwrap(amount),
+                operator
+            ),
+            abi.encode(false)
+        );
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ERC7984.ERC7984UnauthorizedUseOfEncryptedAmount.selector,
+                amount,
+                operator
+            )
+        );
+        vm.prank(operator);
+        token.confidentialTransferFromAndCall(user1, user2, amount, "");
+    }
+
+    function test_RevertWhen_ConfidentialTransferFromAndCall_UnauthorizedSpender() public {
+        euint256 amount = euint256.wrap(bytes32(uint256(1)));
+        vm.mockCall(
+            ACL,
+            abi.encodeWithSignature(
+                "isAllowed(bytes32,address)",
+                euint256.unwrap(amount),
+                operator
+            ),
+            abi.encode(true)
+        );
+        vm.expectRevert(
+            abi.encodeWithSelector(ERC7984.ERC7984UnauthorizedSpender.selector, user1, operator)
+        );
+        vm.prank(operator);
+        token.confidentialTransferFromAndCall(user1, user2, amount, "");
+    }
+
+    function test_RevertWhen_ConfidentialTransferFromAndCall_ReceiverRevertsEmptyReason() public {
+        // Passing empty data causes abi.decode to fail with no reason: ERC7984InvalidReceiver should be raised.
+        ERC7984ReceiverMock receiver = new ERC7984ReceiverMock();
+        uint48 until = uint48(block.timestamp + 1 days);
+        vm.prank(user1);
+        bypassToken.setOperator(operator, until);
+        euint256 amount = euint256.wrap(bytes32(uint256(1)));
+        vm.mockCall(ACL, abi.encodeWithSignature("isAllowed(bytes32,address)"), abi.encode(true));
+        vm.expectRevert(
+            abi.encodeWithSelector(ERC7984.ERC7984InvalidReceiver.selector, address(receiver))
+        );
+        vm.prank(operator);
+        bypassToken.confidentialTransferFromAndCall(user1, address(receiver), amount, "");
+    }
+
+    function test_ConfidentialTransferFromAndCall_ToValidReceiver() public {
+        ERC7984ReceiverMock receiver = new ERC7984ReceiverMock();
+        uint48 until = uint48(block.timestamp + 1 days);
+        vm.prank(user1);
+        bypassToken.setOperator(operator, until);
+        euint256 amount = euint256.wrap(bytes32(uint256(1)));
+        bytes memory data = abi.encode(uint8(1));
+        vm.mockCall(
+            COMPUTE,
+            abi.encodeWithSignature("plaintextToEncrypted(bytes32,uint8)"),
+            abi.encode(MOCK_HANDLE)
+        );
+        vm.mockCall(
+            COMPUTE,
+            abi.encodeWithSignature("select(bytes32,bytes32,bytes32)"),
+            abi.encode(MOCK_HANDLE)
+        );
+        vm.mockCall(
+            COMPUTE,
+            abi.encodeWithSignature("sub(bytes32,bytes32)"),
+            abi.encode(MOCK_HANDLE)
+        );
+        vm.mockCall(ACL, abi.encodeWithSignature("isAllowed(bytes32,address)"), abi.encode(true));
+        vm.mockCall(ACL, abi.encodeWithSignature("allow(bytes32,address)"), "");
+        vm.mockCall(ACL, abi.encodeWithSignature("allowTransient(bytes32,address)"), "");
+        vm.expectEmit(address(receiver));
+        emit ERC7984ReceiverMock.ConfidentialTransferCallback(true);
+        vm.prank(operator);
+        bypassToken.confidentialTransferFromAndCall(user1, address(receiver), amount, data);
     }
 }
