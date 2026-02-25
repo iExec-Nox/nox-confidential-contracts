@@ -10,7 +10,6 @@ import {IERC7984Receiver} from "../../interfaces/IERC7984Receiver.sol";
  */
 contract ERC7984ReceiverMock is IERC7984Receiver {
     event ConfidentialTransferCallback(bool success);
-
     error InvalidInput(uint8 input);
 
     /// @inheritdoc IERC7984Receiver
@@ -22,15 +21,13 @@ contract ERC7984ReceiverMock is IERC7984Receiver {
         bytes calldata data
     ) external returns (ebool) {
         uint8 input = abi.decode(data, (uint8));
-
-        if (input > 1) revert InvalidInput(input);
-
+        if (input > 1) {
+            revert InvalidInput(input);
+        }
         bool success = input == 1;
         emit ConfidentialTransferCallback(success);
-
         ebool returnVal = Nox.toEbool(success);
         Nox.allowTransient(returnVal, msg.sender);
-
         return returnVal;
     }
 }
