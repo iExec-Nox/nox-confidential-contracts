@@ -12,6 +12,7 @@ import {NoxMocks} from "../utils/NoxMocks.sol";
 
 contract ERC7984Test is NoxMocks {
     ERC7984Mock internal token;
+    ERC7984ReceiverMock internal receiver;
 
     address internal owner = makeAddr("owner");
     address internal user1 = makeAddr("user1");
@@ -24,7 +25,9 @@ contract ERC7984Test is NoxMocks {
 
     function setUp() public {
         token = new ERC7984Mock(NAME, SYMBOL, CONTRACT_URI, owner);
+        receiver = new ERC7984ReceiverMock();
         vm.label(address(token), "ERC7984Mock");
+        vm.label(address(receiver), "ERC7984ReceiverMock");
         vm.label(owner, "owner");
         vm.label(user1, "user1");
         vm.label(user2, "user2");
@@ -308,7 +311,6 @@ contract ERC7984Test is NoxMocks {
         vm.prank(owner);
         token.mint(user1, euint256.wrap(MOCK_HANDLE));
 
-        ERC7984ReceiverMock receiver = new ERC7984ReceiverMock();
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
         vm.expectRevert(
             abi.encodeWithSelector(ERC7984.ERC7984InvalidReceiver.selector, address(receiver))
@@ -323,7 +325,6 @@ contract ERC7984Test is NoxMocks {
         vm.prank(owner);
         token.mint(user1, euint256.wrap(MOCK_HANDLE));
 
-        ERC7984ReceiverMock receiver = new ERC7984ReceiverMock();
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
         vm.expectRevert(
             abi.encodeWithSelector(ERC7984ReceiverMock.InvalidInput.selector, uint8(2))
@@ -348,7 +349,6 @@ contract ERC7984Test is NoxMocks {
         vm.prank(owner);
         token.mint(user1, euint256.wrap(MOCK_HANDLE));
 
-        ERC7984ReceiverMock receiver = new ERC7984ReceiverMock();
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
         vm.expectEmit(address(receiver));
         emit ERC7984ReceiverMock.ConfidentialTransferCallback(true);
@@ -408,7 +408,6 @@ contract ERC7984Test is NoxMocks {
         vm.prank(owner);
         token.mint(user1, euint256.wrap(MOCK_HANDLE));
 
-        ERC7984ReceiverMock receiver = new ERC7984ReceiverMock();
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
         vm.expectRevert(
             abi.encodeWithSelector(ERC7984.ERC7984InvalidReceiver.selector, address(receiver))
@@ -424,7 +423,6 @@ contract ERC7984Test is NoxMocks {
         vm.prank(owner);
         token.mint(user1, euint256.wrap(MOCK_HANDLE));
 
-        ERC7984ReceiverMock receiver = new ERC7984ReceiverMock();
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
         vm.expectEmit(address(receiver));
         emit ERC7984ReceiverMock.ConfidentialTransferCallback(true);
