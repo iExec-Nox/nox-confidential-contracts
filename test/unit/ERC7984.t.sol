@@ -4,6 +4,8 @@ pragma solidity ^0.8.28;
 import {Test} from "forge-std/Test.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import {IACL} from "@iexec-nox/nox-protocol-contracts/contracts/interfaces/IACL.sol";
+import {INoxCompute} from "@iexec-nox/nox-protocol-contracts/contracts/interfaces/INoxCompute.sol";
 import {IERC7984} from "../../contracts/interfaces/IERC7984.sol";
 import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {ERC7984} from "../../contracts/token/ERC7984.sol";
@@ -80,6 +82,14 @@ contract ERC7984Test is Test {
         assertFalse(token.isOperator(user1, operator));
     }
 
+    function test_IsOperator_AtExactTimestamp() public {
+        uint48 until = uint48(block.timestamp);
+        vm.prank(user1);
+        token.setOperator(operator, until);
+        // block.timestamp <= until is true at the exact boundary
+        assertTrue(token.isOperator(user1, operator));
+    }
+
     // ============ setOperator ============
 
     function test_SetOperator() public {
@@ -133,7 +143,55 @@ contract ERC7984Test is Test {
         token.burn(user1, euint256.wrap(bytes32(uint256(1))));
     }
 
+    // ============ _transfer ============
+
+    function test_RevertWhen_Transfer_InvalidSender() public {
+        euint256 amount = euint256.wrap(bytes32(uint256(1)));
+        vm.expectRevert(abi.encodeWithSelector(ERC7984.ERC7984InvalidSender.selector, address(0)));
+        token.transfer(address(0), user1, amount);
+    }
+
+    function test_RevertWhen_Transfer_InvalidReceiver() public {
+        euint256 amount = euint256.wrap(bytes32(uint256(1)));
+        vm.expectRevert(
+            abi.encodeWithSelector(ERC7984.ERC7984InvalidReceiver.selector, address(0))
+        );
+        token.transfer(user1, address(0), amount);
+    }
+
     // ============ confidentialTransfer ============
+
+    function test_RevertWhen_ConfidentialTransfer_UnauthorizedUseOfEncryptedAmount() public {
+        euint256 amount = euint256.wrap(bytes32(uint256(1)));
+        vm.mockCall(
+            ACL,
+            abi.encodeWithSignature("isAllowed(bytes32,address)", euint256.unwrap(amount), user1),
+            abi.encode(false)
+        );
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ERC7984.ERC7984UnauthorizedUseOfEncryptedAmount.selector,
+                amount,
+                user1
+            )
+        );
+        vm.prank(user1);
+        token.confidentialTransfer(user2, amount);
+    }
+
+    function test_RevertWhen_ConfidentialTransfer_InvalidReceiver() public {
+        euint256 amount = euint256.wrap(bytes32(uint256(1)));
+        vm.mockCall(
+            ACL,
+            abi.encodeWithSignature("isAllowed(bytes32,address)", euint256.unwrap(amount), user1),
+            abi.encode(true)
+        );
+        vm.expectRevert(
+            abi.encodeWithSelector(ERC7984.ERC7984InvalidReceiver.selector, address(0))
+        );
+        vm.prank(user1);
+        token.confidentialTransfer(address(0), amount);
+    }
 
     function test_RevertWhen_ConfidentialTransfer_ZeroBalance() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
@@ -148,6 +206,28 @@ contract ERC7984Test is Test {
     }
 
     // ============ confidentialTransferFrom ============
+
+    function test_RevertWhen_ConfidentialTransferFrom_UnauthorizedUseOfEncryptedAmount() public {
+        euint256 amount = euint256.wrap(bytes32(uint256(1)));
+        vm.mockCall(
+            ACL,
+            abi.encodeWithSignature(
+                "isAllowed(bytes32,address)",
+                euint256.unwrap(amount),
+                operator
+            ),
+            abi.encode(false)
+        );
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ERC7984.ERC7984UnauthorizedUseOfEncryptedAmount.selector,
+                amount,
+                operator
+            )
+        );
+        vm.prank(operator);
+        token.confidentialTransferFrom(user1, user2, amount);
+    }
 
     function test_RevertWhen_ConfidentialTransferFrom_UnauthorizedSpender() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));

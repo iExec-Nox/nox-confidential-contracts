@@ -21,4 +21,8 @@ contract ERC7984Mock is ERC7984, Ownable {
     function burn(address from, euint256 amount) external returns (euint256) {
         return _burn(from, amount);
     }
+
+    function transfer(address from, address to, euint256 amount) external returns (euint256) {
+        return _transfer(from, to, amount);
+    }
 }
