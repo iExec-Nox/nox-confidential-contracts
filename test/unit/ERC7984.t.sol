@@ -4,12 +4,17 @@ pragma solidity ^0.8.28;
 import {Test} from "forge-std/Test.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import {euint64} from "encrypted-types/EncryptedTypes.sol";
-import {IERC7984} from "@openzeppelin/confidential-contracts/interfaces/IERC7984.sol";
+import {IERC7984} from "../../contracts/interfaces/IERC7984.sol";
+import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
+import {ERC7984} from "../../contracts/token/ERC7984.sol";
 import {ERC7984Mock} from "../../contracts/mocks/token/ERC7984Mock.sol";
 
 contract ERC7984Test is Test {
     ERC7984Mock internal token;
+
+    // TODO: Replace hardcoded address with Nox._acl() when exposed publicly from the lib.
+    // ACL address on local dev chain (chainid 31337)
+    address internal constant ACL = 0x3219A802B61028Fc29848863268FE17d750E5701;
 
     address internal owner = makeAddr("owner");
     address internal user1 = makeAddr("user1");
@@ -34,7 +39,7 @@ contract ERC7984Test is Test {
     function test_Constructor() public view {
         assertEq(token.name(), NAME);
         assertEq(token.symbol(), SYMBOL);
-        assertEq(token.decimals(), 6);
+        assertEq(token.decimals(), 18);
         assertEq(token.contractURI(), CONTRACT_URI);
         assertEq(token.owner(), owner);
     }
@@ -56,13 +61,13 @@ contract ERC7984Test is Test {
     // ============ confidentialTotalSupply ============
 
     function test_ConfidentialTotalSupply_InitiallyZero() public view {
-        assertEq(euint64.unwrap(token.confidentialTotalSupply()), bytes32(0));
+        assertEq(euint256.unwrap(token.confidentialTotalSupply()), bytes32(0));
     }
 
     // ============ confidentialBalanceOf ============
 
     function test_ConfidentialBalanceOf_InitiallyZero() public view {
-        assertEq(euint64.unwrap(token.confidentialBalanceOf(user1)), bytes32(0));
+        assertEq(euint256.unwrap(token.confidentialBalanceOf(user1)), bytes32(0));
     }
 
     // ============ isOperator ============
@@ -105,6 +110,61 @@ contract ERC7984Test is Test {
 
         vm.warp(block.timestamp + 2 hours);
         assertFalse(token.isOperator(user1, operator));
+    }
+
+    // ============ _mint ============
+
+    function test_RevertWhen_Mint_InvalidReceiver() public {
+        vm.expectRevert(
+            abi.encodeWithSelector(ERC7984.ERC7984InvalidReceiver.selector, address(0))
+        );
+        token.mint(address(0), euint256.wrap(bytes32(uint256(1))));
+    }
+
+    // ============ _burn ============
+
+    function test_RevertWhen_Burn_InvalidSender() public {
+        vm.expectRevert(abi.encodeWithSelector(ERC7984.ERC7984InvalidSender.selector, address(0)));
+        token.burn(address(0), euint256.wrap(bytes32(uint256(1))));
+    }
+
+    function test_RevertWhen_Burn_ZeroBalance() public {
+        vm.expectRevert(abi.encodeWithSelector(ERC7984.ERC7984ZeroBalance.selector, user1));
+        token.burn(user1, euint256.wrap(bytes32(uint256(1))));
+    }
+
+    // ============ confidentialTransfer ============
+
+    function test_RevertWhen_ConfidentialTransfer_ZeroBalance() public {
+        euint256 amount = euint256.wrap(bytes32(uint256(1)));
+        vm.mockCall(
+            ACL,
+            abi.encodeWithSignature("isAllowed(bytes32,address)", euint256.unwrap(amount), user1),
+            abi.encode(true)
+        );
+        vm.expectRevert(abi.encodeWithSelector(ERC7984.ERC7984ZeroBalance.selector, user1));
+        vm.prank(user1);
+        token.confidentialTransfer(user2, amount);
+    }
+
+    // ============ confidentialTransferFrom ============
+
+    function test_RevertWhen_ConfidentialTransferFrom_UnauthorizedSpender() public {
+        euint256 amount = euint256.wrap(bytes32(uint256(1)));
+        vm.mockCall(
+            ACL,
+            abi.encodeWithSignature(
+                "isAllowed(bytes32,address)",
+                euint256.unwrap(amount),
+                operator
+            ),
+            abi.encode(true)
+        );
+        vm.expectRevert(
+            abi.encodeWithSelector(ERC7984.ERC7984UnauthorizedSpender.selector, user1, operator)
+        );
+        vm.prank(operator);
+        token.confidentialTransferFrom(user1, user2, amount);
     }
 
     // ============ owner ============
