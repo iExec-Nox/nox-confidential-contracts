@@ -162,7 +162,7 @@ contract ERC7984Test is NoxMocks {
     function test_RevertWhen_ConfidentialTransfer_UnauthorizedUseOfEncryptedAmount() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
         vm.mockCall(
-            ACL,
+            COMPUTE,
             abi.encodeWithSignature("isAllowed(bytes32,address)", euint256.unwrap(amount), user1),
             abi.encode(false)
         );
@@ -180,7 +180,7 @@ contract ERC7984Test is NoxMocks {
     function test_RevertWhen_ConfidentialTransfer_InvalidReceiver() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
         vm.mockCall(
-            ACL,
+            COMPUTE,
             abi.encodeWithSignature("isAllowed(bytes32,address)", euint256.unwrap(amount), user1),
             abi.encode(true)
         );
@@ -194,7 +194,7 @@ contract ERC7984Test is NoxMocks {
     function test_RevertWhen_ConfidentialTransfer_ZeroBalance() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
         vm.mockCall(
-            ACL,
+            COMPUTE,
             abi.encodeWithSignature("isAllowed(bytes32,address)", euint256.unwrap(amount), user1),
             abi.encode(true)
         );
@@ -208,7 +208,7 @@ contract ERC7984Test is NoxMocks {
     function test_RevertWhen_ConfidentialTransferFrom_UnauthorizedUseOfEncryptedAmount() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
         vm.mockCall(
-            ACL,
+            COMPUTE,
             abi.encodeWithSignature(
                 "isAllowed(bytes32,address)",
                 euint256.unwrap(amount),
@@ -230,7 +230,7 @@ contract ERC7984Test is NoxMocks {
     function test_RevertWhen_ConfidentialTransferFrom_UnauthorizedSpender() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
         vm.mockCall(
-            ACL,
+            COMPUTE,
             abi.encodeWithSignature(
                 "isAllowed(bytes32,address)",
                 euint256.unwrap(amount),
@@ -264,7 +264,7 @@ contract ERC7984Test is NoxMocks {
     function test_RevertWhen_ConfidentialTransferAndCall_UnauthorizedUseOfEncryptedAmount() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
         vm.mockCall(
-            ACL,
+            COMPUTE,
             abi.encodeWithSignature("isAllowed(bytes32,address)", euint256.unwrap(amount), user1),
             abi.encode(false)
         );
@@ -282,7 +282,7 @@ contract ERC7984Test is NoxMocks {
     function test_RevertWhen_ConfidentialTransferAndCall_InvalidReceiver() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
         vm.mockCall(
-            ACL,
+            COMPUTE,
             abi.encodeWithSignature("isAllowed(bytes32,address)", euint256.unwrap(amount), user1),
             abi.encode(true)
         );
@@ -296,7 +296,7 @@ contract ERC7984Test is NoxMocks {
     function test_RevertWhen_ConfidentialTransferAndCall_ZeroBalance() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
         vm.mockCall(
-            ACL,
+            COMPUTE,
             abi.encodeWithSignature("isAllowed(bytes32,address)", euint256.unwrap(amount), user1),
             abi.encode(true)
         );
@@ -363,7 +363,7 @@ contract ERC7984Test is NoxMocks {
     {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
         vm.mockCall(
-            ACL,
+            COMPUTE,
             abi.encodeWithSignature(
                 "isAllowed(bytes32,address)",
                 euint256.unwrap(amount),
@@ -385,7 +385,7 @@ contract ERC7984Test is NoxMocks {
     function test_RevertWhen_ConfidentialTransferFromAndCall_UnauthorizedSpender() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
         vm.mockCall(
-            ACL,
+            COMPUTE,
             abi.encodeWithSignature(
                 "isAllowed(bytes32,address)",
                 euint256.unwrap(amount),

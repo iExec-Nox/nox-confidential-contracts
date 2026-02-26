@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@iexec-nox/nox-protocol-contracts':
-        specifier: 0.1.0-beta.4
-        version: 0.1.0-beta.4
+        specifier: link:../nox-protocol-contracts
+        version: link:../nox-protocol-contracts
       '@openzeppelin/contracts':
         specifier: ^5.4.0
         version: 5.4.0
@@ -21,9 +21,15 @@ importers:
       '@nomicfoundation/hardhat-toolbox-viem':
         specifier: ^5.0.2
         version: 5.0.2(a28efb895d030be6b291446d873666e5)
+      '@openzeppelin/contracts-upgradeable':
+        specifier: ^5.4.0
+        version: 5.4.0(@openzeppelin/contracts@5.4.0)
       '@types/node':
         specifier: ^22.19.10
         version: 22.19.10
+      encrypted-types:
+        specifier: ^0.0.4
+        version: 0.0.4
       forge-std:
         specifier: github:foundry-rs/forge-std#v1.9.4
         version: https://codeload.github.com/foundry-rs/forge-std/tar.gz/1eea5bae12ae557d589f9f0f0edae2faa47cb262
@@ -288,9 +294,6 @@ packages:
   '@fastify/busboy@2.1.1':
     resolution: {integrity: sha512-vBZP4NlzfOlerQTnba4aqZoMhE/a9HY7HRqoOPaETQcSQuWEIyZMHGfVu6w9wGtGK5fED5qRs2DteVCjOH60sA==}
     engines: {node: '>=14'}
-
-  '@iexec-nox/nox-protocol-contracts@0.1.0-beta.4':
-    resolution: {integrity: sha512-ANHufAR2budb0C7DXCYPnxfmvTqiLYoL2OYNp+SFgsWOIIwygCXeYeTJlpGESway7yVcxTlv8QqrXpf6fOvzDg==}
 
   '@jest/schemas@29.6.3':
     resolution: {integrity: sha512-mo5j5X+jIZmJQveBKeS/clAueipV7KgiX1vMgCxam1RNYiqE1w62n0/tJJnHtjW8ZHcQco5gY85jA3mi0L+nSA==}
@@ -1278,12 +1281,6 @@ snapshots:
       '@ethersproject/strings': 5.8.0
 
   '@fastify/busboy@2.1.1': {}
-
-  '@iexec-nox/nox-protocol-contracts@0.1.0-beta.4':
-    dependencies:
-      '@openzeppelin/contracts': 5.4.0
-      '@openzeppelin/contracts-upgradeable': 5.4.0(@openzeppelin/contracts@5.4.0)
-      encrypted-types: 0.0.4
 
   '@jest/schemas@29.6.3':
     dependencies:
