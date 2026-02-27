@@ -60,4 +60,5 @@ describe("[IT] ERC7984", function () {
         });
 
         // TODO: Add more tests
+    });
 });
