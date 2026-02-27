@@ -369,11 +369,6 @@ contract ERC7984Test is NoxMock {
         vm.expectEmit(address(receiver));
         emit ERC7984ReceiverMock.ConfidentialTransferCallback(true);
         vm.prank(operator);
-        token.confidentialTransferFromAndCall(
-            user1,
-            address(receiver),
-            amount,
-            abi.encode(true)
-        );
+        token.confidentialTransferFromAndCall(user1, address(receiver), amount, abi.encode(true));
     }
 }
