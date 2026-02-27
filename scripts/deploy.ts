@@ -1,5 +1,5 @@
 import NoxComputeModule from "@iexec-nox/nox-protocol-contracts/ignition/modules/NoxCompute.ts";
-import config from "@iexec-nox/nox-protocol-contracts/config/config.ts";
+import config from "../config/config.ts";
 import connection from "./utils/hardhat-connection-singleton.ts";
 
 /**
