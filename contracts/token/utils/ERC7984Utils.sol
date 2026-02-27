@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
+// Inspired by OpenZeppelin Contracts (token/ERC721/utils/ERC721Utils.sol)
 pragma solidity ^0.8.28;
 
 import {Nox, ebool, euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
@@ -25,22 +26,21 @@ library ERC7984Utils {
         euint256 amount,
         bytes calldata data
     ) internal returns (ebool) {
-        if (to.code.length > 0) {
-            try
-                IERC7984Receiver(to).onConfidentialTransferReceived(operator, from, amount, data)
-            returns (ebool retval) {
-                return retval;
-            } catch (bytes memory reason) {
-                if (reason.length == 0) {
-                    revert ERC7984.ERC7984InvalidReceiver(to);
-                } else {
-                    assembly ("memory-safe") {
-                        revert(add(32, reason), mload(reason))
-                    }
+        if (to.code.length == 0) {
+            return Nox.toEbool(true);
+        }
+        try
+            IERC7984Receiver(to).onConfidentialTransferReceived(operator, from, amount, data)
+        returns (ebool retval) {
+            return retval;
+        } catch (bytes memory reason) {
+            if (reason.length == 0) {
+                revert ERC7984.ERC7984InvalidReceiver(to);
+            } else {
+                assembly ("memory-safe") {
+                    revert(add(32, reason), mload(reason))
                 }
             }
-        } else {
-            return Nox.toEbool(true);
         }
     }
 }

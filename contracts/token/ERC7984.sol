@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
+// Inspired by OpenZeppelin Contracts (token/ERC20/ERC20.sol)
 pragma solidity ^0.8.28;
 
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";

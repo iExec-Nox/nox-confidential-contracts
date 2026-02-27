@@ -8,9 +8,9 @@ import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol"
 import {ERC7984} from "../../contracts/token/ERC7984.sol";
 import {ERC7984Mock} from "../../contracts/mocks/token/ERC7984Mock.sol";
 import {ERC7984ReceiverMock} from "../../contracts/mocks/token/ERC7984ReceiverMock.sol";
-import {NoxMocks} from "../utils/NoxMocks.sol";
+import {NoxMock} from "../utils/NoxMock.sol";
 
-contract ERC7984Test is NoxMocks {
+contract ERC7984Test is NoxMock {
     ERC7984Mock internal token;
     ERC7984ReceiverMock internal receiver;
 
@@ -161,11 +161,7 @@ contract ERC7984Test is NoxMocks {
 
     function test_RevertWhen_ConfidentialTransfer_UnauthorizedUseOfEncryptedAmount() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
-        vm.mockCall(
-            ACL,
-            abi.encodeWithSignature("isAllowed(bytes32,address)", euint256.unwrap(amount), user1),
-            abi.encode(false)
-        );
+        _mockIsAllowedCall(amount, user1, false);
         vm.expectRevert(
             abi.encodeWithSelector(
                 ERC7984.ERC7984UnauthorizedUseOfEncryptedAmount.selector,
@@ -179,11 +175,7 @@ contract ERC7984Test is NoxMocks {
 
     function test_RevertWhen_ConfidentialTransfer_InvalidReceiver() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
-        vm.mockCall(
-            ACL,
-            abi.encodeWithSignature("isAllowed(bytes32,address)", euint256.unwrap(amount), user1),
-            abi.encode(true)
-        );
+        _mockIsAllowedCall(amount, user1, true);
         vm.expectRevert(
             abi.encodeWithSelector(ERC7984.ERC7984InvalidReceiver.selector, address(0))
         );
@@ -193,11 +185,7 @@ contract ERC7984Test is NoxMocks {
 
     function test_RevertWhen_ConfidentialTransfer_ZeroBalance() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
-        vm.mockCall(
-            ACL,
-            abi.encodeWithSignature("isAllowed(bytes32,address)", euint256.unwrap(amount), user1),
-            abi.encode(true)
-        );
+        _mockIsAllowedCall(amount, user1, true);
         vm.expectRevert(abi.encodeWithSelector(ERC7984.ERC7984ZeroBalance.selector, user1));
         vm.prank(user1);
         token.confidentialTransfer(user2, amount);
@@ -207,15 +195,7 @@ contract ERC7984Test is NoxMocks {
 
     function test_RevertWhen_ConfidentialTransferFrom_UnauthorizedUseOfEncryptedAmount() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
-        vm.mockCall(
-            ACL,
-            abi.encodeWithSignature(
-                "isAllowed(bytes32,address)",
-                euint256.unwrap(amount),
-                operator
-            ),
-            abi.encode(false)
-        );
+        _mockIsAllowedCall(amount, operator, false);
         vm.expectRevert(
             abi.encodeWithSelector(
                 ERC7984.ERC7984UnauthorizedUseOfEncryptedAmount.selector,
@@ -229,15 +209,7 @@ contract ERC7984Test is NoxMocks {
 
     function test_RevertWhen_ConfidentialTransferFrom_UnauthorizedSpender() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
-        vm.mockCall(
-            ACL,
-            abi.encodeWithSignature(
-                "isAllowed(bytes32,address)",
-                euint256.unwrap(amount),
-                operator
-            ),
-            abi.encode(true)
-        );
+        _mockIsAllowedCall(amount, operator, true);
         vm.expectRevert(
             abi.encodeWithSelector(ERC7984.ERC7984UnauthorizedSpender.selector, user1, operator)
         );
@@ -263,11 +235,7 @@ contract ERC7984Test is NoxMocks {
 
     function test_RevertWhen_ConfidentialTransferAndCall_UnauthorizedUseOfEncryptedAmount() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
-        vm.mockCall(
-            ACL,
-            abi.encodeWithSignature("isAllowed(bytes32,address)", euint256.unwrap(amount), user1),
-            abi.encode(false)
-        );
+        _mockIsAllowedCall(amount, user1, false);
         vm.expectRevert(
             abi.encodeWithSelector(
                 ERC7984.ERC7984UnauthorizedUseOfEncryptedAmount.selector,
@@ -281,11 +249,7 @@ contract ERC7984Test is NoxMocks {
 
     function test_RevertWhen_ConfidentialTransferAndCall_InvalidReceiver() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
-        vm.mockCall(
-            ACL,
-            abi.encodeWithSignature("isAllowed(bytes32,address)", euint256.unwrap(amount), user1),
-            abi.encode(true)
-        );
+        _mockIsAllowedCall(amount, user1, true);
         vm.expectRevert(
             abi.encodeWithSelector(ERC7984.ERC7984InvalidReceiver.selector, address(0))
         );
@@ -295,11 +259,7 @@ contract ERC7984Test is NoxMocks {
 
     function test_RevertWhen_ConfidentialTransferAndCall_ZeroBalance() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
-        vm.mockCall(
-            ACL,
-            abi.encodeWithSignature("isAllowed(bytes32,address)", euint256.unwrap(amount), user1),
-            abi.encode(true)
-        );
+        _mockIsAllowedCall(amount, user1, true);
         vm.expectRevert(abi.encodeWithSelector(ERC7984.ERC7984ZeroBalance.selector, user1));
         vm.prank(user1);
         token.confidentialTransferAndCall(user2, amount, "");
@@ -320,17 +280,15 @@ contract ERC7984Test is NoxMocks {
     }
 
     function test_RevertWhen_ConfidentialTransferAndCall_ReceiverRevertsWithReason() public {
-        // Passing an invalid input (> 1) triggers InvalidInput: reason is bubbled up as-is.
+        // Passing false triggers InvalidInput: reason is bubbled up as-is.
         _mockNoxPrimitives();
         vm.prank(owner);
         token.mint(user1, euint256.wrap(MOCK_HANDLE));
 
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
-        vm.expectRevert(
-            abi.encodeWithSelector(ERC7984ReceiverMock.InvalidInput.selector, uint8(2))
-        );
+        vm.expectRevert(abi.encodeWithSelector(ERC7984ReceiverMock.InvalidInput.selector));
         vm.prank(user1);
-        token.confidentialTransferAndCall(address(receiver), amount, abi.encode(uint8(2)));
+        token.confidentialTransferAndCall(address(receiver), amount, abi.encode(false));
     }
 
     function test_ConfidentialTransferAndCall_ToEOA() public {
@@ -353,7 +311,7 @@ contract ERC7984Test is NoxMocks {
         vm.expectEmit(address(receiver));
         emit ERC7984ReceiverMock.ConfidentialTransferCallback(true);
         vm.prank(user1);
-        token.confidentialTransferAndCall(address(receiver), amount, abi.encode(uint8(1)));
+        token.confidentialTransferAndCall(address(receiver), amount, abi.encode(true));
     }
 
     // ============ confidentialTransferFromAndCall Tests ============
@@ -362,15 +320,7 @@ contract ERC7984Test is NoxMocks {
         public
     {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
-        vm.mockCall(
-            ACL,
-            abi.encodeWithSignature(
-                "isAllowed(bytes32,address)",
-                euint256.unwrap(amount),
-                operator
-            ),
-            abi.encode(false)
-        );
+        _mockIsAllowedCall(amount, operator, false);
         vm.expectRevert(
             abi.encodeWithSelector(
                 ERC7984.ERC7984UnauthorizedUseOfEncryptedAmount.selector,
@@ -384,15 +334,7 @@ contract ERC7984Test is NoxMocks {
 
     function test_RevertWhen_ConfidentialTransferFromAndCall_UnauthorizedSpender() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
-        vm.mockCall(
-            ACL,
-            abi.encodeWithSignature(
-                "isAllowed(bytes32,address)",
-                euint256.unwrap(amount),
-                operator
-            ),
-            abi.encode(true)
-        );
+        _mockIsAllowedCall(amount, operator, true);
         vm.expectRevert(
             abi.encodeWithSelector(ERC7984.ERC7984UnauthorizedSpender.selector, user1, operator)
         );
@@ -431,7 +373,7 @@ contract ERC7984Test is NoxMocks {
             user1,
             address(receiver),
             amount,
-            abi.encode(uint8(1))
+            abi.encode(true)
         );
     }
 }

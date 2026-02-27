@@ -2,11 +2,13 @@
 pragma solidity ^0.8.28;
 
 import {Test} from "forge-std/Test.sol";
+import {INoxCompute} from "@iexec-nox/nox-protocol-contracts/contracts/interfaces/INoxCompute.sol";
+import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 
 /**
  * @dev Test utility library providing mock helpers for Nox TEE primitives.
  */
-abstract contract NoxMocks is Test {
+abstract contract NoxMock is Test {
     // TODO: Replace hardcoded addresses with Nox._acl() / Nox._compute() when exposed publicly.
     // Contract addresses on local dev chain (chainid 31337)
     address internal constant ACL = 0x3219A802B61028Fc29848863268FE17d750E5701;
@@ -20,7 +22,7 @@ abstract contract NoxMocks is Test {
     function _mockNoxPrimitives() internal {
         vm.mockCall(
             COMPUTE,
-            abi.encodeWithSignature("plaintextToEncrypted(bytes32,uint8)"),
+            abi.encodeWithSelector(INoxCompute.plaintextToEncrypted.selector),
             abi.encode(MOCK_HANDLE)
         );
         vm.mockCall(
@@ -46,5 +48,14 @@ abstract contract NoxMocks is Test {
         vm.mockCall(ACL, abi.encodeWithSignature("isAllowed(bytes32,address)"), abi.encode(true));
         vm.mockCall(ACL, abi.encodeWithSignature("allow(bytes32,address)"), "");
         vm.mockCall(ACL, abi.encodeWithSignature("allowTransient(bytes32,address)"), "");
+    }
+
+    /// @dev Mocks a specific `isAllowed` ACL call for the given encrypted amount handle and user.
+    function _mockIsAllowedCall(euint256 amount, address user, bool allowed) internal {
+        vm.mockCall(
+            ACL,
+            abi.encodeWithSignature("isAllowed(bytes32,address)", euint256.unwrap(amount), user),
+            abi.encode(allowed)
+        );
     }
 }

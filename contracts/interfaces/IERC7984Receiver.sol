@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
+// Inspired by OpenZeppelin Contracts (token/ERC721/IERC721Receiver.sol)
 pragma solidity ^0.8.28;
 
 import {ebool, euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
