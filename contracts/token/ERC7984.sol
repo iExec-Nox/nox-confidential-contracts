@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
+// Inspired by OpenZeppelin Contracts (token/ERC20/ERC20.sol)
 pragma solidity ^0.8.28;
 
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {IERC7984} from "../interfaces/IERC7984.sol";
+import {ERC7984Utils} from "./utils/ERC7984Utils.sol";
 import {
     Nox,
     euint256,
@@ -161,35 +163,67 @@ abstract contract ERC7984 is IERC7984, ERC165 {
 
     /// @inheritdoc IERC7984
     function confidentialTransferAndCall(
-        address,
-        externalEuint256,
-        bytes calldata,
-        bytes calldata
-    ) public virtual returns (euint256) {}
+        address to,
+        externalEuint256 encryptedAmount,
+        bytes calldata inputProof,
+        bytes calldata data
+    ) public virtual returns (euint256 transferred) {
+        transferred = _transferAndCall(
+            msg.sender,
+            to,
+            Nox.fromExternal(encryptedAmount, inputProof),
+            data
+        );
+        Nox.allowTransient(transferred, msg.sender);
+    }
 
     /// @inheritdoc IERC7984
     function confidentialTransferAndCall(
-        address,
-        euint256,
-        bytes calldata
-    ) public virtual returns (euint256) {}
+        address to,
+        euint256 amount,
+        bytes calldata data
+    ) public virtual returns (euint256 transferred) {
+        require(
+            Nox.isAllowed(amount, msg.sender),
+            ERC7984UnauthorizedUseOfEncryptedAmount(amount, msg.sender)
+        );
+        transferred = _transferAndCall(msg.sender, to, amount, data);
+        Nox.allowTransient(transferred, msg.sender);
+    }
 
     /// @inheritdoc IERC7984
     function confidentialTransferFromAndCall(
-        address,
-        address,
-        externalEuint256,
-        bytes calldata,
-        bytes calldata
-    ) public virtual returns (euint256) {}
+        address from,
+        address to,
+        externalEuint256 encryptedAmount,
+        bytes calldata inputProof,
+        bytes calldata data
+    ) public virtual returns (euint256 transferred) {
+        require(isOperator(from, msg.sender), ERC7984UnauthorizedSpender(from, msg.sender));
+        transferred = _transferAndCall(
+            from,
+            to,
+            Nox.fromExternal(encryptedAmount, inputProof),
+            data
+        );
+        Nox.allowTransient(transferred, msg.sender);
+    }
 
     /// @inheritdoc IERC7984
     function confidentialTransferFromAndCall(
-        address,
-        address,
-        euint256,
-        bytes calldata
-    ) public virtual returns (euint256) {}
+        address from,
+        address to,
+        euint256 amount,
+        bytes calldata data
+    ) public virtual returns (euint256 transferred) {
+        require(
+            Nox.isAllowed(amount, msg.sender),
+            ERC7984UnauthorizedUseOfEncryptedAmount(amount, msg.sender)
+        );
+        require(isOperator(from, msg.sender), ERC7984UnauthorizedSpender(from, msg.sender));
+        transferred = _transferAndCall(from, to, amount, data);
+        Nox.allowTransient(transferred, msg.sender);
+    }
 
     // ============ Internal Functions ============
 
@@ -236,6 +270,27 @@ abstract contract ERC7984 is IERC7984, ERC165 {
         require(from != address(0), ERC7984InvalidSender(address(0)));
         require(to != address(0), ERC7984InvalidReceiver(address(0)));
         return _update(from, to, amount);
+    }
+
+    /**
+     * @dev Moves `amount` tokens from `from` to `to`, then calls the {IERC7984Receiver-onConfidentialTransferReceived}
+     * hook on `to` if it is a contract. The receiver returns an encrypted boolean; if it is `false`,
+     * a confidential refund is issued back to `from`. If the receiver reverts, the revert is propagated.
+     */
+    function _transferAndCall(
+        address from,
+        address to,
+        euint256 amount,
+        bytes calldata data
+    ) internal returns (euint256 transferred) {
+        // Try to transfer amount + replace input with actually transferred amount.
+        euint256 sent = _transfer(from, to, amount);
+        // Perform callback
+        ebool success = ERC7984Utils.checkOnTransferReceived(msg.sender, from, to, sent, data);
+
+        // Refund `from` if callback returned false (encrypted).
+        euint256 refund = _update(to, from, Nox.select(success, Nox.toEuint256(0), sent));
+        transferred = Nox.sub(sent, refund);
     }
 
     /**
