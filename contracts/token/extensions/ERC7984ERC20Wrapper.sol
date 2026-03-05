@@ -17,12 +17,16 @@ import {IERC7984ERC20Wrapper} from "../../interfaces/IERC7984ERC20Wrapper.sol";
 import {ERC7984} from "../ERC7984.sol";
 
 /**
- * @dev Extension of {ERC7984} that wraps an ERC-20 token into a confidential ERC-7984 token.
- * Implements {IERC1363Receiver} so users can wrap via direct ERC-1363 transfers.
+ * @dev A wrapper contract built on top of {ERC7984} that allows wrapping an `ERC20` token
+ * into an `ERC7984` token. The wrapper contract implements the `IERC1363Receiver` interface
+ * which allows users to transfer `ERC1363` tokens directly to the wrapper with a callback to wrap the tokens.
  *
  * The wrapped token uses the same decimals as the underlying ERC-20 (1:1 conversion).
+ * Unlike the OpenZeppelin implementation which uses `euint64` and requires a rate to compress
+ * high-decimal values, this implementation uses `euint256` and can represent any ERC-20 value directly.
  *
- * WARNING: Fee-on-transfer or deflationary tokens are not supported.
+ * WARNING: Minting assumes the full amount of the underlying token transfer has been received, hence some
+ * non-standard tokens such as fee-on-transfer or other deflationary-type tokens are not supported by this wrapper.
  */
 abstract contract ERC7984ERC20Wrapper is ERC7984, IERC7984ERC20Wrapper, IERC1363Receiver {
     IERC20 private immutable _underlying;
@@ -91,8 +95,10 @@ abstract contract ERC7984ERC20Wrapper is ERC7984, IERC7984ERC20Wrapper, IERC1363
     }
 
     // TODO: Implement finalizeUnwrap once Nox exposes a decryption verification mechanism
-    // (equivalent to FHE.checkSignatures in FHEVM) to trustlessly verify `unwrapAmountCleartext`
-    // against the encrypted `unwrapAmount` before releasing underlying tokens.
+
+    // TODO: Add a virtual `rate()` function to support custom conversion rates between the
+    // underlying ERC-20 and the wrapped token. Integrate it into `wrap`, `onTransferReceived`
+    // and `_unwrap`.
 
     // ============ View Functions ============
 
@@ -117,8 +123,12 @@ abstract contract ERC7984ERC20Wrapper is ERC7984, IERC7984ERC20Wrapper, IERC1363
     }
 
     /**
-     * @dev Returns `balanceOf(address(this))`. Greater than or equal to the actual
+     * @dev Returns `balanceOf(address(this))`, a value greater than or equal to the actual
      * {confidentialTotalSupply}. Can be inflated by directly sending underlying tokens to this contract.
+     *
+     * NOTE: After an {unwrap}, the encrypted total supply decreases immediately (tokens are burned),
+     * but the underlying ERC-20 balance stays unchanged until {finalizeUnwrap} actually transfers them out.
+     * Between these two calls, this value is temporarily higher than the real total supply.
      */
     function inferredTotalSupply() public view virtual returns (uint256) {
         return IERC20(underlying()).balanceOf(address(this));
@@ -136,6 +146,8 @@ abstract contract ERC7984ERC20Wrapper is ERC7984, IERC7984ERC20Wrapper, IERC1363
 
     // ============ Internal Functions ============
 
+    /// @dev By default `maxTotalSupply` returns `type(uint256).max`, so this check never reverts.
+    /// Override `maxTotalSupply` in a child contract to enforce a custom cap.
     function _checkConfidentialTotalSupply() internal virtual {
         if (inferredTotalSupply() > maxTotalSupply()) revert ERC7984TotalSupplyOverflow();
     }
@@ -161,6 +173,10 @@ abstract contract ERC7984ERC20Wrapper is ERC7984, IERC7984ERC20Wrapper, IERC1363
             from == msg.sender || isOperator(from, msg.sender),
             ERC7984UnauthorizedSpender(from, msg.sender)
         );
+        // WARNING: Storing unwrap requests in a mapping from handle to address assumes that
+        // handles are unique. This holds here because `_burn` always returns a fresh handle
+        // generated randomly off-chain by the gateway, but be cautious when assuming handle
+        // uniqueness in other contexts.
         euint256 unwrapAmount = _burn(from, amount);
         Nox.allowPublicDecryption(unwrapAmount);
         assert(unwrapRequester(unwrapAmount) == address(0));
