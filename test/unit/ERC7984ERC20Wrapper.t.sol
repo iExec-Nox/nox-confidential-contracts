@@ -46,14 +46,12 @@ contract ERC7984ERC20WrapperTest is NoxMock {
 
     function test_Constructor_6DecimalUnderlying() public view {
         assertEq(wrapper.decimals(), 6);
-        assertEq(wrapper.rate(), 1);
         assertEq(wrapper.underlying(), address(underlying6));
     }
 
     function test_Constructor_18DecimalUnderlying() public {
         ERC7984ERC20WrapperMock w18 = new ERC7984ERC20WrapperMock("W18", "w18", "", underlying18);
-        assertEq(w18.decimals(), 6);
-        assertEq(w18.rate(), 1e12);
+        assertEq(w18.decimals(), 18);
     }
 
     // ============ supportsInterface ============
@@ -91,21 +89,19 @@ contract ERC7984ERC20WrapperTest is NoxMock {
         assertEq(underlying6.balanceOf(user1), 0);
     }
 
-    function test_Wrap_RoundsDownAndTransfersAligned() public {
+    function test_Wrap_18DecimalUnderlying() public {
         _mockNoxPrimitives();
         ERC7984ERC20WrapperMock w18 = new ERC7984ERC20WrapperMock("W18", "w18", "", underlying18);
-        uint256 rate = 1e12;
         uint256 amount = 1.5e18;
-        uint256 aligned = amount - (amount % rate); // 1e18
 
-        underlying18.mint(user1, aligned);
+        underlying18.mint(user1, amount);
         vm.prank(user1);
-        underlying18.approve(address(w18), aligned);
+        underlying18.approve(address(w18), amount);
 
         vm.prank(user1);
         w18.wrap(user1, amount);
 
-        assertEq(underlying18.balanceOf(address(w18)), aligned);
+        assertEq(underlying18.balanceOf(address(w18)), amount);
     }
 
     // ============ onTransferReceived ============

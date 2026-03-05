@@ -20,12 +20,13 @@ import {ERC7984} from "../ERC7984.sol";
  * @dev Extension of {ERC7984} that wraps an ERC-20 token into a confidential ERC-7984 token.
  * Implements {IERC1363Receiver} so users can wrap via direct ERC-1363 transfers.
  *
+ * The wrapped token uses the same decimals as the underlying ERC-20 (1:1 conversion).
+ *
  * WARNING: Fee-on-transfer or deflationary tokens are not supported.
  */
 abstract contract ERC7984ERC20Wrapper is ERC7984, IERC7984ERC20Wrapper, IERC1363Receiver {
     IERC20 private immutable _underlying;
     uint8 private immutable _decimals;
-    uint256 private immutable _rate;
 
     mapping(euint256 unwrapAmount => address recipient) private _unwrapRequests;
 
@@ -42,22 +43,13 @@ abstract contract ERC7984ERC20Wrapper is ERC7984, IERC7984ERC20Wrapper, IERC1363
 
     constructor(IERC20 underlying_) {
         _underlying = underlying_;
-        uint8 tokenDecimals = _tryGetAssetDecimals(underlying_);
-        uint8 maxDecimals_ = _maxDecimals();
-        if (tokenDecimals > maxDecimals_) {
-            _decimals = maxDecimals_;
-            _rate = 10 ** (tokenDecimals - maxDecimals_);
-        } else {
-            _decimals = tokenDecimals;
-            _rate = 1;
-        }
+        _decimals = _tryGetAssetDecimals(underlying_);
     }
 
     // ============ External Functions ============
 
     /**
      * @dev ERC-1363 callback: wraps received tokens to the address in `data` (or `from` if empty).
-     * Excess tokens (not divisible by {rate}) are refunded to `from`.
      */
     function onTransferReceived(
         address /*operator*/,
@@ -67,17 +59,14 @@ abstract contract ERC7984ERC20Wrapper is ERC7984, IERC7984ERC20Wrapper, IERC1363
     ) public virtual returns (bytes4) {
         require(underlying() == msg.sender, ERC7984UnauthorizedCaller(msg.sender));
         address to = data.length < 20 ? from : address(bytes20(data));
-        _mint(to, Nox.toEuint256(amount / rate()));
-        uint256 excess = amount % rate();
-        if (excess > 0) SafeERC20.safeTransfer(IERC20(underlying()), from, excess);
+        _mint(to, Nox.toEuint256(amount));
         return IERC1363Receiver.onTransferReceived.selector;
     }
 
     /// @inheritdoc IERC7984ERC20Wrapper
     function wrap(address to, uint256 amount) public virtual override returns (euint256) {
-        uint256 aligned = amount - (amount % rate());
-        SafeERC20.safeTransferFrom(IERC20(underlying()), msg.sender, address(this), aligned);
-        euint256 wrappedAmount = _mint(to, Nox.toEuint256(aligned / rate()));
+        SafeERC20.safeTransferFrom(IERC20(underlying()), msg.sender, address(this), amount);
+        euint256 wrappedAmount = _mint(to, Nox.toEuint256(amount));
         Nox.allowTransient(wrappedAmount, msg.sender);
         return wrappedAmount;
     }
@@ -112,11 +101,6 @@ abstract contract ERC7984ERC20Wrapper is ERC7984, IERC7984ERC20Wrapper, IERC1363
         return _decimals;
     }
 
-    /// @dev Rate at which underlying tokens convert to wrapped tokens (e.g. rate=1e12 for 18→6 decimals).
-    function rate() public view virtual returns (uint256) {
-        return _rate;
-    }
-
     /// @inheritdoc IERC7984ERC20Wrapper
     function underlying() public view virtual override returns (address) {
         return address(_underlying);
@@ -133,11 +117,11 @@ abstract contract ERC7984ERC20Wrapper is ERC7984, IERC7984ERC20Wrapper, IERC1363
     }
 
     /**
-     * @dev Returns `balanceOf(address(this)) / rate()`. Greater than or equal to the actual
+     * @dev Returns `balanceOf(address(this))`. Greater than or equal to the actual
      * {confidentialTotalSupply}. Can be inflated by directly sending underlying tokens to this contract.
      */
     function inferredTotalSupply() public view virtual returns (uint256) {
-        return IERC20(underlying()).balanceOf(address(this)) / rate();
+        return IERC20(underlying()).balanceOf(address(this));
     }
 
     /// @dev Returns the maximum total supply of wrapped tokens.
@@ -188,11 +172,6 @@ abstract contract ERC7984ERC20Wrapper is ERC7984, IERC7984ERC20Wrapper, IERC1363
     /// @dev Default decimals when the underlying ERC-20 does not expose {IERC20Metadata.decimals}.
     function _fallbackUnderlyingDecimals() internal pure virtual returns (uint8) {
         return 18;
-    }
-
-    /// @dev Max decimals for the wrapped token. Underlying with more decimals are scaled down.
-    function _maxDecimals() internal pure virtual returns (uint8) {
-        return 6;
     }
 
     function _tryGetAssetDecimals(IERC20 asset_) private view returns (uint8) {

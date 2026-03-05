@@ -9,7 +9,7 @@ import {IERC7984} from "./IERC7984.sol";
 interface IERC7984ERC20Wrapper is IERC7984 {
     /**
      * @dev Wraps `amount` of the underlying ERC-20 token into a confidential token and sends it to `to`.
-     * Tokens are exchanged at a fixed {rate}. Returns the amount of wrapped token sent.
+     * Tokens are exchanged 1:1. Returns the encrypted amount of wrapped tokens.
      */
     function wrap(address to, uint256 amount) external returns (euint256);
 
