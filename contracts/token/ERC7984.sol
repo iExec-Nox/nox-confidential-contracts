@@ -225,6 +225,9 @@ abstract contract ERC7984 is IERC7984, ERC165 {
         Nox.allowTransient(transferred, msg.sender);
     }
 
+    // TODO: Add requestDiscloseEncryptedAmount(euint256 encryptedAmount) and
+    // discloseEncryptedAmount(euint256 encryptedAmount, uint256 cleartextAmount, bytes decryptionProof)
+
     // ============ Internal Functions ============
 
     function _setOperator(address holder, address operator, uint48 until) internal virtual {

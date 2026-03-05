@@ -2,21 +2,16 @@
 pragma solidity ^0.8.28;
 
 import {Test} from "forge-std/Test.sol";
-// TODO: Once IACL and INoxCompute are merged into a single interface in the npm package,
-// remove the IACL import and update all ACL mock calls to use INoxCompute directly.
 import {INoxCompute} from "@iexec-nox/nox-protocol-contracts/contracts/interfaces/INoxCompute.sol";
-import {IACL} from "@iexec-nox/nox-protocol-contracts/contracts/interfaces/IACL.sol";
 import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 
 /**
  * @dev Test utility library providing mock helpers for Nox TEE primitives.
  */
 abstract contract NoxMock is Test {
-    // TODO: Replace hardcoded addresses with Nox._compute()/_acl() when exposed publicly.
-    // NoxCompute address on local dev chain (chainid 31337) - from Nox._compute() in beta.4.
-    address internal constant NOX_COMPUTE = 0x463Bdd46031353138713a47D7056F7c85024a4A6;
-    // ACL address on local dev chain (chainid 31337) - from Nox._acl() in beta.4.
-    address internal constant NOX_ACL = 0x3219A802B61028Fc29848863268FE17d750E5701;
+    // NoxCompute address on local dev chain (chainid 31337) - merged ACL+Compute contract.
+    // Source: Nox.noxComputeContract() in the current nox-protocol-contracts package.
+    address internal constant NOX_COMPUTE = 0x188D560Fd7F60f50e4c32a4484B1D0DC486714b3;
 
     // Fake handle returned by mocked compute operations.
     bytes32 internal constant MOCK_HANDLE = bytes32(uint256(999));
@@ -49,16 +44,25 @@ abstract contract NoxMock is Test {
             abi.encodeWithSelector(INoxCompute.add.selector),
             abi.encode(MOCK_HANDLE)
         );
-        vm.mockCall(NOX_ACL, abi.encodeWithSelector(IACL.isAllowed.selector), abi.encode(true));
-        vm.mockCall(NOX_ACL, abi.encodeWithSelector(IACL.allow.selector), "");
-        vm.mockCall(NOX_ACL, abi.encodeWithSelector(IACL.allowTransient.selector), "");
+        vm.mockCall(
+            NOX_COMPUTE,
+            abi.encodeWithSelector(INoxCompute.isAllowed.selector),
+            abi.encode(true)
+        );
+        vm.mockCall(NOX_COMPUTE, abi.encodeWithSelector(INoxCompute.allow.selector), "");
+        vm.mockCall(NOX_COMPUTE, abi.encodeWithSelector(INoxCompute.allowTransient.selector), "");
+        vm.mockCall(
+            NOX_COMPUTE,
+            abi.encodeWithSelector(INoxCompute.allowPublicDecryption.selector),
+            ""
+        );
     }
 
     /// @dev Mocks a specific `isAllowed` call for the given encrypted amount handle and user.
     function _mockIsAllowedCall(euint256 amount, address user, bool allowed) internal {
         vm.mockCall(
-            NOX_ACL,
-            abi.encodeWithSelector(IACL.isAllowed.selector, euint256.unwrap(amount), user),
+            NOX_COMPUTE,
+            abi.encodeWithSelector(INoxCompute.isAllowed.selector, euint256.unwrap(amount), user),
             abi.encode(allowed)
         );
     }
