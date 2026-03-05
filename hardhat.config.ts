@@ -18,6 +18,7 @@ export default defineConfig({
                 },
             },
         },
+        npmFilesToBuild: ["@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol"],
     },
     networks: {
         hardhatMainnet: {
