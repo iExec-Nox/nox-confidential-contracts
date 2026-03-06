@@ -3,8 +3,7 @@ pragma solidity ^0.8.28;
 
 import {Test} from "forge-std/Test.sol";
 import {INoxCompute} from "@iexec-nox/nox-protocol-contracts/contracts/interfaces/INoxCompute.sol";
-import {Nox} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
-import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
+import {Nox, euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 
 /**
  * @dev Test utility library providing mock helpers for Nox TEE primitives.
@@ -43,7 +42,11 @@ abstract contract NoxMock is Test {
             abi.encodeWithSelector(INoxCompute.add.selector),
             abi.encode(MOCK_HANDLE)
         );
-        vm.mockCall(noxCompute, abi.encodeWithSelector(INoxCompute.isAllowed.selector), abi.encode(true));
+        vm.mockCall(
+            noxCompute,
+            abi.encodeWithSelector(INoxCompute.isAllowed.selector),
+            abi.encode(true)
+        );
         vm.mockCall(noxCompute, abi.encodeWithSelector(INoxCompute.allow.selector), "");
         vm.mockCall(noxCompute, abi.encodeWithSelector(INoxCompute.allowTransient.selector), "");
     }
