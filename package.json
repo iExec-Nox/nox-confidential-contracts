@@ -37,7 +37,7 @@
     "lint-staged": "^16.2.7",
     "prettier": "^3.7.4",
     "prettier-plugin-solidity": "^2.2.1",
-    "typescript": "~5.8.0",
+    "typescript": "^5.8.0",
     "viem": "^2.45.2"
   },
   "homepage": "https://github.com/iExec-Nox/nox-confidential-contracts#readme",
@@ -49,7 +49,7 @@
     "url": "https://github.com/iExec-Nox/nox-confidential-contracts/issues"
   },
   "dependencies": {
-    "@iexec-nox/nox-protocol-contracts": "0.1.0-beta.5",
+    "@iexec-nox/nox-protocol-contracts": "0.1.0-beta.6",
     "@openzeppelin/contracts": "^5.4.0"
   }
 }
