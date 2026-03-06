@@ -8,7 +8,7 @@
     "cDeFi"
   ],
   "license": "Apache-2.0",
-  "packageManager": "pnpm@10.28.2",
+  "packageManager": "pnpm@10.30.3",
   "type": "module",
   "files": [
     "/contracts"
@@ -28,17 +28,17 @@
     ]
   },
   "devDependencies": {
-    "@nomicfoundation/hardhat-ignition": "^3.0.7",
-    "@nomicfoundation/hardhat-toolbox-viem": "^5.0.2",
-    "@types/node": "^22.19.10",
+    "@nomicfoundation/hardhat-ignition": "^3.0.9",
+    "@nomicfoundation/hardhat-toolbox-viem": "^5.0.3",
+    "@types/node": "^22.19.15",
     "forge-std": "github:foundry-rs/forge-std#v1.9.4",
-    "hardhat": "^3.1.7",
+    "hardhat": "^3.1.11",
     "husky": "^9.1.7",
-    "lint-staged": "^16.2.7",
-    "prettier": "^3.7.4",
+    "lint-staged": "^16.3.2",
+    "prettier": "^3.8.1",
     "prettier-plugin-solidity": "^2.2.1",
-    "typescript": "~5.8.0",
-    "viem": "^2.45.2"
+    "typescript": "^5.9.3",
+    "viem": "^2.47.0"
   },
   "homepage": "https://github.com/iExec-Nox/nox-confidential-contracts#readme",
   "repository": {
@@ -49,7 +49,7 @@
     "url": "https://github.com/iExec-Nox/nox-confidential-contracts/issues"
   },
   "dependencies": {
-    "@iexec-nox/nox-protocol-contracts": "0.1.0-beta.4",
+    "@iexec-nox/nox-protocol-contracts": "0.1.0-beta.6",
     "@openzeppelin/contracts": "^5.4.0"
   }
 }
