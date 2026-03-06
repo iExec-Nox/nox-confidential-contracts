@@ -28,17 +28,17 @@
     ]
   },
   "devDependencies": {
-    "@nomicfoundation/hardhat-ignition": "^3.0.7",
-    "@nomicfoundation/hardhat-toolbox-viem": "^5.0.2",
-    "@types/node": "^22.19.10",
+    "@nomicfoundation/hardhat-ignition": "^3.0.9",
+    "@nomicfoundation/hardhat-toolbox-viem": "^5.0.3",
+    "@types/node": "^22.19.15",
     "forge-std": "github:foundry-rs/forge-std#v1.9.4",
-    "hardhat": "^3.1.7",
+    "hardhat": "^3.1.11",
     "husky": "^9.1.7",
-    "lint-staged": "^16.2.7",
-    "prettier": "^3.7.4",
+    "lint-staged": "^16.3.2",
+    "prettier": "^3.8.1",
     "prettier-plugin-solidity": "^2.2.1",
-    "typescript": "^5.8.0",
-    "viem": "^2.45.2"
+    "typescript": "^5.9.3",
+    "viem": "^2.47.0"
   },
   "homepage": "https://github.com/iExec-Nox/nox-confidential-contracts#readme",
   "repository": {
