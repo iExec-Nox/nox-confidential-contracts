@@ -23,6 +23,16 @@ interface IERC7984ERC20Wrapper is IERC7984 {
     function unwrap(
         address from,
         address to,
+        euint256 amount
+    ) external returns (euint256);
+
+    /**
+     * @dev Same as {unwrap}, but accepts an external encrypted amount with an input proof
+     * instead of requiring prior ACL access.
+     */
+    function unwrap(
+        address from,
+        address to,
         externalEuint256 encryptedAmount,
         bytes calldata inputProof
     ) external returns (euint256);

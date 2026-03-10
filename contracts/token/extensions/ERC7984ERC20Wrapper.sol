@@ -75,8 +75,8 @@ abstract contract ERC7984ERC20Wrapper is ERC7984, IERC7984ERC20Wrapper, IERC1363
         return wrappedAmount;
     }
 
-    /// @dev Unwrap without an input proof. Caller must already be allowed by ACL for `amount`.
-    function unwrap(address from, address to, euint256 amount) public virtual returns (euint256) {
+    /// @inheritdoc IERC7984ERC20Wrapper
+    function unwrap(address from, address to, euint256 amount) public virtual override returns (euint256) {
         require(
             Nox.isAllowed(amount, msg.sender),
             ERC7984UnauthorizedUseOfEncryptedAmount(amount, msg.sender)
