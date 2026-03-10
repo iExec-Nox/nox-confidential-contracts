@@ -20,11 +20,7 @@ interface IERC7984ERC20Wrapper is IERC7984 {
      *
      * NOTE: The unwrap request created by this function must be finalized by calling {finalizeUnwrap}.
      */
-    function unwrap(
-        address from,
-        address to,
-        euint256 amount
-    ) external returns (euint256);
+    function unwrap(address from, address to, euint256 amount) external returns (euint256);
 
     /**
      * @dev Same as {unwrap}, but accepts an external encrypted amount with an input proof
