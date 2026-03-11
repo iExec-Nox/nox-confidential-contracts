@@ -34,9 +34,13 @@ abstract contract ERC7984Advanced is ERC7984 {
      * @dev Transfers `amount` from `from` to `to`, updating balances and total supply.
      * All customizations to transfers, mints, and burns should be done by overriding this function.
      *
-     * - `from == address(0)` → mint: {Nox.safeAdd} increases the total supply.
-     * - `to == address(0)` → burn: {Nox.sub} decreases the total supply.
-     * - Both non-zero → transfer: {Nox.safeSub} decreases sender balance, {Nox.add} increases recipient balance.
+     * - `from == address(0)` → mint: {Nox.mint} updates recipient balance and total supply.
+     *   If total supply is uninitialized, it is initialized to `amount` and success is true.
+     * - `to == address(0)` → burn: {Nox.burn} updates sender balance and total supply.
+     * - Both non-zero → transfer: {Nox.transfer} updates sender and recipient balances.
+     *
+     * For mint/transfer, an uninitialized recipient balance is treated as encrypted 0.
+     * For burn/transfer, the sender balance must be initialized.
      *
      * The actually transferred amount may be less than `amount` when the operation would overflow or underflow.
      * In that case success is false (encrypted) and the transferred amount is encrypted 0.
