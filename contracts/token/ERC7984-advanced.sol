@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import {IERC7984} from "../interfaces/IERC7984.sol";
+import {ERC7984} from "./ERC7984.sol";
 import {ERC7984Utils} from "./utils/ERC7984Utils.sol";
 import {
     Nox,
@@ -28,271 +28,8 @@ import {
  * - Safe overflow/underflow handling for TEE operations
  *
  */
-abstract contract ERC7984 is IERC7984, ERC165 {
-    mapping(address holder => euint256) private _balances;
-    mapping(address holder => mapping(address spender => uint48 until)) private _operators;
-    euint256 private _totalSupply;
-    string private _name;
-    string private _symbol;
-    string private _contractURI;
 
-    /// @dev The given receiver `receiver` is invalid for transfers.
-    error ERC7984InvalidReceiver(address receiver);
-
-    /// @dev The given sender `sender` is invalid for transfers.
-    error ERC7984InvalidSender(address sender);
-
-    /// @dev The given holder `holder` is not authorized to spend on behalf of `spender`.
-    error ERC7984UnauthorizedSpender(address holder, address spender);
-
-    /**
-     * @dev The caller `user` does not have access to the encrypted amount `amount`.
-     *
-     * NOTE: Try using the equivalent transfer function with an input proof.
-     */
-    error ERC7984UnauthorizedUseOfEncryptedAmount(euint256 amount, address user);
-
-    /// @dev The holder `holder` is trying to send tokens but has a balance of 0.
-    error ERC7984ZeroBalance(address holder);
-
-    constructor(string memory name_, string memory symbol_, string memory contractURI_) {
-        _name = name_;
-        _symbol = symbol_;
-        _contractURI = contractURI_;
-    }
-
-    // ============ View Functions ============
-
-    /// @inheritdoc ERC165
-    function supportsInterface(
-        bytes4 interfaceId
-    ) public view virtual override(IERC165, ERC165) returns (bool) {
-        return interfaceId == type(IERC7984).interfaceId || super.supportsInterface(interfaceId);
-    }
-
-    /// @inheritdoc IERC7984
-    function name() public view virtual returns (string memory) {
-        return _name;
-    }
-
-    /// @inheritdoc IERC7984
-    function symbol() public view virtual returns (string memory) {
-        return _symbol;
-    }
-
-    /// @inheritdoc IERC7984
-    function decimals() public view virtual returns (uint8) {
-        return 18;
-    }
-
-    /// @inheritdoc IERC7984
-    function contractURI() public view virtual returns (string memory) {
-        return _contractURI;
-    }
-
-    /// @inheritdoc IERC7984
-    function confidentialTotalSupply() public view virtual returns (euint256) {
-        return _totalSupply;
-    }
-
-    /// @inheritdoc IERC7984
-    function confidentialBalanceOf(address account) public view virtual returns (euint256) {
-        return _balances[account];
-    }
-
-    /// @inheritdoc IERC7984
-    function isOperator(address holder, address spender) public view virtual returns (bool) {
-        return holder == spender || block.timestamp <= _operators[holder][spender];
-    }
-
-    // ============ External Functions ============
-
-    /// @inheritdoc IERC7984
-    function setOperator(address operator, uint48 until) public virtual {
-        _setOperator(msg.sender, operator, until);
-    }
-
-    // ============ Transfer Functions ============
-
-    /// @inheritdoc IERC7984
-    function confidentialTransfer(
-        address to,
-        externalEuint256 encryptedAmount,
-        bytes calldata inputProof
-    ) public virtual returns (euint256) {
-        return _transfer(msg.sender, to, Nox.fromExternal(encryptedAmount, inputProof));
-    }
-
-    /// @inheritdoc IERC7984
-    function confidentialTransfer(address to, euint256 amount) public virtual returns (euint256) {
-        require(
-            Nox.isAllowed(amount, msg.sender),
-            ERC7984UnauthorizedUseOfEncryptedAmount(amount, msg.sender)
-        );
-        return _transfer(msg.sender, to, amount);
-    }
-
-    /// @inheritdoc IERC7984
-    function confidentialTransferFrom(
-        address from,
-        address to,
-        externalEuint256 encryptedAmount,
-        bytes calldata inputProof
-    ) public virtual returns (euint256) {
-        require(isOperator(from, msg.sender), ERC7984UnauthorizedSpender(from, msg.sender));
-        euint256 transferred = _transfer(from, to, Nox.fromExternal(encryptedAmount, inputProof));
-        Nox.allowTransient(transferred, msg.sender);
-        return transferred;
-    }
-
-    /// @inheritdoc IERC7984
-    function confidentialTransferFrom(
-        address from,
-        address to,
-        euint256 amount
-    ) public virtual returns (euint256) {
-        require(
-            Nox.isAllowed(amount, msg.sender),
-            ERC7984UnauthorizedUseOfEncryptedAmount(amount, msg.sender)
-        );
-        require(isOperator(from, msg.sender), ERC7984UnauthorizedSpender(from, msg.sender));
-        euint256 transferred = _transfer(from, to, amount);
-        Nox.allowTransient(transferred, msg.sender);
-        return transferred;
-    }
-
-    /// @inheritdoc IERC7984
-    function confidentialTransferAndCall(
-        address to,
-        externalEuint256 encryptedAmount,
-        bytes calldata inputProof,
-        bytes calldata data
-    ) public virtual returns (euint256 transferred) {
-        transferred = _transferAndCall(
-            msg.sender,
-            to,
-            Nox.fromExternal(encryptedAmount, inputProof),
-            data
-        );
-        Nox.allowTransient(transferred, msg.sender);
-    }
-
-    /// @inheritdoc IERC7984
-    function confidentialTransferAndCall(
-        address to,
-        euint256 amount,
-        bytes calldata data
-    ) public virtual returns (euint256 transferred) {
-        require(
-            Nox.isAllowed(amount, msg.sender),
-            ERC7984UnauthorizedUseOfEncryptedAmount(amount, msg.sender)
-        );
-        transferred = _transferAndCall(msg.sender, to, amount, data);
-        Nox.allowTransient(transferred, msg.sender);
-    }
-
-    /// @inheritdoc IERC7984
-    function confidentialTransferFromAndCall(
-        address from,
-        address to,
-        externalEuint256 encryptedAmount,
-        bytes calldata inputProof,
-        bytes calldata data
-    ) public virtual returns (euint256 transferred) {
-        require(isOperator(from, msg.sender), ERC7984UnauthorizedSpender(from, msg.sender));
-        transferred = _transferAndCall(
-            from,
-            to,
-            Nox.fromExternal(encryptedAmount, inputProof),
-            data
-        );
-        Nox.allowTransient(transferred, msg.sender);
-    }
-
-    /// @inheritdoc IERC7984
-    function confidentialTransferFromAndCall(
-        address from,
-        address to,
-        euint256 amount,
-        bytes calldata data
-    ) public virtual returns (euint256 transferred) {
-        require(
-            Nox.isAllowed(amount, msg.sender),
-            ERC7984UnauthorizedUseOfEncryptedAmount(amount, msg.sender)
-        );
-        require(isOperator(from, msg.sender), ERC7984UnauthorizedSpender(from, msg.sender));
-        transferred = _transferAndCall(from, to, amount, data);
-        Nox.allowTransient(transferred, msg.sender);
-    }
-
-    // ============ Internal Functions ============
-
-    function _setOperator(address holder, address operator, uint48 until) internal virtual {
-        _operators[holder][operator] = until;
-        emit OperatorSet(holder, operator, until);
-    }
-
-    /**
-     * @dev Creates `amount` tokens and assigns them to `to`, updating the total supply.
-     * Relies on the `_update` mechanism.
-     *
-     * Emits a {ConfidentialTransfer} event with `from` set to the zero address.
-     *
-     * NOTE: This function is not virtual. Override {_update} to customize token creation.
-     */
-    function _mint(address to, euint256 amount) internal returns (euint256) {
-        require(to != address(0), ERC7984InvalidReceiver(address(0)));
-        return _update(address(0), to, amount);
-    }
-
-    /**
-     * @dev Destroys `amount` tokens from `from`, reducing the total supply.
-     * Relies on the `_update` mechanism.
-     *
-     * Emits a {ConfidentialTransfer} event with `to` set to the zero address.
-     *
-     * NOTE: This function is not virtual. Override {_update} to customize token destruction.
-     */
-    function _burn(address from, euint256 amount) internal returns (euint256) {
-        require(from != address(0), ERC7984InvalidSender(address(0)));
-        return _update(from, address(0), amount);
-    }
-
-    /**
-     * @dev Moves `amount` tokens from `from` to `to`.
-     * Relies on the `_update` mechanism.
-     *
-     * Emits a {ConfidentialTransfer} event.
-     *
-     * NOTE: This function is not virtual. Override {_update} to customize token transfers.
-     */
-    function _transfer(address from, address to, euint256 amount) internal returns (euint256) {
-        require(from != address(0), ERC7984InvalidSender(address(0)));
-        require(to != address(0), ERC7984InvalidReceiver(address(0)));
-        return _update(from, to, amount);
-    }
-
-    /**
-     * @dev Moves `amount` tokens from `from` to `to`, then calls the {IERC7984Receiver-onConfidentialTransferReceived}
-     * hook on `to` if it is a contract. The receiver returns an encrypted boolean; if it is `false`,
-     * a confidential refund is issued back to `from`. If the receiver reverts, the revert is propagated.
-     */
-    function _transferAndCall(
-        address from,
-        address to,
-        euint256 amount,
-        bytes calldata data
-    ) internal returns (euint256 transferred) {
-        // Try to transfer amount + replace input with actually transferred amount.
-        euint256 sent = _transfer(from, to, amount);
-        // Perform callback
-        ebool success = ERC7984Utils.checkOnTransferReceived(msg.sender, from, to, sent, data);
-
-        // Refund `from` if callback returned false (encrypted).
-        euint256 refund = _update(to, from, Nox.select(success, Nox.toEuint256(0), sent));
-        transferred = Nox.sub(sent, refund);
-    }
-
+abstract contract ERC7984Advanced is ERC7984 {
     /**
      * @dev Transfers `amount` from `from` to `to`, updating balances and total supply.
      * All customizations to transfers, mints, and burns should be done by overriding this function.
@@ -310,60 +47,73 @@ abstract contract ERC7984 is IERC7984, ERC165 {
         address from,
         address to,
         euint256 amount
-    ) internal virtual returns (euint256 transferred) {
+    ) internal override virtual returns (euint256 transferred) {
         ebool success;
-        euint256 ptr;
 
+        // Mint
         if (from == address(0)) {
-            // Mint: safely increase total supply.
+            euint256 newToBalance;
+            euint256 newTotalSupply;
             if (!Nox.isInitialized(_totalSupply)) {
-                // totalSupply is 0: no addition needed, amount becomes the new supply.
                 success = Nox.toEbool(true);
-                ptr = amount;
+                newToBalance = amount;
+                newTotalSupply = amount;
             } else {
-                (success, ptr) = Nox.safeAdd(_totalSupply, amount);
-                ptr = Nox.select(success, ptr, _totalSupply);
+                euint256 toBalance = _balances[to];
+                if (!Nox.isInitialized(toBalance)) {
+                    toBalance = Nox.toEuint256(0);
+                }
+                (success, newToBalance, newTotalSupply) = Nox.mint(
+                    toBalance,
+                    amount,
+                    _totalSupply
+                );
             }
-            Nox.allowThis(ptr);
-            _totalSupply = ptr;
-        } else {
-            // Transfer/burn: safely decrease sender balance.
+            _balances[to] = newToBalance;
+            _totalSupply = newTotalSupply;
+            Nox.allowThis(newToBalance);
+            Nox.allow(newToBalance, to);
+        }
+
+        // Burn
+        if (to == address(0)) {
             euint256 fromBalance = _balances[from];
+            euint256 newFromBalance;
+            euint256 newTotalSupply;
             require(Nox.isInitialized(fromBalance), ERC7984ZeroBalance(from));
-            (success, ptr) = Nox.safeSub(fromBalance, amount);
-            ptr = Nox.select(success, ptr, fromBalance);
-            Nox.allowThis(ptr);
-            Nox.allow(ptr, from);
-            _balances[from] = ptr;
+            (success, newFromBalance, newTotalSupply) = Nox.burn(
+                fromBalance,
+                amount,
+                _totalSupply
+            );
+            _totalSupply = newTotalSupply;
+            _balances[from] = newFromBalance;
+            Nox.allowThis(newFromBalance);
+            Nox.allow(newFromBalance, from);
+        }
+
+        // Transfer
+        if (from != address(0) && to != address(0)) {
+            euint256 fromBalance = _balances[from];
+            euint256 toBalance = _balances[to];
+            euint256 newFromBalance;
+            euint256 newToBalance;
+            require(Nox.isInitialized(fromBalance), ERC7984ZeroBalance(from));
+            toBalance = Nox.isInitialized(toBalance) ? toBalance : Nox.toEuint256(0);
+            (success, newFromBalance, newToBalance) = Nox.transfer(
+                fromBalance,
+                toBalance,
+                amount
+            );
+            _balances[from] = newFromBalance;
+            _balances[to] = newToBalance;
+            Nox.allowThis(newFromBalance);
+            Nox.allow(newFromBalance, from);
+            Nox.allowThis(newToBalance);
+            Nox.allow(newToBalance, to);
         }
 
         transferred = Nox.select(success, amount, Nox.toEuint256(0));
-
-        if (to == address(0)) {
-            // Burn: decrease total supply by actually transferred amount.
-            ptr = Nox.sub(_totalSupply, transferred);
-            Nox.allowThis(ptr);
-            _totalSupply = ptr;
-        } else {
-            // Mint/transfer: increase recipient balance by actually transferred amount.
-            if (!Nox.isInitialized(_balances[to])) {
-                // balance is 0: no addition needed, transferred becomes the new balance.
-                ptr = transferred;
-            } else {
-                ptr = Nox.add(_balances[to], transferred);
-            }
-            Nox.allowThis(ptr);
-            Nox.allow(ptr, to);
-            _balances[to] = ptr;
-        }
-
-        if (from != address(0)) {
-            Nox.allow(transferred, from);
-        }
-        if (to != address(0)) {
-            Nox.allow(transferred, to);
-        }
-        Nox.allowThis(transferred);
         emit ConfidentialTransfer(from, to, transferred);
     }
 }
