@@ -14,7 +14,6 @@ contract ERC7984Test is NoxMock {
     ERC7984Mock internal token;
     ERC7984ReceiverMock internal receiver;
 
-    address internal owner = makeAddr("owner");
     address internal user1 = makeAddr("user1");
     address internal user2 = makeAddr("user2");
     address internal operator = makeAddr("operator");
@@ -24,11 +23,10 @@ contract ERC7984Test is NoxMock {
     string internal constant CONTRACT_URI = "https://example.com/contract.json";
 
     function setUp() public {
-        token = new ERC7984Mock(NAME, SYMBOL, CONTRACT_URI, owner);
+        token = new ERC7984Mock(NAME, SYMBOL, CONTRACT_URI);
         receiver = new ERC7984ReceiverMock();
         vm.label(address(token), "ERC7984Mock");
         vm.label(address(receiver), "ERC7984ReceiverMock");
-        vm.label(owner, "owner");
         vm.label(user1, "user1");
         vm.label(user2, "user2");
         vm.label(operator, "operator");
@@ -41,7 +39,6 @@ contract ERC7984Test is NoxMock {
         assertEq(token.symbol(), SYMBOL);
         assertEq(token.decimals(), 18);
         assertEq(token.contractURI(), CONTRACT_URI);
-        assertEq(token.owner(), owner);
     }
 
     // ============ supportsInterface ============
@@ -217,20 +214,6 @@ contract ERC7984Test is NoxMock {
         token.confidentialTransferFrom(user1, user2, amount);
     }
 
-    // ============ owner ============
-
-    function test_TransferOwnership() public {
-        vm.prank(owner);
-        token.transferOwnership(user1);
-        assertEq(token.owner(), user1);
-    }
-
-    function test_RevertWhen_TransferOwnership_NotOwner() public {
-        vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, user1));
-        vm.prank(user1);
-        token.transferOwnership(user2);
-    }
-
     // ============ confidentialTransferAndCall Tests ============
 
     function test_RevertWhen_ConfidentialTransferAndCall_UnauthorizedUseOfEncryptedAmount() public {
@@ -268,7 +251,7 @@ contract ERC7984Test is NoxMock {
     function test_RevertWhen_ConfidentialTransferAndCall_ReceiverRevertsEmptyReason() public {
         // Passing empty data causes abi.decode to fail with no reason: ERC7984InvalidReceiver should be raised.
         _mockNoxPrimitives();
-        vm.prank(owner);
+        // vm.prank(owner);
         token.mint(user1, euint256.wrap(MOCK_HANDLE));
 
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
@@ -282,7 +265,6 @@ contract ERC7984Test is NoxMock {
     function test_RevertWhen_ConfidentialTransferAndCall_ReceiverRevertsWithReason() public {
         // Passing false triggers InvalidInput: reason is bubbled up as-is.
         _mockNoxPrimitives();
-        vm.prank(owner);
         token.mint(user1, euint256.wrap(MOCK_HANDLE));
 
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
@@ -293,7 +275,6 @@ contract ERC7984Test is NoxMock {
 
     function test_ConfidentialTransferAndCall_ToEOA() public {
         _mockNoxPrimitives();
-        vm.prank(owner);
         token.mint(user1, euint256.wrap(MOCK_HANDLE));
 
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
@@ -304,7 +285,6 @@ contract ERC7984Test is NoxMock {
 
     function test_ConfidentialTransferAndCall_ToValidReceiver() public {
         _mockNoxPrimitives();
-        vm.prank(owner);
         token.mint(user1, euint256.wrap(MOCK_HANDLE));
 
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
@@ -347,7 +327,6 @@ contract ERC7984Test is NoxMock {
         _mockNoxPrimitives();
         vm.prank(user1);
         token.setOperator(operator, uint48(block.timestamp + 1 days));
-        vm.prank(owner);
         token.mint(user1, euint256.wrap(MOCK_HANDLE));
 
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
@@ -362,7 +341,6 @@ contract ERC7984Test is NoxMock {
         _mockNoxPrimitives();
         vm.prank(user1);
         token.setOperator(operator, uint48(block.timestamp + 1 days));
-        vm.prank(owner);
         token.mint(user1, euint256.wrap(MOCK_HANDLE));
 
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
