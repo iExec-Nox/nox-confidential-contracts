@@ -30,6 +30,12 @@ import {
  */
 
 abstract contract ERC7984Advanced is ERC7984 {
+    constructor(
+        string memory name_,
+        string memory symbol_,
+        string memory contractURI_
+    ) ERC7984(name_, symbol_, contractURI_) {}
+
     /**
      * @dev Transfers `amount` from `from` to `to`, updating balances and total supply.
      * All customizations to transfers, mints, and burns should be done by overriding this function.
@@ -51,7 +57,7 @@ abstract contract ERC7984Advanced is ERC7984 {
         address from,
         address to,
         euint256 amount
-    ) internal override virtual returns (euint256 transferred) {
+    ) internal virtual override returns (euint256 transferred) {
         ebool success;
 
         // Mint
@@ -67,11 +73,7 @@ abstract contract ERC7984Advanced is ERC7984 {
                 if (!Nox.isInitialized(toBalance)) {
                     toBalance = Nox.toEuint256(0);
                 }
-                (success, newToBalance, newTotalSupply) = Nox.mint(
-                    toBalance,
-                    amount,
-                    _totalSupply
-                );
+                (success, newToBalance, newTotalSupply) = Nox.mint(toBalance, amount, _totalSupply);
             }
             _balances[to] = newToBalance;
             _totalSupply = newTotalSupply;
@@ -85,11 +87,7 @@ abstract contract ERC7984Advanced is ERC7984 {
             euint256 newFromBalance;
             euint256 newTotalSupply;
             require(Nox.isInitialized(fromBalance), ERC7984ZeroBalance(from));
-            (success, newFromBalance, newTotalSupply) = Nox.burn(
-                fromBalance,
-                amount,
-                _totalSupply
-            );
+            (success, newFromBalance, newTotalSupply) = Nox.burn(fromBalance, amount, _totalSupply);
             _totalSupply = newTotalSupply;
             _balances[from] = newFromBalance;
             Nox.allowThis(newFromBalance);
@@ -104,11 +102,7 @@ abstract contract ERC7984Advanced is ERC7984 {
             euint256 newToBalance;
             require(Nox.isInitialized(fromBalance), ERC7984ZeroBalance(from));
             toBalance = Nox.isInitialized(toBalance) ? toBalance : Nox.toEuint256(0);
-            (success, newFromBalance, newToBalance) = Nox.transfer(
-                fromBalance,
-                toBalance,
-                amount
-            );
+            (success, newFromBalance, newToBalance) = Nox.transfer(fromBalance, toBalance, amount);
             _balances[from] = newFromBalance;
             _balances[to] = newToBalance;
             Nox.allowThis(newFromBalance);
