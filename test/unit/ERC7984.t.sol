@@ -7,11 +7,11 @@ import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol"
 import {ERC7984} from "../../contracts/token/ERC7984.sol";
 import {ERC7984Mock} from "../../contracts/mocks/token/ERC7984Mock.sol";
 import {ERC7984ReceiverMock} from "../../contracts/mocks/token/ERC7984ReceiverMock.sol";
-import {IERC7984Mock} from "../../contracts/mocks/token/IERC7984Mock.sol";
+import {IERC7984TestableMock} from "../../contracts/mocks/token/IERC7984TestableMock.sol";
 import {NoxMock} from "../utils/NoxMock.sol";
 
 contract ERC7984Test is NoxMock {
-    IERC7984Mock internal token;
+    IERC7984TestableMock internal token;
     ERC7984ReceiverMock internal receiver;
 
     address internal user1 = makeAddr("user1");
@@ -25,7 +25,7 @@ contract ERC7984Test is NoxMock {
     function setUp() public {
         token = _getTokenInstance();
         receiver = new ERC7984ReceiverMock();
-        vm.label(address(token), "IERC7984Mock");
+        vm.label(address(token), _getTestedContractName());
         vm.label(address(receiver), "ERC7984ReceiverMock");
         vm.label(user1, "user1");
         vm.label(user2, "user2");
@@ -37,8 +37,15 @@ contract ERC7984Test is NoxMock {
      * Can be overridden by derived test contracts to test different implementations
      * of the same interface IERC7984.
      */
-    function _getTokenInstance() internal virtual returns (IERC7984Mock) {
+    function _getTokenInstance() internal virtual returns (IERC7984TestableMock) {
         return new ERC7984Mock(NAME, SYMBOL, CONTRACT_URI);
+    }
+
+    /**
+     * Override to change tested contract name used in vm.label().
+     */
+    function _getTestedContractName() internal pure virtual returns (string memory) {
+        return "ERC7984";
     }
 
     // ============ constructor ============
