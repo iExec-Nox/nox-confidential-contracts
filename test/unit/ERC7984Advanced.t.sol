@@ -6,7 +6,6 @@ import {IERC7984TestableMock} from "../../contracts/mocks/token/IERC7984Testable
 import {ERC7984Test} from "./ERC7984.t.sol";
 
 contract ERC7984AdvancedTest is ERC7984Test {
-
     function _getTokenInstance() internal override returns (IERC7984TestableMock) {
         return new ERC7984AdvancedMock(NAME, SYMBOL, CONTRACT_URI);
     }
