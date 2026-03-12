@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.28;
 
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {IERC7984} from "../../contracts/interfaces/IERC7984.sol";
 import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {ERC7984} from "../../contracts/token/ERC7984.sol";
 import {ERC7984Mock} from "../../contracts/mocks/token/ERC7984Mock.sol";
 import {ERC7984ReceiverMock} from "../../contracts/mocks/token/ERC7984ReceiverMock.sol";
+import {IERC7984Mock} from "../../contracts/mocks/token/IERC7984Mock.sol";
 import {NoxMock} from "../utils/NoxMock.sol";
 
 contract ERC7984Test is NoxMock {
-    ERC7984Mock internal token;
+    IERC7984Mock internal token;
     ERC7984ReceiverMock internal receiver;
 
     address internal user1 = makeAddr("user1");
@@ -23,13 +23,22 @@ contract ERC7984Test is NoxMock {
     string internal constant CONTRACT_URI = "https://example.com/contract.json";
 
     function setUp() public {
-        token = new ERC7984Mock(NAME, SYMBOL, CONTRACT_URI);
+        token = _getTokenInstance();
         receiver = new ERC7984ReceiverMock();
-        vm.label(address(token), "ERC7984Mock");
+        vm.label(address(token), "IERC7984Mock");
         vm.label(address(receiver), "ERC7984ReceiverMock");
         vm.label(user1, "user1");
         vm.label(user2, "user2");
         vm.label(operator, "operator");
+    }
+
+    /**
+     * @dev Returns an instance of the token contract to be tested.
+     * Can be overridden by derived test contracts to test different implementations
+     * of the same interface IERC7984.
+     */
+    function _getTokenInstance() internal virtual returns (IERC7984Mock) {
+        return new ERC7984Mock(NAME, SYMBOL, CONTRACT_URI);
     }
 
     // ============ constructor ============

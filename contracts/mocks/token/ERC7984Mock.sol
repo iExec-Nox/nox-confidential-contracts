@@ -3,9 +3,10 @@ pragma solidity ^0.8.28;
 
 import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {ERC7984} from "../../token/ERC7984.sol";
+import {IERC7984Mock} from "./IERC7984Mock.sol";
 
 /// @dev Concrete implementation of ERC7984 for testing purposes.
-contract ERC7984Mock is ERC7984 {
+contract ERC7984Mock is IERC7984Mock, ERC7984 {
     constructor(
         string memory name,
         string memory symbol,
