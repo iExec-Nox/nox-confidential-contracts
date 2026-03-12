@@ -6,12 +6,12 @@ import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {IERC7984} from "../../contracts/interfaces/IERC7984.sol";
 import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {ERC7984} from "../../contracts/token/ERC7984.sol";
-import {ERC7984Mock} from "../../contracts/mocks/token/ERC7984Mock.sol";
+import {ERC7984AdvancedMock} from "../../contracts/mocks/token/ERC7984AdvancedMock.sol";
 import {ERC7984ReceiverMock} from "../../contracts/mocks/token/ERC7984ReceiverMock.sol";
 import {NoxMock} from "../utils/NoxMock.sol";
 
-contract ERC7984Test is NoxMock {
-    ERC7984Mock internal token;
+contract ERC7984AdvancedTest is NoxMock {
+    ERC7984AdvancedMock internal token;
     ERC7984ReceiverMock internal receiver;
 
     address internal user1 = makeAddr("user1");
@@ -23,9 +23,9 @@ contract ERC7984Test is NoxMock {
     string internal constant CONTRACT_URI = "https://example.com/contract.json";
 
     function setUp() public {
-        token = new ERC7984Mock(NAME, SYMBOL, CONTRACT_URI);
+        token = new ERC7984AdvancedMock(NAME, SYMBOL, CONTRACT_URI);
         receiver = new ERC7984ReceiverMock();
-        vm.label(address(token), "ERC7984Mock");
+        vm.label(address(token), "ERC7984AdvancedMock");
         vm.label(address(receiver), "ERC7984ReceiverMock");
         vm.label(user1, "user1");
         vm.label(user2, "user2");
