@@ -267,7 +267,6 @@ contract ERC7984Test is NoxMock {
     function test_RevertWhen_ConfidentialTransferAndCall_ReceiverRevertsEmptyReason() public {
         // Passing empty data causes abi.decode to fail with no reason: ERC7984InvalidReceiver should be raised.
         _mockNoxPrimitives();
-        // vm.prank(owner);
         token.mint(user1, euint256.wrap(MOCK_HANDLE));
 
         euint256 amount = euint256.wrap(bytes32(uint256(1)));

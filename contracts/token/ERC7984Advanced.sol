@@ -14,7 +14,7 @@ import {
 } from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 
 /**
- * @dev Reference implementation for {IERC7984}.
+ * @dev Reference implementation for {IERC7984} using advance Nox primitives.
  *
  * This contract implements a fungible token where balances and transfers are encrypted using the Nox TEE,
  * providing confidentiality to users. Token amounts are stored as encrypted, unsigned integers (`euint256`)
@@ -31,10 +31,10 @@ import {
 
 abstract contract ERC7984Advanced is ERC7984 {
     constructor(
-        string memory name_,
-        string memory symbol_,
-        string memory contractURI_
-    ) ERC7984(name_, symbol_, contractURI_) {}
+        string memory name,
+        string memory symbol,
+        string memory contractURI
+    ) ERC7984(name, symbol, contractURI) {}
 
     /**
      * @dev Transfers `amount` from `from` to `to`, updating balances and total supply.
