@@ -9,15 +9,20 @@ import {ERC7984} from "../../contracts/token/ERC7984.sol";
 import {ERC20ToERC7984Wrapper} from "../../contracts/token/extensions/ERC20ToERC7984Wrapper.sol";
 import {
     ERC20Mock,
-    ERC20ToERC7984WrapperMock
+    ERC20ToERC7984WrapperMock,
+    ERC20ToERC7984WrapperTestableMock
 } from "../../contracts/mocks/token/ERC20ToERC7984WrapperMock.sol";
 import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {NoxMock} from "../utils/NoxMock.sol";
 
 contract ERC20ToERC7984WrapperTest is NoxMock {
+    string internal constant NAME = "Wrapped Nox";
+    string internal constant SYMBOL = "wNOX";
+    string internal constant URI = "https://example.com";
+
     ERC20Mock internal underlying6;
     ERC20Mock internal underlying18;
-    ERC20ToERC7984WrapperMock internal wrapper;
+    ERC20ToERC7984WrapperTestableMock internal wrapper;
 
     address internal user1 = makeAddr("user1");
     address internal user2 = makeAddr("user2");
@@ -26,19 +31,30 @@ contract ERC20ToERC7984WrapperTest is NoxMock {
     function setUp() public {
         underlying6 = new ERC20Mock("USD Coin", "USDC", 6);
         underlying18 = new ERC20Mock("DAI Stablecoin", "DAI", 18);
-        wrapper = new ERC20ToERC7984WrapperMock(
-            "Wrapped Nox",
-            "wNOX",
-            "https://example.com",
-            underlying6
-        );
+        wrapper = _getTokenInstance();
 
         vm.label(address(underlying6), "USDC");
         vm.label(address(underlying18), "DAI");
-        vm.label(address(wrapper), "ERC20ToERC7984WrapperMock");
+        vm.label(address(wrapper), _getTestedContractName());
         vm.label(user1, "user1");
         vm.label(user2, "user2");
         vm.label(operator, "operator");
+    }
+
+    /**
+     * @dev Returns an instance of the token contract to be tested.
+     * Can be overridden by derived test contracts to test different implementations
+     * of the same interface IERC7984.
+     */
+    function _getTokenInstance() internal virtual returns (ERC20ToERC7984WrapperTestableMock) {
+        return new ERC20ToERC7984WrapperMock(NAME, SYMBOL, URI, underlying6);
+    }
+
+    /**
+     * Override to change tested contract name used in vm.label().
+     */
+    function _getTestedContractName() internal pure virtual returns (string memory) {
+        return "ERC20ToERC7984Wrapper";
     }
 
     // ============ constructor ============
