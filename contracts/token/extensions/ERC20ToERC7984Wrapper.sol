@@ -127,17 +127,17 @@ abstract contract ERC20ToERC7984Wrapper is ERC7984, IERC20ToERC7984Wrapper, IERC
     }
 
     /// @inheritdoc IERC20ToERC7984Wrapper
-    function inferredTotalSupply() public view virtual override returns (uint256) {
+    function inferredTotalSupply() public view virtual returns (uint256) {
         return IERC20(underlying()).balanceOf(address(this));
     }
 
     /// @inheritdoc IERC20ToERC7984Wrapper
-    function maxTotalSupply() public view virtual override returns (uint256) {
+    function maxTotalSupply() public view virtual returns (uint256) {
         return type(uint256).max;
     }
 
     /// @inheritdoc IERC20ToERC7984Wrapper
-    function unwrapRequester(euint256 unwrapAmount) public view virtual override returns (address) {
+    function unwrapRequester(euint256 unwrapAmount) public view virtual returns (address) {
         return _unwrapRequests[unwrapAmount];
     }
 

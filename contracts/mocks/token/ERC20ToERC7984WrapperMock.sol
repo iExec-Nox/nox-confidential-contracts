@@ -27,6 +27,9 @@ contract ERC20Mock is ERC20 {
     }
 }
 
+/**
+ * @dev Common interface for all {ERC20ToERC7984Wrapper} test implementations (basic, advanced).
+ */
 interface ERC20ToERC7984WrapperTestableMock is IERC20ToERC7984Wrapper, IERC1363Receiver {}
 
 /// @dev Implementation of {ERC20ToERC7984Wrapper} for testing.
