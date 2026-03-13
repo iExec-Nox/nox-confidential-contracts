@@ -9,6 +9,7 @@ import {ERC20ToERC7984WrapperTest} from "./ERC20ToERC7984Wrapper.t.sol";
 
 contract ERC20ToERC7984WrapperAdvancedTest is ERC20ToERC7984WrapperTest {
 
+
     function _getTokenInstance() internal override returns (ERC20ToERC7984WrapperTestableMock) {
         return new ERC20ToERC7984WrapperAdvancedMock(NAME, SYMBOL, URI, underlying6);
     }
@@ -17,3 +18,7 @@ contract ERC20ToERC7984WrapperAdvancedTest is ERC20ToERC7984WrapperTest {
         return "ERC20ToERC7984WrapperAdvanced";
     }
 }
+
+
+
+
