@@ -2,16 +2,13 @@
 // Inspired by OpenZeppelin Contracts (token/ERC20/ERC20.sol)
 pragma solidity ^0.8.28;
 
-import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import {ERC7984} from "./ERC7984.sol";
-import {ERC7984Utils} from "./utils/ERC7984Utils.sol";
 import {
     Nox,
     euint256,
     externalEuint256,
     ebool
 } from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
+import {ERC7984} from "./ERC7984.sol";
 
 /**
  * @dev Reference implementation for {IERC7984} using advance Nox primitives.
