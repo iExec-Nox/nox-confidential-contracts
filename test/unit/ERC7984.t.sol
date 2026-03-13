@@ -7,7 +7,7 @@ import {IERC7984} from "../../contracts/interfaces/IERC7984.sol";
 import {ERC7984} from "../../contracts/token/ERC7984.sol";
 import {ERC7984Mock} from "../../contracts/mocks/token/ERC7984Mock.sol";
 import {ERC7984ReceiverMock} from "../../contracts/mocks/token/ERC7984ReceiverMock.sol";
-import {IERC7984TestableMock} from "../../contracts/mocks/token/IERC7984TestableMock.sol";
+import {IERC7984TestableMock} from "../../contracts/mocks/token/ERC7984Mock.sol";
 import {NoxMock} from "../utils/NoxMock.sol";
 
 contract ERC7984Test is NoxMock {
