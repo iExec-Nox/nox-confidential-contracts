@@ -18,6 +18,8 @@ export default defineConfig({
                 },
             },
         },
+        // Required for Hardhat to compile and link the Nox library used in Solidity tests.
+        npmFilesToBuild: ["@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol"],
     },
     networks: {
         hardhatMainnet: {
