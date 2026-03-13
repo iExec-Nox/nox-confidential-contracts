@@ -10,7 +10,7 @@ import {ERC20ToERC7984Wrapper} from "../../contracts/token/extensions/ERC20ToERC
 import {
     ERC20Mock,
     ERC20ToERC7984WrapperMock,
-    ERC20ToERC7984WrapperTestableMock
+    IERC20ToERC7984WrapperTestableMock
 } from "../../contracts/mocks/token/ERC20ToERC7984WrapperMock.sol";
 import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {NoxMock} from "../utils/NoxMock.sol";
@@ -22,7 +22,7 @@ contract ERC20ToERC7984WrapperTest is NoxMock {
 
     ERC20Mock internal underlying6;
     ERC20Mock internal underlying18;
-    ERC20ToERC7984WrapperTestableMock internal wrapper;
+    IERC20ToERC7984WrapperTestableMock internal wrapper;
 
     address internal user1 = makeAddr("user1");
     address internal user2 = makeAddr("user2");
@@ -46,7 +46,7 @@ contract ERC20ToERC7984WrapperTest is NoxMock {
      * Can be overridden by derived test contracts to test different implementations
      * of the same interface IERC7984.
      */
-    function _getTokenInstance() internal virtual returns (ERC20ToERC7984WrapperTestableMock) {
+    function _getTokenInstance() internal virtual returns (IERC20ToERC7984WrapperTestableMock) {
         return new ERC20ToERC7984WrapperMock(NAME, SYMBOL, URI, underlying6);
     }
 

@@ -30,10 +30,10 @@ contract ERC20Mock is ERC20 {
 /**
  * @dev Common interface for all {ERC20ToERC7984Wrapper} test implementations (basic, advanced).
  */
-interface ERC20ToERC7984WrapperTestableMock is IERC20ToERC7984Wrapper, IERC1363Receiver {}
+interface IERC20ToERC7984WrapperTestableMock is IERC20ToERC7984Wrapper, IERC1363Receiver {}
 
 /// @dev Implementation of {ERC20ToERC7984Wrapper} for testing.
-contract ERC20ToERC7984WrapperMock is ERC20ToERC7984WrapperTestableMock, ERC20ToERC7984Wrapper {
+contract ERC20ToERC7984WrapperMock is IERC20ToERC7984WrapperTestableMock, ERC20ToERC7984Wrapper {
     constructor(
         string memory name,
         string memory symbol,
@@ -44,7 +44,7 @@ contract ERC20ToERC7984WrapperMock is ERC20ToERC7984WrapperTestableMock, ERC20To
 
 /// @dev Implementation of {ERC20ToERC7984WrapperAdvanced} for testing.
 contract ERC20ToERC7984WrapperAdvancedMock is
-    ERC20ToERC7984WrapperTestableMock,
+    IERC20ToERC7984WrapperTestableMock,
     ERC20ToERC7984WrapperAdvanced
 {
     constructor(
