@@ -17,7 +17,6 @@ abstract contract NoxMock is Test {
     /// @dev Mocks all Nox TEE primitive calls needed for tests that exercise
     /// the real _update path or any function relying on TEE arithmetic.
     function _mockNoxPrimitives() internal {
-        address compute = Nox.noxComputeContract();
         vm.mockCall(
             noxCompute,
             abi.encodeWithSelector(INoxCompute.plaintextToEncrypted.selector),

@@ -1,17 +1,16 @@
 // SPDX-License-Identifier: Apache-2.0
-// Inspired by OpenZeppelin Confidential Contracts (token/ERC7984/extensions/ERC7984ERC20Wrapper.sol)
 pragma solidity ^0.8.28;
 
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
 import {ERC7984} from "../../token/ERC7984.sol";
-import {ERC7984ERC20Wrapper} from "../../token/extensions/ERC7984ERC20Wrapper.sol";
+import {ERC20ToERC7984Wrapper} from "../../token/extensions/ERC20ToERC7984Wrapper.sol";
 
 /// @dev Minimal ERC-20 with a public mint function, used for testing.
 contract ERC20Mock is ERC20 {
     uint8 private immutable _decimals;
 
-    constructor(string memory name_, string memory symbol_, uint8 decimals_) ERC20(name_, symbol_) {
+    constructor(string memory name, string memory symbol, uint8 decimals_) ERC20(name, symbol) {
         _decimals = decimals_;
     }
 
@@ -24,12 +23,12 @@ contract ERC20Mock is ERC20 {
     }
 }
 
-/// @dev Concrete implementation of ERC7984ERC20Wrapper for testing.
-contract ERC7984ERC20WrapperMock is ERC7984ERC20Wrapper {
+/// @dev Concrete implementation of ERC20ToERC7984Wrapper for testing.
+contract ERC20ToERC7984WrapperMock is ERC20ToERC7984Wrapper {
     constructor(
-        string memory name_,
-        string memory symbol_,
-        string memory contractURI_,
-        IERC20 underlying_
-    ) ERC7984(name_, symbol_, contractURI_) ERC7984ERC20Wrapper(underlying_) {}
+        string memory name,
+        string memory symbol,
+        string memory contractURI,
+        IERC20 underlying
+    ) ERC7984(name, symbol, contractURI) ERC20ToERC7984Wrapper(underlying) {}
 }

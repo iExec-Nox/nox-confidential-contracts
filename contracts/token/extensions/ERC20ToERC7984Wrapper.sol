@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Inspired by OpenZeppelin Confidential Contracts (token/ERC7984/extensions/ERC7984ERC20Wrapper.sol)
+// Inspired by OpenZeppelin Confidential Contracts (token/ERC7984/extensions/ERC20ToERC7984Wrapper.sol)
 pragma solidity ^0.8.28;
 
 import {IERC1363Receiver} from "@openzeppelin/contracts/interfaces/IERC1363Receiver.sol";
@@ -13,7 +13,7 @@ import {
     externalEuint256
 } from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {IERC7984} from "../../interfaces/IERC7984.sol";
-import {IERC7984ERC20Wrapper} from "../../interfaces/IERC7984ERC20Wrapper.sol";
+import {IERC20ToERC7984Wrapper} from "../../interfaces/IERC20ToERC7984Wrapper.sol";
 import {ERC7984} from "../ERC7984.sol";
 
 /**
@@ -28,7 +28,7 @@ import {ERC7984} from "../ERC7984.sol";
  * WARNING: Minting assumes the full amount of the underlying token transfer has been received, hence some
  * non-standard tokens such as fee-on-transfer or other deflationary-type tokens are not supported by this wrapper.
  */
-abstract contract ERC7984ERC20Wrapper is ERC7984, IERC7984ERC20Wrapper, IERC1363Receiver {
+abstract contract ERC20ToERC7984Wrapper is ERC7984, IERC20ToERC7984Wrapper, IERC1363Receiver {
     IERC20 private immutable _underlying;
     uint8 private immutable _decimals;
 
@@ -67,7 +67,7 @@ abstract contract ERC7984ERC20Wrapper is ERC7984, IERC7984ERC20Wrapper, IERC1363
         return IERC1363Receiver.onTransferReceived.selector;
     }
 
-    /// @inheritdoc IERC7984ERC20Wrapper
+    /// @inheritdoc IERC20ToERC7984Wrapper
     function wrap(address to, uint256 amount) public virtual override returns (euint256) {
         SafeERC20.safeTransferFrom(IERC20(underlying()), msg.sender, address(this), amount);
         euint256 wrappedAmount = _mint(to, Nox.toEuint256(amount));
@@ -75,7 +75,7 @@ abstract contract ERC7984ERC20Wrapper is ERC7984, IERC7984ERC20Wrapper, IERC1363
         return wrappedAmount;
     }
 
-    /// @inheritdoc IERC7984ERC20Wrapper
+    /// @inheritdoc IERC20ToERC7984Wrapper
     function unwrap(
         address from,
         address to,
@@ -88,7 +88,7 @@ abstract contract ERC7984ERC20Wrapper is ERC7984, IERC7984ERC20Wrapper, IERC1363
         return _unwrap(from, to, amount);
     }
 
-    /// @inheritdoc IERC7984ERC20Wrapper
+    /// @inheritdoc IERC20ToERC7984Wrapper
     function unwrap(
         address from,
         address to,
@@ -111,7 +111,7 @@ abstract contract ERC7984ERC20Wrapper is ERC7984, IERC7984ERC20Wrapper, IERC1363
         return _decimals;
     }
 
-    /// @inheritdoc IERC7984ERC20Wrapper
+    /// @inheritdoc IERC20ToERC7984Wrapper
     function underlying() public view virtual override returns (address) {
         return address(_underlying);
     }
@@ -121,7 +121,7 @@ abstract contract ERC7984ERC20Wrapper is ERC7984, IERC7984ERC20Wrapper, IERC1363
         bytes4 interfaceId
     ) public view virtual override(IERC165, ERC7984) returns (bool) {
         return
-            interfaceId == type(IERC7984ERC20Wrapper).interfaceId ||
+            interfaceId == type(IERC20ToERC7984Wrapper).interfaceId ||
             interfaceId == type(IERC1363Receiver).interfaceId ||
             super.supportsInterface(interfaceId);
     }
@@ -178,9 +178,8 @@ abstract contract ERC7984ERC20Wrapper is ERC7984, IERC7984ERC20Wrapper, IERC1363
             ERC7984UnauthorizedSpender(from, msg.sender)
         );
         // WARNING: Storing unwrap requests in a mapping from handle to address assumes that
-        // handles are unique. This holds here because `_burn` always returns a fresh handle
-        // generated randomly off-chain by the gateway, but be cautious when assuming handle
-        // uniqueness in other contexts.
+        // handles are unique. This holds here because `_burn` always returns a fresh handle,
+        // but be cautious when assuming handle uniqueness in other contexts.
         euint256 unwrapAmount = _burn(from, amount);
         Nox.allowPublicDecryption(unwrapAmount);
         assert(unwrapRequester(unwrapAmount) == address(0));

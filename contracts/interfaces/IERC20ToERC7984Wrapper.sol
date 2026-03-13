@@ -5,8 +5,8 @@ pragma solidity ^0.8.28;
 import {euint256, externalEuint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {IERC7984} from "./IERC7984.sol";
 
-/// @dev Interface for ERC7984ERC20Wrapper contract.
-interface IERC7984ERC20Wrapper is IERC7984 {
+/// @dev Interface for ERC20ToERC7984Wrapper contract.
+interface IERC20ToERC7984Wrapper is IERC7984 {
     /**
      * @dev Wraps `amount` of the underlying ERC-20 token into a confidential token and sends it to `to`.
      * Tokens are exchanged 1:1. Returns the encrypted amount of wrapped tokens.

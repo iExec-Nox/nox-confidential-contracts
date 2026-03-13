@@ -1,24 +1,23 @@
 // SPDX-License-Identifier: Apache-2.0
-// Inspired by OpenZeppelin Confidential Contracts (token/ERC7984/extensions/ERC7984ERC20Wrapper.sol)
 pragma solidity ^0.8.28;
 
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {IERC1363Receiver} from "@openzeppelin/contracts/interfaces/IERC1363Receiver.sol";
 import {IERC7984} from "../../contracts/interfaces/IERC7984.sol";
-import {IERC7984ERC20Wrapper} from "../../contracts/interfaces/IERC7984ERC20Wrapper.sol";
+import {IERC20ToERC7984Wrapper} from "../../contracts/interfaces/IERC20ToERC7984Wrapper.sol";
 import {ERC7984} from "../../contracts/token/ERC7984.sol";
-import {ERC7984ERC20Wrapper} from "../../contracts/token/extensions/ERC7984ERC20Wrapper.sol";
+import {ERC20ToERC7984Wrapper} from "../../contracts/token/extensions/ERC20ToERC7984Wrapper.sol";
 import {
     ERC20Mock,
-    ERC7984ERC20WrapperMock
-} from "../../contracts/mocks/token/ERC7984ERC20WrapperMock.sol";
+    ERC20ToERC7984WrapperMock
+} from "../../contracts/mocks/token/ERC20ToERC7984WrapperMock.sol";
 import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {NoxMock} from "../utils/NoxMock.sol";
 
-contract ERC7984ERC20WrapperTest is NoxMock {
+contract ERC20ToERC7984WrapperTest is NoxMock {
     ERC20Mock internal underlying6;
     ERC20Mock internal underlying18;
-    ERC7984ERC20WrapperMock internal wrapper;
+    ERC20ToERC7984WrapperMock internal wrapper;
 
     address internal user1 = makeAddr("user1");
     address internal user2 = makeAddr("user2");
@@ -27,7 +26,7 @@ contract ERC7984ERC20WrapperTest is NoxMock {
     function setUp() public {
         underlying6 = new ERC20Mock("USD Coin", "USDC", 6);
         underlying18 = new ERC20Mock("DAI Stablecoin", "DAI", 18);
-        wrapper = new ERC7984ERC20WrapperMock(
+        wrapper = new ERC20ToERC7984WrapperMock(
             "Wrapped Nox",
             "wNOX",
             "https://example.com",
@@ -36,7 +35,7 @@ contract ERC7984ERC20WrapperTest is NoxMock {
 
         vm.label(address(underlying6), "USDC");
         vm.label(address(underlying18), "DAI");
-        vm.label(address(wrapper), "ERC7984ERC20WrapperMock");
+        vm.label(address(wrapper), "ERC20ToERC7984WrapperMock");
         vm.label(user1, "user1");
         vm.label(user2, "user2");
         vm.label(operator, "operator");
@@ -50,14 +49,19 @@ contract ERC7984ERC20WrapperTest is NoxMock {
     }
 
     function test_Constructor_18DecimalUnderlying() public {
-        ERC7984ERC20WrapperMock w18 = new ERC7984ERC20WrapperMock("W18", "w18", "", underlying18);
+        ERC20ToERC7984WrapperMock w18 = new ERC20ToERC7984WrapperMock(
+            "W18",
+            "w18",
+            "",
+            underlying18
+        );
         assertEq(w18.decimals(), 18);
     }
 
     // ============ supportsInterface ============
 
-    function test_SupportsInterface_IERC7984ERC20Wrapper() public view {
-        assertTrue(wrapper.supportsInterface(type(IERC7984ERC20Wrapper).interfaceId));
+    function test_SupportsInterface_IERC20ToERC7984Wrapper() public view {
+        assertTrue(wrapper.supportsInterface(type(IERC20ToERC7984Wrapper).interfaceId));
     }
 
     function test_SupportsInterface_IERC1363Receiver() public view {
@@ -91,7 +95,12 @@ contract ERC7984ERC20WrapperTest is NoxMock {
 
     function test_Wrap_18DecimalUnderlying() public {
         _mockNoxPrimitives();
-        ERC7984ERC20WrapperMock w18 = new ERC7984ERC20WrapperMock("W18", "w18", "", underlying18);
+        ERC20ToERC7984WrapperMock w18 = new ERC20ToERC7984WrapperMock(
+            "W18",
+            "w18",
+            "",
+            underlying18
+        );
         uint256 amount = 1.5e18;
 
         underlying18.mint(user1, amount);
@@ -108,7 +117,7 @@ contract ERC7984ERC20WrapperTest is NoxMock {
 
     function test_RevertWhen_OnTransferReceived_UnauthorizedCaller() public {
         vm.expectRevert(
-            abi.encodeWithSelector(ERC7984ERC20Wrapper.ERC7984UnauthorizedCaller.selector, user1)
+            abi.encodeWithSelector(ERC20ToERC7984Wrapper.ERC7984UnauthorizedCaller.selector, user1)
         );
         vm.prank(user1);
         wrapper.onTransferReceived(user1, user1, 100e6, "");
