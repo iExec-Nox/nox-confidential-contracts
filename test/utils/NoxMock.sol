@@ -50,6 +50,21 @@ abstract contract NoxMock is Test {
         );
         vm.mockCall(noxCompute, abi.encodeWithSelector(INoxCompute.allow.selector), "");
         vm.mockCall(noxCompute, abi.encodeWithSelector(INoxCompute.allowTransient.selector), "");
+        vm.mockCall(
+            noxCompute,
+            abi.encodeWithSelector(INoxCompute.mint.selector),
+            abi.encode(MOCK_HANDLE, MOCK_HANDLE, MOCK_HANDLE)
+        );
+        vm.mockCall(
+            noxCompute,
+            abi.encodeWithSelector(INoxCompute.burn.selector),
+            abi.encode(MOCK_HANDLE, MOCK_HANDLE, MOCK_HANDLE)
+        );
+        vm.mockCall(
+            noxCompute,
+            abi.encodeWithSelector(INoxCompute.transfer.selector),
+            abi.encode(MOCK_HANDLE, MOCK_HANDLE, MOCK_HANDLE)
+        );
     }
 
     /// @dev Mocks a specific `isAllowed` call for the given encrypted amount handle and user.

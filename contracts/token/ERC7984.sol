@@ -29,9 +29,10 @@ import {
  *
  */
 abstract contract ERC7984 is IERC7984, ERC165 {
-    mapping(address holder => euint256) private _balances;
+    // TODO refactor common code in a base contract and reset state variables to private.
+    mapping(address holder => euint256) internal _balances;
     mapping(address holder => mapping(address spender => uint48 until)) private _operators;
-    euint256 private _totalSupply;
+    euint256 internal _totalSupply;
     string private _name;
     string private _symbol;
     string private _contractURI;
