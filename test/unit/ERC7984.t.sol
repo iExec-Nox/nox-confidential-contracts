@@ -5,9 +5,8 @@ import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol"
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {IERC7984} from "../../contracts/interfaces/IERC7984.sol";
 import {ERC7984} from "../../contracts/token/ERC7984.sol";
-import {ERC7984Mock} from "../../contracts/mocks/token/ERC7984Mock.sol";
+import {ERC7984Mock, IERC7984TestableMock} from "../../contracts/mocks/token/ERC7984Mocks.sol";
 import {ERC7984ReceiverMock} from "../../contracts/mocks/token/ERC7984ReceiverMock.sol";
-import {IERC7984TestableMock} from "../../contracts/mocks/token/ERC7984Mock.sol";
 import {NoxMock} from "../utils/NoxMock.sol";
 
 contract ERC7984Test is NoxMock {

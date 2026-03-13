@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 import {
     ERC7984AdvancedMock,
     IERC7984TestableMock
-} from "../../contracts/mocks/token/ERC7984Mock.sol";
+} from "../../contracts/mocks/token/ERC7984Mocks.sol";
 import {ERC7984Test} from "./ERC7984.t.sol";
 
 contract ERC7984AdvancedTest is ERC7984Test {
