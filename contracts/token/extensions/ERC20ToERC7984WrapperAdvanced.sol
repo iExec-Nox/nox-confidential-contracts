@@ -4,11 +4,7 @@ pragma solidity ^0.8.28;
 
 import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import {
-    Nox,
-    euint256,
-    externalEuint256
-} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
+import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {ERC7984} from "../ERC7984.sol";
 import {ERC7984Advanced} from "../ERC7984Advanced.sol";
 import {ERC20ToERC7984Wrapper} from "./ERC20ToERC7984Wrapper.sol";
