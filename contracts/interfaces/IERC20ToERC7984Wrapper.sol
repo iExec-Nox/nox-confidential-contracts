@@ -35,4 +35,20 @@ interface IERC20ToERC7984Wrapper is IERC7984 {
 
     /// @dev Returns the address of the underlying ERC-20 token being wrapped.
     function underlying() external view returns (address);
+
+    /**
+     * @dev Returns `balanceOf(address(this))`, a value greater than or equal to the actual
+     * {confidentialTotalSupply}. Can be inflated by directly sending underlying tokens to this contract.
+     *
+     * NOTE: After an {unwrap}, the encrypted total supply decreases immediately (tokens are burned),
+     * but the underlying ERC-20 balance stays unchanged until {finalizeUnwrap} actually transfers them out.
+     * Between these two calls, this value is temporarily higher than the real total supply.
+     */
+    function inferredTotalSupply() external view returns (uint256);
+
+    /// @dev Returns the maximum total supply of wrapped tokens.
+    function maxTotalSupply() external view returns (uint256);
+
+    /// @dev Returns the recipient of the pending unwrap request for `unwrapAmount`, or `address(0)`.
+    function unwrapRequester(euint256 unwrapAmount) external view returns (address);
 }
