@@ -235,7 +235,7 @@ contract ERC20ToERC7984WrapperTest is NoxMock {
 
         vm.expectRevert(
             abi.encodeWithSelector(
-                ERC20ToERC7984Wrapper.InvalidUnwrapRequest.selector,
+                ERC20ToERC7984Wrapper.InvalidDecryptionProof.selector,
                 unwrapRequestId
             )
         );

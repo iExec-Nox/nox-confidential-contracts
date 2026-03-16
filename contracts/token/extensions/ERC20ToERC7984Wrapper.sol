@@ -36,6 +36,7 @@ abstract contract ERC20ToERC7984Wrapper is ERC7984, IERC20ToERC7984Wrapper, IERC
 
     error ERC7984UnauthorizedCaller(address caller);
     error InvalidUnwrapRequest(euint256 amount);
+    error InvalidDecryptionProof(euint256 amount);
     error ERC7984TotalSupplyOverflow();
 
     constructor(IERC20 underlying_) {
@@ -96,13 +97,13 @@ abstract contract ERC20ToERC7984Wrapper is ERC7984, IERC20ToERC7984Wrapper, IERC
         euint256 unwrapRequestId,
         uint256 plaintextAmount,
         bytes calldata amountDecryptionProof
-    ) external {
+    ) external virtual override {
         address to = unwrapRequester(unwrapRequestId);
         require(to != address(0), InvalidUnwrapRequest(unwrapRequestId));
         delete _unwrapRequests[unwrapRequestId];
         require(
             Nox.publicDecrypt(unwrapRequestId, amountDecryptionProof) == plaintextAmount,
-            InvalidUnwrapRequest(unwrapRequestId)
+            InvalidDecryptionProof(unwrapRequestId)
         );
         SafeERC20.safeTransfer(IERC20(underlying()), to, plaintextAmount);
         emit UnwrapFinalized(to, unwrapRequestId, plaintextAmount);
