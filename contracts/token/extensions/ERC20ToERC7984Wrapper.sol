@@ -126,24 +126,17 @@ abstract contract ERC20ToERC7984Wrapper is ERC7984, IERC20ToERC7984Wrapper, IERC
             super.supportsInterface(interfaceId);
     }
 
-    /**
-     * @dev Returns `balanceOf(address(this))`, a value greater than or equal to the actual
-     * {confidentialTotalSupply}. Can be inflated by directly sending underlying tokens to this contract.
-     *
-     * NOTE: After an {unwrap}, the encrypted total supply decreases immediately (tokens are burned),
-     * but the underlying ERC-20 balance stays unchanged until {finalizeUnwrap} actually transfers them out.
-     * Between these two calls, this value is temporarily higher than the real total supply.
-     */
+    /// @inheritdoc IERC20ToERC7984Wrapper
     function inferredTotalSupply() public view virtual returns (uint256) {
         return IERC20(underlying()).balanceOf(address(this));
     }
 
-    /// @dev Returns the maximum total supply of wrapped tokens.
+    /// @inheritdoc IERC20ToERC7984Wrapper
     function maxTotalSupply() public view virtual returns (uint256) {
         return type(uint256).max;
     }
 
-    /// @dev Returns the recipient of the pending unwrap request for `unwrapAmount`, or `address(0)`.
+    /// @inheritdoc IERC20ToERC7984Wrapper
     function unwrapRequester(euint256 unwrapAmount) public view virtual returns (address) {
         return _unwrapRequests[unwrapAmount];
     }

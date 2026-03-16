@@ -2,31 +2,17 @@
 // Inspired by OpenZeppelin Contracts (token/ERC20/ERC20.sol)
 pragma solidity ^0.8.28;
 
-import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import {ERC7984} from "./ERC7984.sol";
-import {ERC7984Utils} from "./utils/ERC7984Utils.sol";
 import {
     Nox,
     euint256,
     externalEuint256,
     ebool
 } from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
+import {ERC7984} from "./ERC7984.sol";
 
 /**
- * @dev Reference implementation for {IERC7984} using advance Nox primitives.
- *
- * This contract implements a fungible token where balances and transfers are encrypted using the Nox TEE,
- * providing confidentiality to users. Token amounts are stored as encrypted, unsigned integers (`euint256`)
- * that can only be decrypted by authorized parties.
- *
- * Key features:
- *
- * - All balances are encrypted
- * - Transfers happen without revealing amounts
- * - Support for operators (delegated transfer capabilities with time bounds)
- * - Safe overflow/underflow handling for TEE operations
- *
+ * @dev Reference implementation for {ERC7984} using advanced Nox primitives.
+ * @dev See {ERC7984}.
  */
 
 abstract contract ERC7984Advanced is ERC7984 {

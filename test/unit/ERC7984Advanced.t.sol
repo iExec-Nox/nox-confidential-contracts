@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.28;
 
-import {ERC7984AdvancedMock} from "../../contracts/mocks/token/ERC7984AdvancedMock.sol";
-import {IERC7984TestableMock} from "../../contracts/mocks/token/IERC7984TestableMock.sol";
+import {
+    ERC7984AdvancedMock,
+    IERC7984TestableMock
+} from "../../contracts/mocks/token/ERC7984Mock.sol";
 import {ERC7984Test} from "./ERC7984.t.sol";
 
 contract ERC7984AdvancedTest is ERC7984Test {
