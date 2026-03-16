@@ -34,13 +34,6 @@ abstract contract ERC20ToERC7984Wrapper is ERC7984, IERC20ToERC7984Wrapper, IERC
 
     mapping(euint256 unwrapAmount => address recipient) private _unwrapRequests;
 
-    event UnwrapRequested(address indexed receiver, euint256 amount);
-    event UnwrapFinalized(
-        address indexed receiver,
-        euint256 encryptedAmount,
-        uint256 cleartextAmount
-    );
-
     error ERC7984UnauthorizedCaller(address caller);
     error InvalidUnwrapRequest(euint256 amount);
     error ERC7984TotalSupplyOverflow();
@@ -98,7 +91,22 @@ abstract contract ERC20ToERC7984Wrapper is ERC7984, IERC20ToERC7984Wrapper, IERC
         return _unwrap(from, to, Nox.fromExternal(encryptedAmount, inputProof));
     }
 
-    // TODO: Implement finalizeUnwrap once Nox exposes a decryption verification mechanism
+    /// @inheritdoc IERC20ToERC7984Wrapper
+    function finalizeUnwrap(
+        euint256 unwrapRequestId,
+        uint256 plaintextAmount,
+        bytes calldata amountDecryptionProof
+    ) external {
+        address to = unwrapRequester(unwrapRequestId);
+        require(to != address(0), InvalidUnwrapRequest(unwrapRequestId));
+        delete _unwrapRequests[unwrapRequestId];
+        require(
+            Nox.publicDecrypt(unwrapRequestId, amountDecryptionProof) == plaintextAmount,
+            InvalidUnwrapRequest(unwrapRequestId)
+        );
+        SafeERC20.safeTransfer(IERC20(underlying()), to, plaintextAmount);
+        emit UnwrapFinalized(to, unwrapRequestId, plaintextAmount);
+    }
 
     // TODO: Add a virtual `rate()` function to support custom conversion rates between the
     // underlying ERC-20 and the wrapped token. Integrate it into `wrap`, `onTransferReceived`

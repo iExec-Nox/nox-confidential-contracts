@@ -74,4 +74,14 @@ abstract contract NoxMock is Test {
             abi.encode(allowed)
         );
     }
+
+    /// @dev Mocks `publicDecrypt` call and returns the given plaintext amount.
+    function _mockPublicDecryptCall(uint256 returnValue) internal {
+        bytes memory returnValueAsBytes = abi.encode(returnValue);
+        vm.mockCall(
+            noxCompute,
+            abi.encodeWithSelector(INoxCompute.validateDecryptionProof.selector),
+            abi.encode(returnValueAsBytes)
+        );
+    }
 }
