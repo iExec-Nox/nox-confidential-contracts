@@ -10,11 +10,11 @@ import {
 } from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {ERC7984} from "./ERC7984.sol";
 
+// Find a better name for this contract.
 /**
  * @dev Reference implementation for {ERC7984} using advanced Nox primitives.
  * @dev See {ERC7984}.
  */
-
 abstract contract ERC7984Advanced is ERC7984 {
     constructor(
         string memory name,

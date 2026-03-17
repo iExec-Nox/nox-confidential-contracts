@@ -1,6 +1,6 @@
 {
   "name": "@iexec-nox/nox-confidential-contracts",
-  "version": "0.0.0",
+  "version": "0.1.0-beta.2",
   "description": "Nox confidential smart contracts",
   "keywords": [
     "Nox",
@@ -11,7 +11,8 @@
   "packageManager": "pnpm@10.30.3",
   "type": "module",
   "files": [
-    "/contracts"
+    "/contracts",
+    "!/contracts/mocks"
   ],
   "scripts": {
     "prepare": "husky",
@@ -26,6 +27,10 @@
     "*.{sol,js,ts,json,md,yml,yaml}": [
       "prettier --write"
     ]
+  },
+  "dependencies": {
+    "@iexec-nox/nox-protocol-contracts": "0.1.0-beta.7",
+    "@openzeppelin/contracts": "^5.4.0"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-ignition": "^3.0.9",
@@ -47,9 +52,5 @@
   },
   "bugs": {
     "url": "https://github.com/iExec-Nox/nox-confidential-contracts/issues"
-  },
-  "dependencies": {
-    "@iexec-nox/nox-protocol-contracts": "0.1.0-beta.7",
-    "@openzeppelin/contracts": "^5.4.0"
   }
 }

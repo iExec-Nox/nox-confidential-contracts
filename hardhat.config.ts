@@ -1,16 +1,22 @@
 import hardhatToolboxViemPlugin from "@nomicfoundation/hardhat-toolbox-viem";
 import { configVariable, defineConfig } from "hardhat/config";
 
+const baseProfile = {
+    version: "0.8.34",
+    settings: {
+        evmVersion: "osaka",
+    },
+} as const;
+
 export default defineConfig({
     plugins: [hardhatToolboxViemPlugin],
     solidity: {
         profiles: {
-            default: {
-                version: "0.8.28",
-            },
+            default: baseProfile,
             production: {
-                version: "0.8.28",
+                version: baseProfile.version,
                 settings: {
+                    ...baseProfile.settings,
                     optimizer: {
                         enabled: true,
                         runs: 200,
