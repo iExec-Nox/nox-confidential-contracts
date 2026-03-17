@@ -49,7 +49,7 @@
     "url": "https://github.com/iExec-Nox/nox-confidential-contracts/issues"
   },
   "dependencies": {
-    "@iexec-nox/nox-protocol-contracts": "0.1.0-beta.6",
+    "@iexec-nox/nox-protocol-contracts": "0.1.0-beta.7",
     "@openzeppelin/contracts": "^5.4.0"
   }
 }

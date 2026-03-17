@@ -7,6 +7,13 @@ import {IERC7984} from "./IERC7984.sol";
 
 /// @dev Interface for ERC20ToERC7984Wrapper contract.
 interface IERC20ToERC7984Wrapper is IERC7984 {
+    event UnwrapRequested(address indexed receiver, euint256 amount);
+    event UnwrapFinalized(
+        address indexed receiver,
+        euint256 encryptedAmount,
+        uint256 plaintextAmount
+    );
+
     /**
      * @dev Wraps `amount` of the underlying ERC-20 token into a confidential token and sends it to `to`.
      * Tokens are exchanged 1:1. Returns the encrypted amount of wrapped tokens.
@@ -20,7 +27,11 @@ interface IERC20ToERC7984Wrapper is IERC7984 {
      *
      * NOTE: The unwrap request created by this function must be finalized by calling {finalizeUnwrap}.
      */
-    function unwrap(address from, address to, euint256 amount) external returns (euint256);
+    function unwrap(
+        address from,
+        address to,
+        euint256 amount
+    ) external returns (euint256 unwrapRequestId);
 
     /**
      * @dev Same as {unwrap}, but accepts an external encrypted amount with an input proof
@@ -31,7 +42,18 @@ interface IERC20ToERC7984Wrapper is IERC7984 {
         address to,
         externalEuint256 encryptedAmount,
         bytes calldata inputProof
-    ) external returns (euint256);
+    ) external returns (euint256 unwrapRequestId);
+
+    /**
+     * @dev Finalizes an unwrap request by verifying the decryption proof and transferring the
+     * underlying ERC-20 tokens to the recipient.
+     * @dev `unwrapRequestId` is the amount handle returned by {unwrap}.
+     */
+    function finalizeUnwrap(
+        euint256 unwrapRequestId,
+        uint256 plaintextAmount,
+        bytes calldata amountDecryptionProof
+    ) external;
 
     /// @dev Returns the address of the underlying ERC-20 token being wrapped.
     function underlying() external view returns (address);
