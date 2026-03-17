@@ -35,8 +35,7 @@ abstract contract ERC20ToERC7984Wrapper is ERC7984, IERC20ToERC7984Wrapper, IERC
     mapping(euint256 unwrapAmount => address recipient) private _unwrapRequests;
 
     error ERC7984UnauthorizedCaller(address caller);
-    error InvalidUnwrapRequest(euint256 amount);
-    error InvalidDecryptionProof(euint256 amount);
+    error InvalidUnwrapRequest(euint256 unwrapRequestId);
     error ERC7984TotalSupplyOverflow();
 
     constructor(IERC20 underlying_) {
@@ -92,19 +91,16 @@ abstract contract ERC20ToERC7984Wrapper is ERC7984, IERC20ToERC7984Wrapper, IERC
         return _unwrap(from, to, Nox.fromExternal(encryptedAmount, inputProof));
     }
 
+    /// @dev This interface slightly differs from Openzeppelin's (no plaintext amout).
     /// @inheritdoc IERC20ToERC7984Wrapper
     function finalizeUnwrap(
         euint256 unwrapRequestId,
-        uint256 plaintextAmount,
-        bytes calldata amountDecryptionProof
+        bytes calldata decryptedAmountAndProof
     ) external virtual override {
         address to = unwrapRequester(unwrapRequestId);
         require(to != address(0), InvalidUnwrapRequest(unwrapRequestId));
         delete _unwrapRequests[unwrapRequestId];
-        require(
-            Nox.publicDecrypt(unwrapRequestId, amountDecryptionProof) == plaintextAmount,
-            InvalidDecryptionProof(unwrapRequestId)
-        );
+        uint256 plaintextAmount = Nox.publicDecrypt(unwrapRequestId, decryptedAmountAndProof);
         SafeERC20.safeTransfer(IERC20(underlying()), to, plaintextAmount);
         emit UnwrapFinalized(to, unwrapRequestId, plaintextAmount);
     }

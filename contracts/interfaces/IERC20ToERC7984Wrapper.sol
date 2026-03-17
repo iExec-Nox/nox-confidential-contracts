@@ -51,8 +51,7 @@ interface IERC20ToERC7984Wrapper is IERC7984 {
      */
     function finalizeUnwrap(
         euint256 unwrapRequestId,
-        uint256 plaintextAmount,
-        bytes calldata amountDecryptionProof
+        bytes calldata decryptedAmountAndProof
     ) external;
 
     /// @dev Returns the address of the underlying ERC-20 token being wrapped.
