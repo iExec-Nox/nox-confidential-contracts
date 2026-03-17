@@ -208,7 +208,7 @@ contract ERC20ToERC7984WrapperTest is NoxMock {
         vm.expectEmit(address(wrapper));
         emit IERC20ToERC7984Wrapper.UnwrapFinalized(user2, unwrapRequestId, plaintextAmount);
 
-        wrapper.finalizeUnwrap(unwrapRequestId, plaintextAmount, hex"1234");
+        wrapper.finalizeUnwrap(unwrapRequestId, hex"1234");
 
         assertEq(wrapper.unwrapRequester(unwrapRequestId), address(0));
         assertEq(underlying6.balanceOf(user2), plaintextAmount);
@@ -224,22 +224,7 @@ contract ERC20ToERC7984WrapperTest is NoxMock {
                 invalidRequestId
             )
         );
-        wrapper.finalizeUnwrap(invalidRequestId, 100e6, hex"1234");
-    }
-
-    function test_RevertWhen_FinalizeUnwrap_InvalidDecryptionProof() public {
-        _mockNoxPrimitives();
-        euint256 unwrapRequestId = _createPendingUnwrapRequest();
-        uint256 plaintextAmount = 400e6;
-        _mockPublicDecryptCall(plaintextAmount + 1);
-
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                ERC20ToERC7984Wrapper.InvalidDecryptionProof.selector,
-                unwrapRequestId
-            )
-        );
-        wrapper.finalizeUnwrap(unwrapRequestId, plaintextAmount, hex"1234");
+        wrapper.finalizeUnwrap(invalidRequestId, hex"1234");
     }
 
     function test_RevertWhen_FinalizeUnwrap_UnderlyingTransferFails() public {
@@ -253,7 +238,7 @@ contract ERC20ToERC7984WrapperTest is NoxMock {
         underlying6.transfer(address(0xdeadbeef), 1000e6);
 
         vm.expectRevert();
-        wrapper.finalizeUnwrap(unwrapRequestId, plaintextAmount, hex"1234");
+        wrapper.finalizeUnwrap(unwrapRequestId, hex"1234");
     }
 
     // ============ inferredTotalSupply / maxTotalSupply ============
