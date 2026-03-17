@@ -91,6 +91,7 @@ abstract contract ERC20ToERC7984Wrapper is ERC7984, IERC20ToERC7984Wrapper, IERC
         return _unwrap(from, to, Nox.fromExternal(encryptedAmount, inputProof));
     }
 
+    /// @dev This interface slightly differs from Openzeppelin's (no plaintext amout).
     /// @inheritdoc IERC20ToERC7984Wrapper
     function finalizeUnwrap(
         euint256 unwrapRequestId,
