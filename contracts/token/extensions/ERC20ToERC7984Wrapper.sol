@@ -35,7 +35,7 @@ abstract contract ERC20ToERC7984Wrapper is ERC7984, IERC20ToERC7984Wrapper, IERC
     mapping(euint256 unwrapAmount => address recipient) private _unwrapRequests;
 
     error ERC7984UnauthorizedCaller(address caller);
-    error InvalidUnwrapRequest(euint256 amount);
+    error InvalidUnwrapRequest(euint256 unwrapRequestId);
     error ERC7984TotalSupplyOverflow();
 
     constructor(IERC20 underlying_) {

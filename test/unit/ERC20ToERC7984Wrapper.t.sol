@@ -227,6 +227,15 @@ contract ERC20ToERC7984WrapperTest is NoxMock {
         wrapper.finalizeUnwrap(invalidRequestId, hex"1234");
     }
 
+    function test_RevertWhen_FinalizeUnwrap_InvalidDecryptionProof() public {
+        _mockNoxPrimitives();
+        euint256 unwrapRequestId = _createPendingUnwrapRequest();
+        // Do not mock a successful publicDecrypt call so that the invalid proof
+        // causes the underlying Nox decryption/proof validation to revert.
+        vm.expectRevert(); // Custom error from NoxCompute
+        wrapper.finalizeUnwrap(unwrapRequestId, hex"deadbeef");
+    }
+
     function test_RevertWhen_FinalizeUnwrap_UnderlyingTransferFails() public {
         _mockNoxPrimitives();
         euint256 unwrapRequestId = _createPendingUnwrapRequest();
