@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: MIT
 // Inspired by OpenZeppelin confidential contracts (token/ERC721/IERC721Receiver.sol)
 pragma solidity ^0.8.28;
 
