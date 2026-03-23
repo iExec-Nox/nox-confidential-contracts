@@ -1,8 +1,9 @@
 import hardhatToolboxViemPlugin from "@nomicfoundation/hardhat-toolbox-viem";
 import { configVariable, defineConfig } from "hardhat/config";
+import solc from "./.solc.json" with { type: "json" };
 
 const baseProfile = {
-    version: "0.8.34",
+    version: solc.version,
     settings: {
         evmVersion: "osaka",
     },
