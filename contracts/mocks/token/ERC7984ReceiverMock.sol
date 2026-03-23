@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: MIT
 // Inspired by OpenZeppelin Contracts (token/ERC721/utils/ERC721ReceiverMock.sol)
 pragma solidity ^0.8.28;
 
