@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Inspired by OpenZeppelin confidential contracts (token/ERC721/IERC721Receiver.sol)
+// Inspired by OpenZeppelin confidential contracts (contracts/interfaces/IERC7984Receiver.sol)
 pragma solidity ^0.8.28;
 
 import {ebool, euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";

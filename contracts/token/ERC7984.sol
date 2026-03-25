@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Inspired by OpenZeppelin Contracts (token/ERC20/ERC20.sol)
+// Inspired by OpenZeppelin Contracts (contracts/token/ERC7984/ERC7984.sol)
 pragma solidity ^0.8.28;
 
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
