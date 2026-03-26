@@ -28,13 +28,18 @@ import {
  * - Safe overflow/underflow handling for TEE operations
  *
  */
-abstract contract ERC7984 is IERC7984, ERC165 {
-    mapping(address holder => euint256) internal _balances;
-    mapping(address holder => mapping(address spender => uint48 until)) private _operators;
-    euint256 internal _totalSupply;
-    string private _name;
-    string private _symbol;
-    string private _contractURI;
+
+struct ERC7984Storage {
+    mapping(address holder => euint256) _balances;
+    mapping(address holder => mapping(address spender => uint48 until)) _operators;
+    euint256 _totalSupply;
+    string _name;
+    string _symbol;
+    string _contractURI;
+}
+
+abstract contract ERC7984Base is IERC7984, ERC165 {
+    function _getERC7984Storage() internal pure virtual returns (ERC7984Storage storage $);
 
     /// @dev The given receiver `receiver` is invalid for transfers.
     error ERC7984InvalidReceiver(address receiver);
@@ -55,12 +60,6 @@ abstract contract ERC7984 is IERC7984, ERC165 {
     /// @dev The holder `holder` is trying to send tokens but has a balance of 0.
     error ERC7984ZeroBalance(address holder);
 
-    constructor(string memory name_, string memory symbol_, string memory contractURI_) {
-        _name = name_;
-        _symbol = symbol_;
-        _contractURI = contractURI_;
-    }
-
     // ============ View Functions ============
 
     /// @inheritdoc ERC165
@@ -72,12 +71,14 @@ abstract contract ERC7984 is IERC7984, ERC165 {
 
     /// @inheritdoc IERC7984
     function name() public view virtual returns (string memory) {
-        return _name;
+        ERC7984Storage storage $ = _getERC7984Storage();
+        return $._name;
     }
 
     /// @inheritdoc IERC7984
     function symbol() public view virtual returns (string memory) {
-        return _symbol;
+        ERC7984Storage storage $ = _getERC7984Storage();
+        return $._symbol;
     }
 
     /// @inheritdoc IERC7984
@@ -87,22 +88,26 @@ abstract contract ERC7984 is IERC7984, ERC165 {
 
     /// @inheritdoc IERC7984
     function contractURI() public view virtual returns (string memory) {
-        return _contractURI;
+        ERC7984Storage storage $ = _getERC7984Storage();
+        return $._contractURI;
     }
 
     /// @inheritdoc IERC7984
     function confidentialTotalSupply() public view virtual returns (euint256) {
-        return _totalSupply;
+        ERC7984Storage storage $ = _getERC7984Storage();
+        return $._totalSupply;
     }
 
     /// @inheritdoc IERC7984
     function confidentialBalanceOf(address account) public view virtual returns (euint256) {
-        return _balances[account];
+        ERC7984Storage storage $ = _getERC7984Storage();
+        return $._balances[account];
     }
 
     /// @inheritdoc IERC7984
     function isOperator(address holder, address spender) public view virtual returns (bool) {
-        return holder == spender || block.timestamp <= _operators[holder][spender];
+        ERC7984Storage storage $ = _getERC7984Storage();
+        return holder == spender || block.timestamp <= $._operators[holder][spender];
     }
 
     // ============ External Functions ============
@@ -231,7 +236,8 @@ abstract contract ERC7984 is IERC7984, ERC165 {
     // ============ Internal Functions ============
 
     function _setOperator(address holder, address operator, uint48 until) internal virtual {
-        _operators[holder][operator] = until;
+        ERC7984Storage storage $ = _getERC7984Storage();
+        $._operators[holder][operator] = until;
         emit OperatorSet(holder, operator, until);
     }
 
@@ -314,50 +320,51 @@ abstract contract ERC7984 is IERC7984, ERC165 {
         address to,
         euint256 amount
     ) internal virtual returns (euint256 transferred) {
+        ERC7984Storage storage $ = _getERC7984Storage();
         ebool success;
         euint256 ptr;
 
         if (from == address(0)) {
             // Mint: safely increase total supply.
-            if (!Nox.isInitialized(_totalSupply)) {
+            if (!Nox.isInitialized($._totalSupply)) {
                 // totalSupply is 0: no addition needed, amount becomes the new supply.
                 success = Nox.toEbool(true);
                 ptr = amount;
             } else {
-                (success, ptr) = Nox.safeAdd(_totalSupply, amount);
-                ptr = Nox.select(success, ptr, _totalSupply);
+                (success, ptr) = Nox.safeAdd($._totalSupply, amount);
+                ptr = Nox.select(success, ptr, $._totalSupply);
             }
             Nox.allowThis(ptr);
-            _totalSupply = ptr;
+            $._totalSupply = ptr;
         } else {
             // Transfer/burn: safely decrease sender balance.
-            euint256 fromBalance = _balances[from];
+            euint256 fromBalance = $._balances[from];
             require(Nox.isInitialized(fromBalance), ERC7984ZeroBalance(from));
             (success, ptr) = Nox.safeSub(fromBalance, amount);
             ptr = Nox.select(success, ptr, fromBalance);
             Nox.allowThis(ptr);
             Nox.allow(ptr, from);
-            _balances[from] = ptr;
+            $._balances[from] = ptr;
         }
 
         transferred = Nox.select(success, amount, Nox.toEuint256(0));
 
         if (to == address(0)) {
             // Burn: decrease total supply by actually transferred amount.
-            ptr = Nox.sub(_totalSupply, transferred);
+            ptr = Nox.sub($._totalSupply, transferred);
             Nox.allowThis(ptr);
-            _totalSupply = ptr;
+            $._totalSupply = ptr;
         } else {
             // Mint/transfer: increase recipient balance by actually transferred amount.
-            if (!Nox.isInitialized(_balances[to])) {
+            if (!Nox.isInitialized($._balances[to])) {
                 // balance is 0: no addition needed, transferred becomes the new balance.
                 ptr = transferred;
             } else {
-                ptr = Nox.add(_balances[to], transferred);
+                ptr = Nox.add($._balances[to], transferred);
             }
             Nox.allowThis(ptr);
             Nox.allow(ptr, to);
-            _balances[to] = ptr;
+            $._balances[to] = ptr;
         }
 
         if (from != address(0)) {
