@@ -2,9 +2,10 @@
 // Inspired by OpenZeppelin Contracts (contracts/token/ERC7984/ERC7984.sol)
 pragma solidity ^0.8.28;
 
+import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import {ERC7984Base, ERC7984Storage} from "./ERC7984Base.sol";
 
-abstract contract ERC7984 is ERC7984Base {
+abstract contract ERC7984 is ERC7984Base, Initializable {
     function _getERC7984Storage() internal pure override returns (ERC7984Storage storage $) {
         assembly {
             // keccak256(abi.encode(uint256(keccak256("nox.storage.ERC7984")) - 1)) & ~bytes32(uint256(0xff))

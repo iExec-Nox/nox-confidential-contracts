@@ -15,6 +15,7 @@ import {
 import {IERC7984} from "../../interfaces/IERC7984.sol";
 import {IERC20ToERC7984Wrapper} from "../../interfaces/IERC20ToERC7984Wrapper.sol";
 import {ERC7984} from "../ERC7984NonUpgradeable.sol";
+import {ERC7984Base} from "../ERC7984Base.sol";
 
 /**
  * @dev A wrapper contract built on top of {ERC7984} that allows wrapping an `ERC20` token
@@ -111,8 +112,8 @@ abstract contract ERC20ToERC7984Wrapper is ERC7984, IERC20ToERC7984Wrapper, IERC
 
     // ============ View Functions ============
 
-    /// @inheritdoc ERC7984
-    function decimals() public view virtual override(IERC7984, ERC7984) returns (uint8) {
+    /// @inheritdoc ERC7984Base
+    function decimals() public view virtual override(IERC7984, ERC7984Base) returns (uint8) {
         return _decimals;
     }
 
@@ -124,7 +125,7 @@ abstract contract ERC20ToERC7984Wrapper is ERC7984, IERC20ToERC7984Wrapper, IERC
     /// @inheritdoc IERC165
     function supportsInterface(
         bytes4 interfaceId
-    ) public view virtual override(IERC165, ERC7984) returns (bool) {
+    ) public view virtual override(IERC165, ERC7984Base) returns (bool) {
         return
             interfaceId == type(IERC20ToERC7984Wrapper).interfaceId ||
             interfaceId == type(IERC1363Receiver).interfaceId ||
@@ -154,7 +155,7 @@ abstract contract ERC20ToERC7984Wrapper is ERC7984, IERC20ToERC7984Wrapper, IERC
         if (inferredTotalSupply() > maxTotalSupply()) revert ERC7984TotalSupplyOverflow();
     }
 
-    /// @inheritdoc ERC7984
+    /// @inheritdoc ERC7984Base
     function _update(
         address from,
         address to,

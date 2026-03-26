@@ -5,6 +5,7 @@ pragma solidity ^0.8.28;
 import {Nox, ebool, euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {IERC7984Receiver} from "../../interfaces/IERC7984Receiver.sol";
 import {ERC7984} from "../ERC7984NonUpgradeable.sol";
+import {ERC7984Base} from "../ERC7984Base.sol";
 
 /**
  * @dev Library that provides common {ERC7984} utility functions.
@@ -35,7 +36,7 @@ library ERC7984Utils {
             return retval;
         } catch (bytes memory reason) {
             if (reason.length == 0) {
-                revert ERC7984.ERC7984InvalidReceiver(to);
+                revert ERC7984Base.ERC7984InvalidReceiver(to);
             } else {
                 assembly ("memory-safe") {
                     revert(add(32, reason), mload(reason))

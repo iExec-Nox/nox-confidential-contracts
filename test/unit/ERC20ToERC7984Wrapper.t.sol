@@ -5,7 +5,7 @@ import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {IERC1363Receiver} from "@openzeppelin/contracts/interfaces/IERC1363Receiver.sol";
 import {IERC7984} from "../../contracts/interfaces/IERC7984.sol";
 import {IERC20ToERC7984Wrapper} from "../../contracts/interfaces/IERC20ToERC7984Wrapper.sol";
-import {ERC7984} from "../../contracts/token/ERC7984NonUpgradeable.sol";
+import {ERC7984Base} from "../../contracts/token/ERC7984Base.sol";
 import {ERC20ToERC7984Wrapper} from "../../contracts/token/extensions/ERC20ToERC7984Wrapper.sol";
 import {
     ERC20Mock,
@@ -175,7 +175,7 @@ contract ERC20ToERC7984WrapperTest is NoxMock {
 
         euint256 encAmount = euint256.wrap(MOCK_HANDLE);
         vm.expectRevert(
-            abi.encodeWithSelector(ERC7984.ERC7984InvalidReceiver.selector, address(0))
+            abi.encodeWithSelector(ERC7984Base.ERC7984InvalidReceiver.selector, address(0))
         );
         vm.prank(user1);
         wrapper.unwrap(user1, address(0), encAmount);
@@ -191,7 +191,7 @@ contract ERC20ToERC7984WrapperTest is NoxMock {
 
         euint256 encAmount = euint256.wrap(MOCK_HANDLE);
         vm.expectRevert(
-            abi.encodeWithSelector(ERC7984.ERC7984UnauthorizedSpender.selector, user1, operator)
+            abi.encodeWithSelector(ERC7984Base.ERC7984UnauthorizedSpender.selector, user1, operator)
         );
         vm.prank(operator);
         wrapper.unwrap(user1, user2, encAmount);
