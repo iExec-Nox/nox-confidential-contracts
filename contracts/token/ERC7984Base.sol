@@ -39,7 +39,7 @@ struct ERC7984Storage {
 }
 
 abstract contract ERC7984Base is IERC7984, ERC165 {
-    function _getERC7984Storage() internal pure virtual returns (ERC7984Storage storage $);
+    function _getERC7984Storage() internal view virtual returns (ERC7984Storage storage $);
 
     /// @dev The given receiver `receiver` is invalid for transfers.
     error ERC7984InvalidReceiver(address receiver);
