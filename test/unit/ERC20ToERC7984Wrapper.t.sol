@@ -5,7 +5,7 @@ import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {IERC1363Receiver} from "@openzeppelin/contracts/interfaces/IERC1363Receiver.sol";
 import {IERC7984} from "../../contracts/interfaces/IERC7984.sol";
 import {IERC20ToERC7984Wrapper} from "../../contracts/interfaces/IERC20ToERC7984Wrapper.sol";
-import {ERC7984} from "../../contracts/token/ERC7984.sol";
+import {ERC7984} from "../../contracts/token/ERC7984NonUpgradeable.sol";
 import {ERC20ToERC7984Wrapper} from "../../contracts/token/extensions/ERC20ToERC7984Wrapper.sol";
 import {
     ERC20Mock,

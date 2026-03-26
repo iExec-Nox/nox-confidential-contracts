@@ -7,7 +7,7 @@ import {
     externalEuint256,
     ebool
 } from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
-import {ERC7984} from "./ERC7984.sol";
+import {ERC7984} from "./ERC7984NonUpgradeable.sol";
 
 // Find a better name for this contract.
 /**

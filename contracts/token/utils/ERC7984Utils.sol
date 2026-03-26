@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 
 import {Nox, ebool, euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {IERC7984Receiver} from "../../interfaces/IERC7984Receiver.sol";
-import {ERC7984} from "../ERC7984.sol";
+import {ERC7984} from "../ERC7984NonUpgradeable.sol";
 
 /**
  * @dev Library that provides common {ERC7984} utility functions.

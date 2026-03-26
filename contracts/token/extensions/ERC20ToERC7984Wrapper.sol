@@ -14,7 +14,7 @@ import {
 } from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {IERC7984} from "../../interfaces/IERC7984.sol";
 import {IERC20ToERC7984Wrapper} from "../../interfaces/IERC20ToERC7984Wrapper.sol";
-import {ERC7984} from "../ERC7984.sol";
+import {ERC7984} from "../ERC7984NonUpgradeable.sol";
 
 /**
  * @dev A wrapper contract built on top of {ERC7984} that allows wrapping an `ERC20` token
