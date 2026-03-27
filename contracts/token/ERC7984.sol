@@ -53,6 +53,9 @@ abstract contract ERC7984 is IERC7984, ERC165 {
      */
     error ERC7984UnauthorizedUseOfEncryptedAmount(euint256 amount, address user);
 
+    /// @dev The holder `holder` is trying to send tokens but has a balance of 0.
+    error ERC7984ZeroBalance(address holder);
+
     constructor(string memory name_, string memory symbol_, string memory contractURI_) {
         _name = name_;
         _symbol = symbol_;
@@ -324,6 +327,7 @@ abstract contract ERC7984 is IERC7984, ERC165 {
         } else {
             // Transfer/burn: safely decrease sender balance.
             euint256 fromBalance = _balances[from];
+            require(Nox.isInitialized(fromBalance), ERC7984ZeroBalance(from));
             (success, ptr) = Nox.safeSub(fromBalance, amount);
             ptr = Nox.select(success, ptr, fromBalance);
             Nox.allowThis(ptr);

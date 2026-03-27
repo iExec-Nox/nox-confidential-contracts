@@ -148,6 +148,11 @@ contract ERC7984Test is NoxMock {
         token.burn(address(0), euint256.wrap(bytes32(uint256(1))));
     }
 
+    function test_RevertWhen_Burn_ZeroBalance() public {
+        vm.expectRevert(abi.encodeWithSelector(ERC7984.ERC7984ZeroBalance.selector, user1));
+        token.burn(user1, euint256.wrap(bytes32(uint256(1))));
+    }
+
     // ============ _transfer ============
 
     function test_RevertWhen_Transfer_InvalidSender() public {
@@ -188,6 +193,14 @@ contract ERC7984Test is NoxMock {
         );
         vm.prank(user1);
         token.confidentialTransfer(address(0), amount);
+    }
+
+    function test_RevertWhen_ConfidentialTransfer_ZeroBalance() public {
+        euint256 amount = euint256.wrap(bytes32(uint256(1)));
+        _mockIsAllowedCall(amount, user1, true);
+        vm.expectRevert(abi.encodeWithSelector(ERC7984.ERC7984ZeroBalance.selector, user1));
+        vm.prank(user1);
+        token.confidentialTransfer(user2, amount);
     }
 
     // ============ confidentialTransferFrom ============
@@ -240,6 +253,14 @@ contract ERC7984Test is NoxMock {
         );
         vm.prank(user1);
         token.confidentialTransferAndCall(address(0), amount, "");
+    }
+
+    function test_RevertWhen_ConfidentialTransferAndCall_ZeroBalance() public {
+        euint256 amount = euint256.wrap(bytes32(uint256(1)));
+        _mockIsAllowedCall(amount, user1, true);
+        vm.expectRevert(abi.encodeWithSelector(ERC7984.ERC7984ZeroBalance.selector, user1));
+        vm.prank(user1);
+        token.confidentialTransferAndCall(user2, amount, "");
     }
 
     function test_RevertWhen_ConfidentialTransferAndCall_ReceiverRevertsEmptyReason() public {
