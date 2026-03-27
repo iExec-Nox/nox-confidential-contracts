@@ -39,7 +39,12 @@ struct ERC7984Storage {
 }
 
 abstract contract ERC7984Base is IERC7984, ERC165 {
-    function _getERC7984Storage() internal view virtual returns (ERC7984Storage storage $);
+    function _getERC7984Storage() internal pure returns (ERC7984Storage storage $) {
+        assembly {
+            // keccak256(abi.encode(uint256(keccak256("nox.storage.ERC7984")) - 1)) & ~bytes32(uint256(0xff))
+            $.slot := 0xb419a3e8264d03c5da9315fb9617f069307274561d78c35809e10a1cfb715600
+        }
+    }
 
     /// @dev The given receiver `receiver` is invalid for transfers.
     error ERC7984InvalidReceiver(address receiver);
@@ -59,6 +64,17 @@ abstract contract ERC7984Base is IERC7984, ERC165 {
 
     /// @dev The holder `holder` is trying to send tokens but has a balance of 0.
     error ERC7984ZeroBalance(address holder);
+
+    function __ERC7984Base(
+        string memory name_,
+        string memory symbol_,
+        string memory contractURI_
+    ) internal {
+        ERC7984Storage storage $ = _getERC7984Storage();
+        $._name = name_;
+        $._symbol = symbol_;
+        $._contractURI = contractURI_;
+    }
 
     // ============ View Functions ============
 
