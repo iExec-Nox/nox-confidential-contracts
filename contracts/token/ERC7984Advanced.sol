@@ -41,45 +41,54 @@ abstract contract ERC7984Advanced is ERC7984 {
         address to,
         euint256 amount
     ) internal virtual override returns (euint256 transferred) {
+        ERC7984Storage storage $ = _getERC7984Storage();
         ebool success;
 
         // Mint
         if (from == address(0)) {
             euint256 newToBalance;
             euint256 newTotalSupply;
-            (success, newToBalance, newTotalSupply) = Nox.mint(_balances[to], amount, _totalSupply);
-            _balances[to] = newToBalance;
-            _totalSupply = newTotalSupply;
+            (success, newToBalance, newTotalSupply) = Nox.mint(
+                $._balances[to],
+                amount,
+                $._totalSupply
+            );
+            $._balances[to] = newToBalance;
+            $._totalSupply = newTotalSupply;
             Nox.allowThis(newToBalance);
             Nox.allow(newToBalance, to);
         }
 
         // Burn
         if (to == address(0)) {
-            euint256 fromBalance = _balances[from];
+            euint256 fromBalance = $._balances[from];
             require(Nox.isInitialized(fromBalance), ERC7984ZeroBalance(from));
             euint256 newFromBalance;
             euint256 newTotalSupply;
-            (success, newFromBalance, newTotalSupply) = Nox.burn(fromBalance, amount, _totalSupply);
-            _totalSupply = newTotalSupply;
-            _balances[from] = newFromBalance;
+            (success, newFromBalance, newTotalSupply) = Nox.burn(
+                fromBalance,
+                amount,
+                $._totalSupply
+            );
+            $._totalSupply = newTotalSupply;
+            $._balances[from] = newFromBalance;
             Nox.allowThis(newFromBalance);
             Nox.allow(newFromBalance, from);
         }
 
         // Transfer
         if (from != address(0) && to != address(0)) {
-            euint256 fromBalance = _balances[from];
+            euint256 fromBalance = $._balances[from];
             require(Nox.isInitialized(fromBalance), ERC7984ZeroBalance(from));
             euint256 newFromBalance;
             euint256 newToBalance;
             (success, newFromBalance, newToBalance) = Nox.transfer(
                 fromBalance,
-                _balances[to],
+                $._balances[to],
                 amount
             );
-            _balances[from] = newFromBalance;
-            _balances[to] = newToBalance;
+            $._balances[from] = newFromBalance;
+            $._balances[to] = newToBalance;
             Nox.allowThis(newFromBalance);
             Nox.allow(newFromBalance, from);
             Nox.allowThis(newToBalance);

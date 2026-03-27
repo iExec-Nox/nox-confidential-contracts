@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {IERC7984} from "../../contracts/interfaces/IERC7984.sol";
-import {ERC7984} from "../../contracts/token/ERC7984.sol";
+import {ERC7984Base} from "../../contracts/token/ERC7984Base.sol";
 import {ERC7984Mock, IERC7984TestableMock} from "../../contracts/mocks/token/ERC7984Mock.sol";
 import {ERC7984ReceiverMock} from "../../contracts/mocks/token/ERC7984ReceiverMock.sol";
 import {NoxMock} from "../utils/NoxMock.sol";
@@ -136,7 +136,7 @@ contract ERC7984Test is NoxMock {
 
     function test_RevertWhen_Mint_InvalidReceiver() public {
         vm.expectRevert(
-            abi.encodeWithSelector(ERC7984.ERC7984InvalidReceiver.selector, address(0))
+            abi.encodeWithSelector(ERC7984Base.ERC7984InvalidReceiver.selector, address(0))
         );
         token.mint(address(0), euint256.wrap(bytes32(uint256(1))));
     }
@@ -144,12 +144,14 @@ contract ERC7984Test is NoxMock {
     // ============ _burn ============
 
     function test_RevertWhen_Burn_InvalidSender() public {
-        vm.expectRevert(abi.encodeWithSelector(ERC7984.ERC7984InvalidSender.selector, address(0)));
+        vm.expectRevert(
+            abi.encodeWithSelector(ERC7984Base.ERC7984InvalidSender.selector, address(0))
+        );
         token.burn(address(0), euint256.wrap(bytes32(uint256(1))));
     }
 
     function test_RevertWhen_Burn_ZeroBalance() public {
-        vm.expectRevert(abi.encodeWithSelector(ERC7984.ERC7984ZeroBalance.selector, user1));
+        vm.expectRevert(abi.encodeWithSelector(ERC7984Base.ERC7984ZeroBalance.selector, user1));
         token.burn(user1, euint256.wrap(bytes32(uint256(1))));
     }
 
@@ -157,14 +159,16 @@ contract ERC7984Test is NoxMock {
 
     function test_RevertWhen_Transfer_InvalidSender() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
-        vm.expectRevert(abi.encodeWithSelector(ERC7984.ERC7984InvalidSender.selector, address(0)));
+        vm.expectRevert(
+            abi.encodeWithSelector(ERC7984Base.ERC7984InvalidSender.selector, address(0))
+        );
         token.transfer(address(0), user1, amount);
     }
 
     function test_RevertWhen_Transfer_InvalidReceiver() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
         vm.expectRevert(
-            abi.encodeWithSelector(ERC7984.ERC7984InvalidReceiver.selector, address(0))
+            abi.encodeWithSelector(ERC7984Base.ERC7984InvalidReceiver.selector, address(0))
         );
         token.transfer(user1, address(0), amount);
     }
@@ -176,7 +180,7 @@ contract ERC7984Test is NoxMock {
         _mockIsAllowedCall(amount, user1, false);
         vm.expectRevert(
             abi.encodeWithSelector(
-                ERC7984.ERC7984UnauthorizedUseOfEncryptedAmount.selector,
+                ERC7984Base.ERC7984UnauthorizedUseOfEncryptedAmount.selector,
                 amount,
                 user1
             )
@@ -189,7 +193,7 @@ contract ERC7984Test is NoxMock {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
         _mockIsAllowedCall(amount, user1, true);
         vm.expectRevert(
-            abi.encodeWithSelector(ERC7984.ERC7984InvalidReceiver.selector, address(0))
+            abi.encodeWithSelector(ERC7984Base.ERC7984InvalidReceiver.selector, address(0))
         );
         vm.prank(user1);
         token.confidentialTransfer(address(0), amount);
@@ -198,7 +202,7 @@ contract ERC7984Test is NoxMock {
     function test_RevertWhen_ConfidentialTransfer_ZeroBalance() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
         _mockIsAllowedCall(amount, user1, true);
-        vm.expectRevert(abi.encodeWithSelector(ERC7984.ERC7984ZeroBalance.selector, user1));
+        vm.expectRevert(abi.encodeWithSelector(ERC7984Base.ERC7984ZeroBalance.selector, user1));
         vm.prank(user1);
         token.confidentialTransfer(user2, amount);
     }
@@ -210,7 +214,7 @@ contract ERC7984Test is NoxMock {
         _mockIsAllowedCall(amount, operator, false);
         vm.expectRevert(
             abi.encodeWithSelector(
-                ERC7984.ERC7984UnauthorizedUseOfEncryptedAmount.selector,
+                ERC7984Base.ERC7984UnauthorizedUseOfEncryptedAmount.selector,
                 amount,
                 operator
             )
@@ -223,7 +227,7 @@ contract ERC7984Test is NoxMock {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
         _mockIsAllowedCall(amount, operator, true);
         vm.expectRevert(
-            abi.encodeWithSelector(ERC7984.ERC7984UnauthorizedSpender.selector, user1, operator)
+            abi.encodeWithSelector(ERC7984Base.ERC7984UnauthorizedSpender.selector, user1, operator)
         );
         vm.prank(operator);
         token.confidentialTransferFrom(user1, user2, amount);
@@ -236,7 +240,7 @@ contract ERC7984Test is NoxMock {
         _mockIsAllowedCall(amount, user1, false);
         vm.expectRevert(
             abi.encodeWithSelector(
-                ERC7984.ERC7984UnauthorizedUseOfEncryptedAmount.selector,
+                ERC7984Base.ERC7984UnauthorizedUseOfEncryptedAmount.selector,
                 amount,
                 user1
             )
@@ -249,7 +253,7 @@ contract ERC7984Test is NoxMock {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
         _mockIsAllowedCall(amount, user1, true);
         vm.expectRevert(
-            abi.encodeWithSelector(ERC7984.ERC7984InvalidReceiver.selector, address(0))
+            abi.encodeWithSelector(ERC7984Base.ERC7984InvalidReceiver.selector, address(0))
         );
         vm.prank(user1);
         token.confidentialTransferAndCall(address(0), amount, "");
@@ -258,7 +262,7 @@ contract ERC7984Test is NoxMock {
     function test_RevertWhen_ConfidentialTransferAndCall_ZeroBalance() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
         _mockIsAllowedCall(amount, user1, true);
-        vm.expectRevert(abi.encodeWithSelector(ERC7984.ERC7984ZeroBalance.selector, user1));
+        vm.expectRevert(abi.encodeWithSelector(ERC7984Base.ERC7984ZeroBalance.selector, user1));
         vm.prank(user1);
         token.confidentialTransferAndCall(user2, amount, "");
     }
@@ -270,7 +274,7 @@ contract ERC7984Test is NoxMock {
 
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
         vm.expectRevert(
-            abi.encodeWithSelector(ERC7984.ERC7984InvalidReceiver.selector, address(receiver))
+            abi.encodeWithSelector(ERC7984Base.ERC7984InvalidReceiver.selector, address(receiver))
         );
         vm.prank(user1);
         token.confidentialTransferAndCall(address(receiver), amount, "");
@@ -317,7 +321,7 @@ contract ERC7984Test is NoxMock {
         _mockIsAllowedCall(amount, operator, false);
         vm.expectRevert(
             abi.encodeWithSelector(
-                ERC7984.ERC7984UnauthorizedUseOfEncryptedAmount.selector,
+                ERC7984Base.ERC7984UnauthorizedUseOfEncryptedAmount.selector,
                 amount,
                 operator
             )
@@ -330,7 +334,7 @@ contract ERC7984Test is NoxMock {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
         _mockIsAllowedCall(amount, operator, true);
         vm.expectRevert(
-            abi.encodeWithSelector(ERC7984.ERC7984UnauthorizedSpender.selector, user1, operator)
+            abi.encodeWithSelector(ERC7984Base.ERC7984UnauthorizedSpender.selector, user1, operator)
         );
         vm.prank(operator);
         token.confidentialTransferFromAndCall(user1, user2, amount, "");
@@ -345,7 +349,7 @@ contract ERC7984Test is NoxMock {
 
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
         vm.expectRevert(
-            abi.encodeWithSelector(ERC7984.ERC7984InvalidReceiver.selector, address(receiver))
+            abi.encodeWithSelector(ERC7984Base.ERC7984InvalidReceiver.selector, address(receiver))
         );
         vm.prank(operator);
         token.confidentialTransferFromAndCall(user1, address(receiver), amount, "");
