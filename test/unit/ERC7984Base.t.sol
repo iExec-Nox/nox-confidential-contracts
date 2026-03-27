@@ -5,11 +5,11 @@ import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol"
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {IERC7984} from "../../contracts/interfaces/IERC7984.sol";
 import {ERC7984Base} from "../../contracts/token/ERC7984Base.sol";
-import {ERC7984Mock, IERC7984TestableMock} from "../../contracts/mocks/token/ERC7984Mock.sol";
+import {ERC7984BaseMock, IERC7984TestableMock} from "../../contracts/mocks/token/ERC7984Mock.sol";
 import {ERC7984ReceiverMock} from "../../contracts/mocks/token/ERC7984ReceiverMock.sol";
 import {NoxMock} from "../utils/NoxMock.sol";
 
-contract ERC7984Test is NoxMock {
+contract ERC7984BaseTest is NoxMock {
     IERC7984TestableMock internal token;
     ERC7984ReceiverMock internal receiver;
 
@@ -37,14 +37,14 @@ contract ERC7984Test is NoxMock {
      * of the same interface IERC7984.
      */
     function _getTokenInstance() internal virtual returns (IERC7984TestableMock) {
-        return new ERC7984Mock(NAME, SYMBOL, CONTRACT_URI);
+        return new ERC7984BaseMock(NAME, SYMBOL, CONTRACT_URI);
     }
 
     /**
      * Override to change tested contract name used in vm.label().
      */
     function _getTestedContractName() internal pure virtual returns (string memory) {
-        return "ERC7984";
+        return "ERC7984Base";
     }
 
     // ============ constructor ============

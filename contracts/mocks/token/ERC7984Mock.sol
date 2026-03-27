@@ -3,7 +3,7 @@ pragma solidity ^0.8.28;
 
 import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {IERC7984} from "../../interfaces/IERC7984.sol";
-import {ERC7984} from "../../token/ERC7984NonUpgradeable.sol";
+import {ERC7984Base} from "../../token/ERC7984Base.sol";
 import {ERC7984Advanced} from "../../token/ERC7984Advanced.sol";
 
 /**
@@ -18,12 +18,10 @@ interface IERC7984TestableMock is IERC7984 {
 /**
  * @dev Implementation of {ERC7984} for testing purposes.
  */
-contract ERC7984Mock is IERC7984TestableMock, ERC7984 {
-    constructor(
-        string memory name,
-        string memory symbol,
-        string memory contractURI
-    ) ERC7984(name, symbol, contractURI) {}
+contract ERC7984BaseMock is IERC7984TestableMock, ERC7984Base {
+    constructor(string memory name, string memory symbol, string memory contractURI) {
+        __ERC7984Base(name, symbol, contractURI);
+    }
 
     function mint(address to, euint256 amount) external override returns (euint256) {
         return _mint(to, amount);
