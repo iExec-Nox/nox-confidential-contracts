@@ -4,7 +4,6 @@ pragma solidity ^0.8.28;
 
 import {ERC7984Base, ERC7984Storage} from "./ERC7984Base.sol";
 
-// TODO change filename to ERC7984.sol
 abstract contract ERC7984 is ERC7984Base {
     constructor(string memory name, string memory symbol, string memory contractURI) {
         __ERC7984Base(name, symbol, contractURI);
