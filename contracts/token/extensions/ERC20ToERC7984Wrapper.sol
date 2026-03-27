@@ -14,7 +14,7 @@ import {
 } from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {IERC7984} from "../../interfaces/IERC7984.sol";
 import {IERC20ToERC7984Wrapper} from "../../interfaces/IERC20ToERC7984Wrapper.sol";
-import {ERC7984} from "../ERC7984NonUpgradeable.sol";
+import {ERC7984} from "../ERC7984.sol";
 import {ERC7984Base} from "../ERC7984Base.sol";
 
 /**
