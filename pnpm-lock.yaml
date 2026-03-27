@@ -692,10 +692,6 @@ packages:
     resolution: {integrity: sha512-jt2DW/aNFNwke7AUd+Z+e6pz39KO5rzdbbFCg2sGafS4mk13MI7Z8O5z9cADNn5lhGODIgLwug6TZO2ctf7kcw==}
     engines: {node: '>=6.0.0'}
 
-  fill-range@7.1.1:
-    resolution: {integrity: sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg==}
-    engines: {node: '>=8'}
-
   forge-std@https://codeload.github.com/foundry-rs/forge-std/tar.gz/0844d7e1fc5e60d77b68e469bff60265f236c398:
     resolution: {tarball: https://codeload.github.com/foundry-rs/forge-std/tar.gz/0844d7e1fc5e60d77b68e469bff60265f236c398}
     version: 1.15.0
@@ -1742,10 +1738,6 @@ snapshots:
   eventemitter3@5.0.4: {}
 
   fast-equals@5.4.0: {}
-
-  fill-range@7.1.1:
-    dependencies:
-      to-regex-range: 5.0.1
 
   forge-std@https://codeload.github.com/foundry-rs/forge-std/tar.gz/0844d7e1fc5e60d77b68e469bff60265f236c398: {}
 
