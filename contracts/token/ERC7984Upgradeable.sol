@@ -3,7 +3,7 @@
 pragma solidity ^0.8.28;
 
 import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
-import {ERC7984Base, ERC7984Storage} from "./ERC7984Base.sol";
+import {ERC7984Base} from "./ERC7984Base.sol";
 
 abstract contract ERC7984Upgradeable is ERC7984Base, Initializable {
     function __ERC7984_init(
@@ -11,6 +11,6 @@ abstract contract ERC7984Upgradeable is ERC7984Base, Initializable {
         string memory symbol,
         string memory contractURI
     ) internal onlyInitializing {
-        __ERC7984Base(name, symbol, contractURI);
+        __ERC7984Base_init(name, symbol, contractURI);
     }
 }

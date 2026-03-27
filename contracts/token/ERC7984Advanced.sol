@@ -8,7 +8,6 @@ import {
     ebool
 } from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {ERC7984} from "./ERC7984NonUpgradeable.sol";
-import {ERC7984Storage} from "./ERC7984Base.sol";
 
 // Find a better name for this contract.
 /**
