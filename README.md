@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 [![Docs](https://img.shields.io/badge/docs-nox--protocol-purple)](https://docs.iex.ec)
 [![Discord](https://img.shields.io/badge/chat-Discord-5865F2)](https://discord.com/invite/5TewNUnJHN)
-[![Tag](https://img.shields.io/github/v/tag/iExec-Nox/nox-confidential-contracts?label=ship)](https://github.com/iExec-Nox/nox-confidential-contracts/releases)
+[![Tag](https://img.shields.io/github/v/tag/iExec-Nox/nox-confidential-contracts?label=tag)](https://github.com/iExec-Nox/nox-confidential-contracts/releases)
 [![npm](https://img.shields.io/npm/v/@iexec-nox/nox-confidential-contracts?label=npm)](https://www.npmjs.com/package/@iexec-nox/nox-confidential-contracts)
 
 > A library of confidential smart contracts for the [Nox protocol](https://github.com/iExec-Nox/nox-protocol-contracts). Implementations of standards like [ERC-7984](https://eips.ethereum.org/EIPS/eip-7984), with extensions and utilities for building confidential applications.
