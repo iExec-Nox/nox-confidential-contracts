@@ -26,7 +26,6 @@ import {
  * - Transfers happen without revealing amounts
  * - Support for operators (delegated transfer capabilities with time bounds)
  * - Safe overflow/underflow handling for TEE operations
- *
  */
 abstract contract ERC7984Base is IERC7984, ERC165 {
     struct ERC7984Storage {
