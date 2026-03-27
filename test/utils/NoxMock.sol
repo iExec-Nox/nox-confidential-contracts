@@ -19,13 +19,18 @@ abstract contract NoxMock is Test {
     function _mockNoxPrimitives() internal {
         vm.mockCall(
             noxCompute,
-            abi.encodeWithSelector(INoxCompute.plaintextToEncrypted.selector),
+            abi.encodeWithSelector(INoxCompute.wrapAsPublicHandle.selector),
             abi.encode(MOCK_HANDLE)
         );
         vm.mockCall(
             noxCompute,
             abi.encodeWithSelector(INoxCompute.select.selector),
             abi.encode(MOCK_HANDLE)
+        );
+        vm.mockCall(
+            noxCompute,
+            abi.encodeWithSelector(INoxCompute.safeAdd.selector),
+            abi.encode(MOCK_HANDLE, MOCK_HANDLE)
         );
         vm.mockCall(
             noxCompute,
