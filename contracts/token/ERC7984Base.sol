@@ -65,6 +65,10 @@ abstract contract ERC7984Base is IERC7984, ERC165 {
     /// @dev The holder `holder` is trying to send tokens but has a balance of 0.
     error ERC7984ZeroBalance(address holder);
 
+    /**
+     * @dev Initializes the contract by setting a `name`, `symbol`, and `contractURI`.
+     * Should be used in inheriting contract's constructor or initializer function.
+     */
     function __ERC7984Base(
         string memory name_,
         string memory symbol_,
