@@ -36,7 +36,7 @@
 
 - Node.js >= 24 (see `.nvmrc`)
 - pnpm >= 10 (see `packageManager` in `package.json`)
-- Foundry (`forge`) for Solidity tests
+- Hardhat >= 3
 
 ## Getting Started
 
@@ -67,17 +67,15 @@ pnpm run coverage
 ## Configuration notes
 
 - Solidity compiler version is pinned in [`.solc.json`](.solc.json).
-- The EVM target is set to `osaka` in [`hardhat.config.ts`](hardhat.config.ts).
 - Depends on [`@iexec-nox/nox-protocol-contracts`](https://github.com/iExec-Nox/nox-protocol-contracts) for Nox SDK and protocol interfaces.
 
 ## Related Repositories
 
-| Repository                                                                      | Description                                         |
-| ------------------------------------------------------------------------------- | --------------------------------------------------- |
-| [nox-protocol-contracts](https://github.com/iExec-Nox/nox-protocol-contracts)   | Core Nox protocol contracts (NoxCompute, SDK)       |
-| [nox-handle-sdk](https://github.com/iExec-Nox/nox-handle-sdk)                   | TypeScript SDK for handle encryption/decryption     |
-| [nox-offchain-deployment](https://github.com/iExec-Nox/nox-offchain-deployment) | Off-chain services (gateway, KMS, runner, ingestor) |
-| [encrypted-types](https://github.com/iExec-Nox/encrypted-types)                 | Solidity types for encrypted values                 |
+| Repository                                                                    | Description                                     |
+| ----------------------------------------------------------------------------- | ----------------------------------------------- |
+| [nox-protocol-contracts](https://github.com/iExec-Nox/nox-protocol-contracts) | Core Nox protocol contracts (NoxCompute, SDK)   |
+| [nox-handle-sdk](https://github.com/iExec-Nox/nox-handle-sdk)                 | TypeScript SDK for handle encryption/decryption |
+| [encrypted-types](https://github.com/iExec-Nox/encrypted-types)               | Solidity types for encrypted values             |
 
 ## Contributing
 
