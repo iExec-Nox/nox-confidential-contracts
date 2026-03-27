@@ -26,19 +26,17 @@ import {
  * - Transfers happen without revealing amounts
  * - Support for operators (delegated transfer capabilities with time bounds)
  * - Safe overflow/underflow handling for TEE operations
- *
  */
-
-struct ERC7984Storage {
-    mapping(address holder => euint256) _balances;
-    mapping(address holder => mapping(address spender => uint48 until)) _operators;
-    euint256 _totalSupply;
-    string _name;
-    string _symbol;
-    string _contractURI;
-}
-
 abstract contract ERC7984Base is IERC7984, ERC165 {
+    struct ERC7984Storage {
+        mapping(address holder => euint256) _balances;
+        mapping(address holder => mapping(address spender => uint48 until)) _operators;
+        euint256 _totalSupply;
+        string _name;
+        string _symbol;
+        string _contractURI;
+    }
+
     function _getERC7984Storage() internal pure returns (ERC7984Storage storage $) {
         assembly {
             // keccak256(abi.encode(uint256(keccak256("nox.storage.ERC7984")) - 1)) & ~bytes32(uint256(0xff))
@@ -69,7 +67,7 @@ abstract contract ERC7984Base is IERC7984, ERC165 {
      * @dev Initializes the contract by setting a `name`, `symbol`, and `contractURI`.
      * Should be used in inheriting contract's constructor or initializer function.
      */
-    function __ERC7984Base(
+    function __ERC7984Base_init(
         string memory name_,
         string memory symbol_,
         string memory contractURI_
@@ -346,14 +344,8 @@ abstract contract ERC7984Base is IERC7984, ERC165 {
 
         if (from == address(0)) {
             // Mint: safely increase total supply.
-            if (!Nox.isInitialized($._totalSupply)) {
-                // totalSupply is 0: no addition needed, amount becomes the new supply.
-                success = Nox.toEbool(true);
-                ptr = amount;
-            } else {
-                (success, ptr) = Nox.safeAdd($._totalSupply, amount);
-                ptr = Nox.select(success, ptr, $._totalSupply);
-            }
+            (success, ptr) = Nox.safeAdd($._totalSupply, amount);
+            ptr = Nox.select(success, ptr, $._totalSupply);
             Nox.allowThis(ptr);
             $._totalSupply = ptr;
         } else {
@@ -376,12 +368,7 @@ abstract contract ERC7984Base is IERC7984, ERC165 {
             $._totalSupply = ptr;
         } else {
             // Mint/transfer: increase recipient balance by actually transferred amount.
-            if (!Nox.isInitialized($._balances[to])) {
-                // balance is 0: no addition needed, transferred becomes the new balance.
-                ptr = transferred;
-            } else {
-                ptr = Nox.add($._balances[to], transferred);
-            }
+            ptr = Nox.add($._balances[to], transferred);
             Nox.allowThis(ptr);
             Nox.allow(ptr, to);
             $._balances[to] = ptr;
