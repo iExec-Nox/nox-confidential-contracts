@@ -29,6 +29,11 @@ abstract contract NoxMock is Test {
         );
         vm.mockCall(
             noxCompute,
+            abi.encodeWithSelector(INoxCompute.safeAdd.selector),
+            abi.encode(MOCK_HANDLE, MOCK_HANDLE)
+        );
+        vm.mockCall(
+            noxCompute,
             abi.encodeWithSelector(INoxCompute.safeSub.selector),
             abi.encode(MOCK_HANDLE, MOCK_HANDLE)
         );
