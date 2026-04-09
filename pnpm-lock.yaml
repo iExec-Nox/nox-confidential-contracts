@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@iexec-nox/nox-protocol-contracts':
-        specifier: 0.1.0-beta.9
-        version: 0.1.0-beta.9
+        specifier: 0.1.0
+        version: 0.1.0
       '@openzeppelin/contracts':
         specifier: ^5.6.1
         version: 5.6.1
@@ -289,8 +289,8 @@ packages:
     resolution: {integrity: sha512-vBZP4NlzfOlerQTnba4aqZoMhE/a9HY7HRqoOPaETQcSQuWEIyZMHGfVu6w9wGtGK5fED5qRs2DteVCjOH60sA==}
     engines: {node: '>=14'}
 
-  '@iexec-nox/nox-protocol-contracts@0.1.0-beta.9':
-    resolution: {integrity: sha512-LECeGLcjh0xFrAPNG0j7vCOKIOTjUbsZF4CEYSnQg4v6NVI+mdJpvuFDY7aWuKG1/nQdZt1hWEs1yv1QVokbXA==}
+  '@iexec-nox/nox-protocol-contracts@0.1.0':
+    resolution: {integrity: sha512-sQ/yCpOXjUE2X5YmCmPKNLYfU00xTZSTI+yewVHOVZTdGA35QOPzOBg2Q8Qm++KLdPwc8FC0efc2jHqxMR83bg==}
 
   '@jest/schemas@29.6.3':
     resolution: {integrity: sha512-mo5j5X+jIZmJQveBKeS/clAueipV7KgiX1vMgCxam1RNYiqE1w62n0/tJJnHtjW8ZHcQco5gY85jA3mi0L+nSA==}
@@ -1261,7 +1261,7 @@ snapshots:
 
   '@fastify/busboy@2.1.1': {}
 
-  '@iexec-nox/nox-protocol-contracts@0.1.0-beta.9':
+  '@iexec-nox/nox-protocol-contracts@0.1.0':
     dependencies:
       '@openzeppelin/contracts': 5.6.1
       '@openzeppelin/contracts-upgradeable': 5.6.1(@openzeppelin/contracts@5.6.1)
