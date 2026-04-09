@@ -9,7 +9,7 @@ importers:
   .:
     dependencies:
       '@iexec-nox/nox-protocol-contracts':
-        specifier: 0.1.0
+        specifier: ^0.1.0
         version: 0.1.0
       '@openzeppelin/contracts':
         specifier: ^5.6.1
