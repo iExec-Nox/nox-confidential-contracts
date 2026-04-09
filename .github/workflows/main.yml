@@ -1,4 +1,4 @@
-name: Nox Contracts CI
+name: Nox Confidential Contracts CI
 
 on:
   push:
