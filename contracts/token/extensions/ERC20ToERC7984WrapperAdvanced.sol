@@ -10,7 +10,7 @@ import {ERC20ToERC7984Wrapper} from "./ERC20ToERC7984Wrapper.sol";
 
 /**
  * @dev Implementation of {ERC20ToERC7984Wrapper} using advanced Nox primitives.
- * @dev See {ERC20ToERC7984Wrapper}.
+ * See {ERC20ToERC7984Wrapper}.
  */
 abstract contract ERC20ToERC7984WrapperAdvanced is ERC20ToERC7984Wrapper, ERC7984Advanced {
     constructor(IERC20 underlying) ERC20ToERC7984Wrapper(underlying) {}
