@@ -10,10 +10,9 @@ import {
 import {ERC7984Base} from "./ERC7984Base.sol";
 
 /**
- * @dev Reference implementation for {ERC7984} using advanced Nox primitives.
- * @dev See {ERC7984}.
+ * @dev Reference implementation for {ERC7984} using "advanced" Nox primitives.
  */
-abstract contract ERC7984BaseAdvanced is ERC7984Base {
+abstract contract ERC7984AdvancedPrimitives is ERC7984Base {
     /**
      * @dev Transfers `amount` from `from` to `to`, updating balances and total supply.
      * All customizations to transfers, mints, and burns should be done by overriding this function.
