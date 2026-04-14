@@ -3,7 +3,7 @@
 pragma solidity ^0.8.28;
 
 import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
-import {ERC7984BasicPrimitives} from "./ERC7984BasicPrimitives.sol";
+import {ERC7984BasicPrimitives} from "./base/ERC7984BasicPrimitives.sol";
 
 abstract contract ERC7984Upgradeable is ERC7984BasicPrimitives, Initializable {
     function __ERC7984_init(

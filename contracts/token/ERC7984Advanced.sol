@@ -1,13 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {
-    Nox,
-    euint256,
-    externalEuint256,
-    ebool
-} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
-import {ERC7984AdvancedPrimitives} from "./ERC7984AdvancedPrimitives.sol";
+import {ERC7984AdvancedPrimitives} from "./base/ERC7984AdvancedPrimitives.sol";
 
 // TODO Find a better name for this contract.
 /**

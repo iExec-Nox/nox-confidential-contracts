@@ -4,8 +4,8 @@ pragma solidity ^0.8.28;
 
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import {IERC7984} from "../interfaces/IERC7984.sol";
-import {ERC7984Utils} from "./utils/ERC7984Utils.sol";
+import {IERC7984} from "../../interfaces/IERC7984.sol";
+import {ERC7984Utils} from "../utils/ERC7984Utils.sol";
 import {
     Nox,
     euint256,
