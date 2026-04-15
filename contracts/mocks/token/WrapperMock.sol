@@ -5,8 +5,6 @@ import {IERC1363Receiver} from "@openzeppelin/contracts/interfaces/IERC1363Recei
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
 import {IERC20ToERC7984Wrapper} from "../../interfaces/IERC20ToERC7984Wrapper.sol";
-import {ERC7984Advanced} from "../../token/ERC7984Advanced.sol";
-import {ERC7984} from "../../token/ERC7984.sol";
 import {ERC20ToERC7984Wrapper} from "../../token/extensions/ERC20ToERC7984Wrapper.sol";
 import {ERC20ToERC7984WrapperAdvanced} from "../../token/extensions/ERC20ToERC7984WrapperAdvanced.sol";
 
