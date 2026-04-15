@@ -5,14 +5,22 @@ import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol"
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {IERC7984} from "../../contracts/interfaces/IERC7984.sol";
 import {ERC7984Base} from "../../contracts/token/ERC7984Base.sol";
-import {ERC7984Mock, IERC7984TestableMock} from "../../contracts/mocks/token/ERC7984Mock.sol";
 import {ERC7984ReceiverMock} from "../../contracts/mocks/token/ERC7984ReceiverMock.sol";
 import {NoxMock} from "../utils/NoxMock.sol";
+
+/**
+ * @dev Common interface for all ERC7984 test implementations (basic, advanced).
+ */
+interface TokenMock is IERC7984 {
+    function mint(address to, euint256 amount) external returns (euint256);
+    function burn(address from, euint256 amount) external returns (euint256);
+    function transfer(address from, address to, euint256 amount) external returns (euint256);
+}
 
 // TODO Prevent tests in this contract from running since they are already
 // running in derived test contracts.
 abstract contract ERC7984CommonTest is NoxMock {
-    IERC7984TestableMock internal token;
+    TokenMock internal token;
     ERC7984ReceiverMock internal receiver;
 
     address internal user1 = makeAddr("user1");
@@ -33,7 +41,7 @@ abstract contract ERC7984CommonTest is NoxMock {
         vm.label(operator, "operator");
     }
 
-    function _getTokenInstance() internal virtual returns (IERC7984TestableMock);
+    function _getTokenInstance() internal virtual returns (TokenMock);
 
     function _getTestedContractName() internal pure virtual returns (string memory);
 
