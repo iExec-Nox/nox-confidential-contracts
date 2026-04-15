@@ -324,6 +324,8 @@ abstract contract ERC7984Base is IERC7984, ERC165 {
      * @dev Inheriting contracts must implement this function to handle transfers/mint/burn logic.
      * @dev Inheriting contracts can choose to implement this function using `_updateWithAdvancedPrimitives`
      * or `_updateWithBasicPrimitives`, or implement a completely custom logic.
+     * @dev Putting both implementations in this base contract hugely simplifies inheritance in derived
+     * contracts. The disadvantage is a bit of unused code but we consider it worth it in this context.
      * @param from The from address
      * @param to The to address
      * @param amount The encrypted amount
