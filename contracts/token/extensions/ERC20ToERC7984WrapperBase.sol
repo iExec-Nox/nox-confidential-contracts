@@ -208,4 +208,44 @@ abstract contract ERC20ToERC7984WrapperBase is
         if (success && encodedDecimals.length == 32) return abi.decode(encodedDecimals, (uint8));
         return _fallbackUnderlyingDecimals();
     }
+
+    // ============ ERC7984Base overrides ============
+
+    /**
+     * Inheriting contracts must implement this function to choose which implementation
+     * to use (basic or advanced primitives).
+     */
+    function _update(
+        address from,
+        address to,
+        euint256 amount
+    ) internal virtual override returns (euint256 transferred);
+
+    /**
+     * @dev Overrides parent function to check the total supply when minting.
+     */
+    function _updateWithBasicPrimitives(
+        address from,
+        address to,
+        euint256 amount
+    ) internal virtual override returns (euint256 transferred) {
+        if (from == address(0)) {
+            _checkConfidentialTotalSupply();
+        }
+        transferred = super._updateWithBasicPrimitives(from, to, amount);
+    }
+
+    /**
+     * @dev Overrides parent function to check the total supply when minting.
+     */
+    function _updateWithAdvancedPrimitives(
+        address from,
+        address to,
+        euint256 amount
+    ) internal virtual override returns (euint256 transferred) {
+        if (from == address(0)) {
+            _checkConfidentialTotalSupply();
+        }
+        transferred = super._updateWithAdvancedPrimitives(from, to, amount);
+    }
 }
