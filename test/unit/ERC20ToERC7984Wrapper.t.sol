@@ -7,6 +7,7 @@ import {IERC7984} from "../../contracts/interfaces/IERC7984.sol";
 import {IERC20ToERC7984Wrapper} from "../../contracts/interfaces/IERC20ToERC7984Wrapper.sol";
 import {ERC7984Base} from "../../contracts/token/ERC7984Base.sol";
 import {ERC20ToERC7984Wrapper} from "../../contracts/token/extensions/ERC20ToERC7984Wrapper.sol";
+import {ERC20ToERC7984WrapperBase} from "../../contracts/token/extensions/ERC20ToERC7984WrapperBase.sol";
 import {
     ERC20Mock,
     ERC20ToERC7984WrapperMock,
@@ -134,7 +135,10 @@ contract ERC20ToERC7984WrapperTest is NoxMock {
 
     function test_RevertWhen_OnTransferReceived_UnauthorizedCaller() public {
         vm.expectRevert(
-            abi.encodeWithSelector(ERC20ToERC7984Wrapper.ERC7984UnauthorizedCaller.selector, user1)
+            abi.encodeWithSelector(
+                ERC20ToERC7984WrapperBase.ERC7984UnauthorizedCaller.selector,
+                user1
+            )
         );
         vm.prank(user1);
         wrapper.onTransferReceived(user1, user1, 100e6, "");
@@ -220,7 +224,7 @@ contract ERC20ToERC7984WrapperTest is NoxMock {
 
         vm.expectRevert(
             abi.encodeWithSelector(
-                ERC20ToERC7984Wrapper.InvalidUnwrapRequest.selector,
+                ERC20ToERC7984WrapperBase.InvalidUnwrapRequest.selector,
                 invalidRequestId
             )
         );

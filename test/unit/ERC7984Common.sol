@@ -124,6 +124,19 @@ abstract contract ERC7984CommonTest is NoxMock {
 
     // ============ _mint ============
 
+    function test_Mint() public {
+        _mockNoxPrimitives();
+        assertEq(euint256.unwrap(token.confidentialTotalSupply()), bytes32(0));
+        assertEq(euint256.unwrap(token.confidentialBalanceOf(user1)), bytes32(0));
+
+        _assertUsedPrimitivesForMint();
+        token.mint(user1, euint256.wrap(MOCK_HANDLE));
+        assertEq(euint256.unwrap(token.confidentialBalanceOf(user1)), MOCK_HANDLE);
+        assertEq(euint256.unwrap(token.confidentialTotalSupply()), MOCK_HANDLE);
+    }
+
+    function _assertUsedPrimitivesForMint() internal virtual;
+
     function test_RevertWhen_Mint_InvalidReceiver() public {
         vm.expectRevert(
             abi.encodeWithSelector(ERC7984Base.ERC7984InvalidReceiver.selector, address(0))
@@ -132,6 +145,20 @@ abstract contract ERC7984CommonTest is NoxMock {
     }
 
     // ============ _burn ============
+
+    function test_Burn() public {
+        _mockNoxPrimitives();
+        assertEq(euint256.unwrap(token.confidentialTotalSupply()), bytes32(0));
+        assertEq(euint256.unwrap(token.confidentialBalanceOf(user1)), bytes32(0));
+        token.mint(user1, euint256.wrap(MOCK_HANDLE));
+
+        _assertUsedPrimitivesForBurn();
+        token.burn(user1, euint256.wrap(MOCK_HANDLE));
+        assertEq(euint256.unwrap(token.confidentialBalanceOf(user1)), MOCK_HANDLE);
+        assertEq(euint256.unwrap(token.confidentialTotalSupply()), MOCK_HANDLE);
+    }
+
+    function _assertUsedPrimitivesForBurn() internal virtual;
 
     function test_RevertWhen_Burn_InvalidSender() public {
         vm.expectRevert(
@@ -146,6 +173,20 @@ abstract contract ERC7984CommonTest is NoxMock {
     }
 
     // ============ _transfer ============
+
+    function test_Transfer() public {
+        _mockNoxPrimitives();
+        assertEq(euint256.unwrap(token.confidentialTotalSupply()), bytes32(0));
+        assertEq(euint256.unwrap(token.confidentialBalanceOf(user1)), bytes32(0));
+        token.mint(user1, euint256.wrap(MOCK_HANDLE));
+
+        _assertUsedPrimitivesForTransfer();
+        token.transfer(user1, user2, euint256.wrap(MOCK_HANDLE));
+        assertEq(euint256.unwrap(token.confidentialBalanceOf(user1)), MOCK_HANDLE);
+        assertEq(euint256.unwrap(token.confidentialTotalSupply()), MOCK_HANDLE);
+    }
+
+    function _assertUsedPrimitivesForTransfer() internal virtual;
 
     function test_RevertWhen_Transfer_InvalidSender() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));

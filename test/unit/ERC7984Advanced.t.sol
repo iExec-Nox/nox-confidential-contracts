@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
+import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
+import {INoxCompute} from "@iexec-nox/nox-protocol-contracts/contracts/interfaces/INoxCompute.sol";
 import {
     ERC7984AdvancedMock,
     IERC7984TestableMock
@@ -17,8 +19,15 @@ contract ERC7984AdvancedTest is ERC7984CommonTest {
         return "ERC7984Advanced";
     }
 
-    // function test_ShouldUseAdvancedPrimitives() public {
+    function _assertUsedPrimitivesForMint() internal virtual override {
+        vm.expectCall(noxCompute, abi.encodeWithSelector(INoxCompute.mint.selector));
+    }
 
-    //     assertEq(token.getPrimitiveType(), 2);
-    // }
+    function _assertUsedPrimitivesForBurn() internal virtual override {
+        vm.expectCall(noxCompute, abi.encodeWithSelector(INoxCompute.burn.selector));
+    }
+
+    function _assertUsedPrimitivesForTransfer() internal virtual override {
+        vm.expectCall(noxCompute, abi.encodeWithSelector(INoxCompute.transfer.selector));
+    }
 }
