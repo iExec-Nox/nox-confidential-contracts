@@ -9,7 +9,9 @@ import {ERC7984Mock, IERC7984TestableMock} from "../../contracts/mocks/token/ERC
 import {ERC7984ReceiverMock} from "../../contracts/mocks/token/ERC7984ReceiverMock.sol";
 import {NoxMock} from "../utils/NoxMock.sol";
 
-contract ERC7984CommonTest is NoxMock {
+// TODO Prevent tests in this contract from running since they are already
+// running in derived test contracts.
+abstract contract ERC7984CommonTest is NoxMock {
     IERC7984TestableMock internal token;
     ERC7984ReceiverMock internal receiver;
 
@@ -31,21 +33,9 @@ contract ERC7984CommonTest is NoxMock {
         vm.label(operator, "operator");
     }
 
-    /**
-     * @dev Returns an instance of the token contract to be tested.
-     * Can be overridden by derived test contracts to test different implementations
-     * of the same interface IERC7984.
-     */
-    function _getTokenInstance() internal virtual returns (IERC7984TestableMock) {
-        return new ERC7984Mock(NAME, SYMBOL, CONTRACT_URI);
-    }
+    function _getTokenInstance() internal virtual returns (IERC7984TestableMock);
 
-    /**
-     * Override to change tested contract name used in vm.label().
-     */
-    function _getTestedContractName() internal pure virtual returns (string memory) {
-        return "ERC7984";
-    }
+    function _getTestedContractName() internal pure virtual returns (string memory);
 
     // ============ constructor ============
 
@@ -175,6 +165,19 @@ contract ERC7984CommonTest is NoxMock {
 
     // ============ confidentialTransfer ============
 
+    function test_ConfidentialTransfer() public {
+        _mockNoxPrimitives();
+        token.mint(user1, euint256.wrap(MOCK_HANDLE));
+
+        euint256 amount = euint256.wrap(bytes32(uint256(1)));
+        vm.expectEmit(true, true, false, true);
+        emit IERC7984.ConfidentialTransfer(user1, user2, amount);
+        vm.prank(user1);
+        token.confidentialTransfer(user2, amount);
+    }
+
+    // TODO test_ConfidentialTransfer with encryptedAmount and proof
+
     function test_RevertWhen_ConfidentialTransfer_UnauthorizedUseOfEncryptedAmount() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
         _mockIsAllowedCall(amount, user1, false);
@@ -209,6 +212,19 @@ contract ERC7984CommonTest is NoxMock {
 
     // ============ confidentialTransferFrom ============
 
+    function test_ConfidentialTransferFrom() public {
+        _mockNoxPrimitives();
+        token.mint(user1, euint256.wrap(MOCK_HANDLE));
+
+        euint256 amount = euint256.wrap(bytes32(uint256(1)));
+        vm.expectEmit(true, true, false, true);
+        emit IERC7984.ConfidentialTransfer(user1, user2, amount);
+        vm.prank(user1);
+        token.confidentialTransferFrom(user1, user2, amount);
+    }
+
+    // TODO test_ConfidentialTransferFrom with encryptedAmount and proof
+
     function test_RevertWhen_ConfidentialTransferFrom_UnauthorizedUseOfEncryptedAmount() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
         _mockIsAllowedCall(amount, operator, false);
@@ -240,6 +256,8 @@ contract ERC7984CommonTest is NoxMock {
         token.mint(user1, euint256.wrap(MOCK_HANDLE));
 
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
+        vm.expectEmit(true, true, false, true);
+        emit IERC7984.ConfidentialTransfer(user1, user2, amount);
         vm.prank(user1);
         // user2 is an EOA: checkOnTransferReceived skips the callback and returns toEbool(true).
         token.confidentialTransferAndCall(user2, amount, "");
@@ -250,11 +268,15 @@ contract ERC7984CommonTest is NoxMock {
         token.mint(user1, euint256.wrap(MOCK_HANDLE));
 
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
+        vm.expectEmit(true, true, false, true);
+        emit IERC7984.ConfidentialTransfer(user1, address(receiver), amount);
         vm.expectEmit(address(receiver));
         emit ERC7984ReceiverMock.ConfidentialTransferCallback(true);
         vm.prank(user1);
         token.confidentialTransferAndCall(address(receiver), amount, abi.encode(true));
     }
+
+    // TODO test_ConfidentialTransferAndCall with encryptedAmount and proof
 
     function test_RevertWhen_ConfidentialTransferAndCall_UnauthorizedUseOfEncryptedAmount() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
@@ -314,6 +336,23 @@ contract ERC7984CommonTest is NoxMock {
 
     // ============ confidentialTransferFromAndCall ============
 
+    function test_ConfidentialTransferFromAndCall_ToValidReceiver() public {
+        _mockNoxPrimitives();
+        vm.prank(user1);
+        token.setOperator(operator, uint48(block.timestamp + 1 days));
+        token.mint(user1, euint256.wrap(MOCK_HANDLE));
+
+        euint256 amount = euint256.wrap(bytes32(uint256(1)));
+        vm.expectEmit(true, true, false, true);
+        emit IERC7984.ConfidentialTransfer(user1, address(receiver), amount);
+        vm.expectEmit(address(receiver));
+        emit ERC7984ReceiverMock.ConfidentialTransferCallback(true);
+        vm.prank(operator);
+        token.confidentialTransferFromAndCall(user1, address(receiver), amount, abi.encode(true));
+    }
+
+    // TODO test_ConfidentialTransferFromAndCall with encryptedAmount and proof
+
     function test_RevertWhen_ConfidentialTransferFromAndCall_UnauthorizedUseOfEncryptedAmount()
         public
     {
@@ -353,18 +392,5 @@ contract ERC7984CommonTest is NoxMock {
         );
         vm.prank(operator);
         token.confidentialTransferFromAndCall(user1, address(receiver), amount, "");
-    }
-
-    function test_ConfidentialTransferFromAndCall_ToValidReceiver() public {
-        _mockNoxPrimitives();
-        vm.prank(user1);
-        token.setOperator(operator, uint48(block.timestamp + 1 days));
-        token.mint(user1, euint256.wrap(MOCK_HANDLE));
-
-        euint256 amount = euint256.wrap(bytes32(uint256(1)));
-        vm.expectEmit(address(receiver));
-        emit ERC7984ReceiverMock.ConfidentialTransferCallback(true);
-        vm.prank(operator);
-        token.confidentialTransferFromAndCall(user1, address(receiver), amount, abi.encode(true));
     }
 }
