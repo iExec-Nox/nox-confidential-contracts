@@ -4,7 +4,9 @@ pragma solidity ^0.8.28;
 import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {INoxCompute} from "@iexec-nox/nox-protocol-contracts/contracts/interfaces/INoxCompute.sol";
 import {ERC7984} from "../../contracts/token/ERC7984.sol";
-import {ERC7984CommonTest, TokenMock} from "./ERC7984Common.sol";
+import {ERC7984CommonTest} from "./ERC7984Common.sol";
+import {TokenMock} from "../../contracts/mocks/token/ERC7984Mock.sol";
+import {ERC7984Mock} from "../../contracts/mocks/token/ERC7984Mock.sol";
 
 contract ERC7984Test is ERC7984CommonTest {
     function _getTokenInstance() internal override returns (TokenMock) {
@@ -51,32 +53,5 @@ contract ERC7984Test is ERC7984CommonTest {
 
     function _expectSelectCall() private {
         vm.expectCall(noxCompute, abi.encodeWithSelector(INoxCompute.select.selector));
-    }
-}
-
-/**
- * @dev Mock implementation of {ERC7984}.
- */
-contract ERC7984Mock is TokenMock, ERC7984 {
-    constructor(
-        string memory name,
-        string memory symbol,
-        string memory contractURI
-    ) ERC7984(name, symbol, contractURI) {}
-
-    function mint(address to, euint256 amount) external override returns (euint256) {
-        return _mint(to, amount);
-    }
-
-    function burn(address from, euint256 amount) external override returns (euint256) {
-        return _burn(from, amount);
-    }
-
-    function transfer(
-        address from,
-        address to,
-        euint256 amount
-    ) external override returns (euint256) {
-        return _transfer(from, to, amount);
     }
 }
