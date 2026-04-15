@@ -9,7 +9,7 @@ import {ERC7984Mock, IERC7984TestableMock} from "../../contracts/mocks/token/ERC
 import {ERC7984ReceiverMock} from "../../contracts/mocks/token/ERC7984ReceiverMock.sol";
 import {NoxMock} from "../utils/NoxMock.sol";
 
-contract ERC7984Test is NoxMock {
+contract ERC7984CommonTest is NoxMock {
     IERC7984TestableMock internal token;
     ERC7984ReceiverMock internal receiver;
 
