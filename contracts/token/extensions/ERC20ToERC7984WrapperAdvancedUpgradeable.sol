@@ -16,7 +16,5 @@ abstract contract ERC20ToERC7984WrapperAdvancedUpgradeable is
     constructor(IERC20 underlying) ERC20ToERC7984WrapperAdvanced(underlying) {}
 
     // TODO check if this is required.
-    function __ERC20ToERC7984WrapperAdvancedUpgradeable_init(
-        IERC20 underlying
-    ) internal onlyInitializing {}
+    function __ERC20ToERC7984WrapperAdvancedUpgradeable_init() internal onlyInitializing {}
 }

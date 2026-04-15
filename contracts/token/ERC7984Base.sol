@@ -337,7 +337,7 @@ abstract contract ERC7984Base is IERC7984, ERC165 {
     ) internal virtual returns (euint256 transferred);
 
     /**
-     * @dev This function provides an implementatin of the `update` function using advanced primitives.
+     * @dev This function provides an implementation of the `update` function using advanced primitives.
      * @dev Transfers `amount` from `from` to `to`, updating balances and total supply.
      * All customizations to transfers, mints, and burns should be done by overriding this function.
      *
