@@ -111,7 +111,7 @@ contract ERC7984CommonTest is NoxMock {
         assertTrue(token.isOperator(user1, operator));
     }
 
-    function test_SetOperator_RevokeBySettingPastTimestamp() public {
+    function test_SetOperator_RevokedBySettingPastTimestamp() public {
         uint48 until = uint48(block.timestamp + 1 days);
         vm.prank(user1);
         token.setOperator(operator, until);
@@ -233,7 +233,28 @@ contract ERC7984CommonTest is NoxMock {
         token.confidentialTransferFrom(user1, user2, amount);
     }
 
-    // ============ confidentialTransferAndCall Tests ============
+    // ============ confidentialTransferAndCall ============
+
+    function test_ConfidentialTransferAndCall_ToEOA() public {
+        _mockNoxPrimitives();
+        token.mint(user1, euint256.wrap(MOCK_HANDLE));
+
+        euint256 amount = euint256.wrap(bytes32(uint256(1)));
+        vm.prank(user1);
+        // user2 is an EOA: checkOnTransferReceived skips the callback and returns toEbool(true).
+        token.confidentialTransferAndCall(user2, amount, "");
+    }
+
+    function test_ConfidentialTransferAndCall_ToValidReceiver() public {
+        _mockNoxPrimitives();
+        token.mint(user1, euint256.wrap(MOCK_HANDLE));
+
+        euint256 amount = euint256.wrap(bytes32(uint256(1)));
+        vm.expectEmit(address(receiver));
+        emit ERC7984ReceiverMock.ConfidentialTransferCallback(true);
+        vm.prank(user1);
+        token.confidentialTransferAndCall(address(receiver), amount, abi.encode(true));
+    }
 
     function test_RevertWhen_ConfidentialTransferAndCall_UnauthorizedUseOfEncryptedAmount() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
@@ -291,28 +312,7 @@ contract ERC7984CommonTest is NoxMock {
         token.confidentialTransferAndCall(address(receiver), amount, abi.encode(false));
     }
 
-    function test_ConfidentialTransferAndCall_ToEOA() public {
-        _mockNoxPrimitives();
-        token.mint(user1, euint256.wrap(MOCK_HANDLE));
-
-        euint256 amount = euint256.wrap(bytes32(uint256(1)));
-        vm.prank(user1);
-        // user2 is an EOA: checkOnTransferReceived skips the callback and returns toEbool(true).
-        token.confidentialTransferAndCall(user2, amount, "");
-    }
-
-    function test_ConfidentialTransferAndCall_ToValidReceiver() public {
-        _mockNoxPrimitives();
-        token.mint(user1, euint256.wrap(MOCK_HANDLE));
-
-        euint256 amount = euint256.wrap(bytes32(uint256(1)));
-        vm.expectEmit(address(receiver));
-        emit ERC7984ReceiverMock.ConfidentialTransferCallback(true);
-        vm.prank(user1);
-        token.confidentialTransferAndCall(address(receiver), amount, abi.encode(true));
-    }
-
-    // ============ confidentialTransferFromAndCall Tests ============
+    // ============ confidentialTransferFromAndCall ============
 
     function test_RevertWhen_ConfidentialTransferFromAndCall_UnauthorizedUseOfEncryptedAmount()
         public
