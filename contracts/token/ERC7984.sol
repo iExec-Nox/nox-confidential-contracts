@@ -3,7 +3,7 @@
 pragma solidity ^0.8.28;
 
 import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
-import {ERC7984Base} from "./base/ERC7984Base.sol";
+import {ERC7984Base} from "./ERC7984Base.sol";
 
 /**
  * @dev Reference implementation for {IERC7984} using basic Nox primitives.

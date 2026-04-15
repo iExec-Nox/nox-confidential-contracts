@@ -39,7 +39,7 @@ contract ERC20ToERC7984WrapperMock is IERC20ToERC7984WrapperTestableMock, ERC20T
         string memory symbol,
         string memory contractURI,
         IERC20 underlying
-    ) ERC7984(name, symbol, contractURI) ERC20ToERC7984Wrapper(underlying) {}
+    ) ERC20ToERC7984Wrapper(underlying) {}
 }
 
 /// @dev Implementation of {ERC20ToERC7984WrapperAdvanced} for testing.
@@ -52,5 +52,5 @@ contract ERC20ToERC7984WrapperAdvancedMock is
         string memory symbol,
         string memory contractURI,
         IERC20 underlying
-    ) ERC7984Advanced(name, symbol, contractURI) ERC20ToERC7984WrapperAdvanced(underlying) {}
+    ) ERC20ToERC7984WrapperAdvanced(underlying) {}
 }
