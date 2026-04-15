@@ -173,16 +173,6 @@ abstract contract ERC20ToERC7984WrapperBase is
         if (inferredTotalSupply() > maxTotalSupply()) revert ERC7984TotalSupplyOverflow();
     }
 
-    // /// @inheritdoc ERC7984Base
-    // function _update(
-    //     address from,
-    //     address to,
-    //     euint256 amount
-    // ) internal virtual override returns (euint256) {
-    //     if (from == address(0)) _checkConfidentialTotalSupply();
-    //     return super._update(from, to, amount);
-    // }
-
     /// @dev Burns `amount` from `from`, marks the result publicly decryptable, and records the unwrap request.
     function _unwrap(
         address from,

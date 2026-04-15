@@ -1,15 +1,23 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {ERC7984AdvancedPrimitives} from "./base/ERC7984AdvancedPrimitives.sol";
+import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
+import {ERC7984Base} from "./base/ERC7984Base.sol";
 
-// TODO Find a better name for this contract.
 /**
- * @dev Reference implementation for {ERC7984} using advanced Nox primitives.
- * @dev See {ERC7984}.
+ * @dev Reference implementation for {IERC7984} using advanced Nox primitives.
  */
-abstract contract ERC7984Advanced is ERC7984AdvancedPrimitives {
+abstract contract ERC7984Advanced is ERC7984Base {
     constructor(string memory name, string memory symbol, string memory contractURI) {
         __ERC7984Base_init(name, symbol, contractURI);
+    }
+
+    /// @inheritdoc ERC7984Base
+    function _update(
+        address from,
+        address to,
+        euint256 amount
+    ) internal virtual override returns (euint256 transferred) {
+        transferred = _updateWithAdvancedPrimitives(from, to, amount);
     }
 }
