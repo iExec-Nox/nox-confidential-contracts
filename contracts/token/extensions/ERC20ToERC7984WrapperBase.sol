@@ -224,7 +224,7 @@ abstract contract ERC20ToERC7984WrapperBase is
     /**
      * @dev Overrides parent function to check the total supply when minting.
      */
-    function _updateWithBasicPrimitives(
+    function _updateWithRawPrimitives(
         address from,
         address to,
         euint256 amount
@@ -232,13 +232,13 @@ abstract contract ERC20ToERC7984WrapperBase is
         if (from == address(0)) {
             _checkConfidentialTotalSupply();
         }
-        transferred = super._updateWithBasicPrimitives(from, to, amount);
+        transferred = super._updateWithRawPrimitives(from, to, amount);
     }
 
     /**
      * @dev Overrides parent function to check the total supply when minting.
      */
-    function _updateWithAdvancedPrimitives(
+    function _updateWithOptimizedPrimitives(
         address from,
         address to,
         euint256 amount
@@ -246,6 +246,6 @@ abstract contract ERC20ToERC7984WrapperBase is
         if (from == address(0)) {
             _checkConfidentialTotalSupply();
         }
-        transferred = super._updateWithAdvancedPrimitives(from, to, amount);
+        transferred = super._updateWithOptimizedPrimitives(from, to, amount);
     }
 }

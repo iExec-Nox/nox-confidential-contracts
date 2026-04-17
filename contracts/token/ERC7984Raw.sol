@@ -19,6 +19,6 @@ abstract contract ERC7984Raw is ERC7984Base {
         address to,
         euint256 amount
     ) internal virtual override returns (euint256 transferred) {
-        transferred = _updateWithBasicPrimitives(from, to, amount);
+        transferred = _updateWithRawPrimitives(from, to, amount);
     }
 }

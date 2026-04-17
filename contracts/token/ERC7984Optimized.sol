@@ -5,9 +5,9 @@ import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol"
 import {ERC7984Base} from "./ERC7984Base.sol";
 
 /**
- * @dev Reference implementation for {IERC7984} using advanced Nox primitives.
+ * @dev Reference implementation for {IERC7984} using optimized Nox primitives.
  */
-abstract contract ERC7984Advanced is ERC7984Base {
+abstract contract ERC7984Optimized is ERC7984Base {
     constructor(string memory name, string memory symbol, string memory contractURI) {
         __ERC7984Base_init(name, symbol, contractURI);
     }
@@ -18,6 +18,6 @@ abstract contract ERC7984Advanced is ERC7984Base {
         address to,
         euint256 amount
     ) internal virtual override returns (euint256 transferred) {
-        transferred = _updateWithAdvancedPrimitives(from, to, amount);
+        transferred = _updateWithOptimizedPrimitives(from, to, amount);
     }
 }

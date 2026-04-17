@@ -6,9 +6,9 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
 import {IERC20ToERC7984Wrapper} from "../../interfaces/IERC20ToERC7984Wrapper.sol";
 import {ERC20ToERC7984WrapperRaw} from "../../token/extensions/ERC20ToERC7984WrapperRaw.sol";
-import {ERC20ToERC7984WrapperAdvanced} from "../../token/extensions/ERC20ToERC7984WrapperAdvanced.sol";
+import {ERC20ToERC7984WrapperOptimized} from "../../token/extensions/ERC20ToERC7984WrapperOptimized.sol";
 import {ERC20ToERC7984WrapperRawUpgradeable} from "../../token/extensions/ERC20ToERC7984WrapperRawUpgradeable.sol";
-import {ERC20ToERC7984WrapperAdvancedUpgradeable} from "../../token/extensions/ERC20ToERC7984WrapperAdvancedUpgradeable.sol";
+import {ERC20ToERC7984WrapperOptimizedUpgradeable} from "../../token/extensions/ERC20ToERC7984WrapperOptimizedUpgradeable.sol";
 
 /// @dev Minimal ERC-20 with a public mint function, used for testing.
 contract ERC20Mock is ERC20 {
@@ -28,7 +28,7 @@ contract ERC20Mock is ERC20 {
 }
 
 /**
- * @dev Common interface for all {ERC20ToERC7984Wrapper} test implementations (basic, advanced).
+ * @dev Common interface for all {ERC20ToERC7984Wrapper} test implementations (raw, optimized).
  */
 interface WrapperMock is IERC20ToERC7984Wrapper, IERC1363Receiver {}
 
@@ -42,14 +42,14 @@ contract ERC20ToERC7984WrapperRawMock is WrapperMock, ERC20ToERC7984WrapperRaw {
     ) ERC20ToERC7984WrapperRaw(name, symbol, contractURI, underlying) {}
 }
 
-/// @dev Implementation of {ERC20ToERC7984WrapperAdvanced} for testing.
-contract ERC20ToERC7984WrapperAdvancedMock is WrapperMock, ERC20ToERC7984WrapperAdvanced {
+/// @dev Implementation of {ERC20ToERC7984WrapperOptimized} for testing.
+contract ERC20ToERC7984WrapperOptimizedMock is WrapperMock, ERC20ToERC7984WrapperOptimized {
     constructor(
         string memory name,
         string memory symbol,
         string memory contractURI,
         IERC20 underlying
-    ) ERC20ToERC7984WrapperAdvanced(name, symbol, contractURI, underlying) {}
+    ) ERC20ToERC7984WrapperOptimized(name, symbol, contractURI, underlying) {}
 }
 
 /// @dev Implementation of {ERC20ToERC7984WrapperRawUpgradeable} for testing.
@@ -71,13 +71,13 @@ contract ERC20ToERC7984WrapperRawUpgradeableMock is
     }
 }
 
-/// @dev Implementation of {ERC20ToERC7984WrapperAdvancedUpgradeable} for testing.
-contract ERC20ToERC7984WrapperAdvancedUpgradeableMock is
+/// @dev Implementation of {ERC20ToERC7984WrapperOptimizedUpgradeable} for testing.
+contract ERC20ToERC7984WrapperOptimizedUpgradeableMock is
     WrapperMock,
-    ERC20ToERC7984WrapperAdvancedUpgradeable
+    ERC20ToERC7984WrapperOptimizedUpgradeable
 {
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor(IERC20 underlying) ERC20ToERC7984WrapperAdvancedUpgradeable(underlying) {
+    constructor(IERC20 underlying) ERC20ToERC7984WrapperOptimizedUpgradeable(underlying) {
         _disableInitializers();
     }
 
@@ -86,6 +86,6 @@ contract ERC20ToERC7984WrapperAdvancedUpgradeableMock is
         string memory symbol,
         string memory contractURI
     ) external initializer {
-        __ERC20ToERC7984WrapperAdvancedUpgradeable_init(name, symbol, contractURI);
+        __ERC20ToERC7984WrapperOptimizedUpgradeable_init(name, symbol, contractURI);
     }
 }

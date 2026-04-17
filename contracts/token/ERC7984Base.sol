@@ -15,7 +15,7 @@ import {
 
 /**
  * @dev Partial implementation of {IERC7984}.
- * @dev Use {ERC7984Raw} or {ERC7984Advanced} for a complete implementation.
+ * @dev Use {ERC7984Raw} or {ERC7984Optimized} for a complete implementation.
  *
  * This contract implements a fungible token where balances and transfers are encrypted using the Nox TEE,
  * providing confidentiality to users. Token amounts are stored as encrypted, unsigned integers (`euint256`)
@@ -322,8 +322,8 @@ abstract contract ERC7984Base is IERC7984, ERC165 {
 
     /**
      * @dev Inheriting contracts must implement this function to handle transfers/mint/burn logic.
-     * @dev Inheriting contracts can choose to implement this function using `_updateWithAdvancedPrimitives`
-     * or `_updateWithBasicPrimitives`, or implement a completely custom logic.
+     * @dev Inheriting contracts can choose to implement this function using `_updateWithOptimizedPrimitives`
+     * or `_updateWithRawPrimitives`, or implement completely custom logic.
      * @dev Putting both implementations in this base contract hugely simplifies inheritance in derived
      * contracts. The disadvantage is a bit of unused code but we consider it worth it in this context.
      * @param from The from address
@@ -337,7 +337,7 @@ abstract contract ERC7984Base is IERC7984, ERC165 {
     ) internal virtual returns (euint256 transferred);
 
     /**
-     * @dev This function provides an implementation of the `update` function using advanced primitives.
+     * @dev This function provides an implementation of the `update` function using optimized primitives.
      * @dev Transfers `amount` from `from` to `to`, updating balances and total supply.
      * All customizations to transfers, mints, and burns should be done by overriding this function.
      *
@@ -352,7 +352,7 @@ abstract contract ERC7984Base is IERC7984, ERC165 {
      *
      * Emits a {ConfidentialTransfer} event.
      */
-    function _updateWithAdvancedPrimitives(
+    function _updateWithOptimizedPrimitives(
         address from,
         address to,
         euint256 amount
@@ -416,7 +416,7 @@ abstract contract ERC7984Base is IERC7984, ERC165 {
     }
 
     /**
-     * @dev this function provides an implementation of the `update` function using basic primitives.
+     * @dev This function provides an implementation of the `update` function using raw primitives.
      * @dev Transfers `amount` from `from` to `to`, updating balances and total supply.
      * All customizations to transfers, mints, and burns should be done by overriding this function.
      *
@@ -429,7 +429,7 @@ abstract contract ERC7984Base is IERC7984, ERC165 {
      *
      * Emits a {ConfidentialTransfer} event.
      */
-    function _updateWithBasicPrimitives(
+    function _updateWithRawPrimitives(
         address from,
         address to,
         euint256 amount

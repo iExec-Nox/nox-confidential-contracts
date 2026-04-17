@@ -23,6 +23,6 @@ abstract contract ERC20ToERC7984WrapperRaw is ERC20ToERC7984WrapperBase {
         address to,
         euint256 amount
     ) internal virtual override returns (euint256 transferred) {
-        transferred = _updateWithBasicPrimitives(from, to, amount);
+        transferred = _updateWithRawPrimitives(from, to, amount);
     }
 }

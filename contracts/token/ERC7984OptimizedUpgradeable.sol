@@ -7,10 +7,10 @@ import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol"
 import {ERC7984Base} from "./ERC7984Base.sol";
 
 /**
- * @notice Upgradeable version of {ERC7984Advanced}.
+ * @notice Upgradeable version of {ERC7984Optimized}.
  */
-abstract contract ERC7984AdvancedUpgradeable is ERC7984Base, Initializable {
-    function __ERC7984Advanced_init(
+abstract contract ERC7984OptimizedUpgradeable is ERC7984Base, Initializable {
+    function __ERC7984Optimized_init(
         string memory name,
         string memory symbol,
         string memory contractURI
@@ -24,6 +24,6 @@ abstract contract ERC7984AdvancedUpgradeable is ERC7984Base, Initializable {
         address to,
         euint256 amount
     ) internal virtual override returns (euint256 transferred) {
-        transferred = _updateWithAdvancedPrimitives(from, to, amount);
+        transferred = _updateWithOptimizedPrimitives(from, to, amount);
     }
 }
