@@ -4,8 +4,8 @@ pragma solidity ^0.8.28;
 import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import {INoxCompute} from "@iexec-nox/nox-protocol-contracts/contracts/interfaces/INoxCompute.sol";
-import {ERC7984CommonTest} from "../utils/ERC7984Common.sol";
-import {TokenMock, ERC7984UpgradeableMock} from "../../contracts/mocks/token/TokenMock.sol";
+import {ERC7984CommonTest} from "../../utils/ERC7984Common.sol";
+import {TokenMock, ERC7984UpgradeableMock} from "../../../contracts/mocks/token/TokenMock.sol";
 
 contract ERC7984UpgradeableTest is ERC7984CommonTest {
     function _getTestedContractInstance() internal override returns (TokenMock) {
