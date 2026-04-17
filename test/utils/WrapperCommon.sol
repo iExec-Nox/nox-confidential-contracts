@@ -45,7 +45,12 @@ abstract contract WrapperCommonTest is NoxMock {
 
     function _getTestedContractName() internal pure virtual returns (string memory);
 
-    function _newWrapperFor(ERC20Mock underlying_) internal virtual returns (WrapperMock);
+    function _newWrapperInstance(
+        string memory name,
+        string memory symbol,
+        string memory uri,
+        ERC20Mock underlying_
+    ) internal virtual returns (WrapperMock);
 
     // ============ constructor ============
 
@@ -55,7 +60,7 @@ abstract contract WrapperCommonTest is NoxMock {
     }
 
     function test_Constructor_18DecimalUnderlying() public {
-        WrapperMock w18 = _newWrapperFor(underlying18);
+        WrapperMock w18 = _newWrapperInstance("W18", "W18", URI, underlying18);
         assertEq(w18.decimals(), 18);
     }
 
@@ -96,7 +101,7 @@ abstract contract WrapperCommonTest is NoxMock {
 
     function test_Wrap_18DecimalUnderlying() public {
         _mockNoxPrimitives();
-        WrapperMock w18 = _newWrapperFor(underlying18);
+        WrapperMock w18 = _newWrapperInstance("W18", "W18", URI, underlying18);
         uint256 amount = 1.5e18;
 
         underlying18.mint(user1, amount);

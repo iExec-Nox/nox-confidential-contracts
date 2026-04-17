@@ -12,14 +12,19 @@ import {
 
 contract ERC20ToERC7984WrapperAdvancedUpgradeableTest is WrapperCommonTest {
     function _getTestedContractInstance() internal override returns (WrapperMock) {
-        return _newWrapperFor(underlying6);
+        return _newWrapperInstance(NAME, SYMBOL, URI, underlying6);
     }
 
     function _getTestedContractName() internal pure override returns (string memory) {
         return "ERC20ToERC7984WrapperAdvancedUpgradeable";
     }
 
-    function _newWrapperFor(ERC20Mock underlying_) internal override returns (WrapperMock) {
+    function _newWrapperInstance(
+        string memory,
+        string memory,
+        string memory,
+        ERC20Mock underlying_
+    ) internal override returns (WrapperMock) {
         ERC20ToERC7984WrapperAdvancedUpgradeableMock impl = new ERC20ToERC7984WrapperAdvancedUpgradeableMock(
                 underlying_
             );

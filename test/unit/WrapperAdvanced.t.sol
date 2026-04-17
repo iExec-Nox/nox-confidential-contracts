@@ -10,14 +10,19 @@ import {WrapperCommonTest} from "../utils/WrapperCommon.sol";
 
 contract ERC20ToERC7984WrapperAdvancedTest is WrapperCommonTest {
     function _getTestedContractInstance() internal override returns (WrapperMock) {
-        return _newWrapperFor(underlying6);
+        return _newWrapperInstance(NAME, SYMBOL, URI, underlying6);
     }
 
     function _getTestedContractName() internal pure override returns (string memory) {
         return "ERC20ToERC7984WrapperAdvanced";
     }
 
-    function _newWrapperFor(ERC20Mock underlying_) internal override returns (WrapperMock) {
-        return new ERC20ToERC7984WrapperAdvancedMock(NAME, SYMBOL, URI, underlying_);
+    function _newWrapperInstance(
+        string memory name,
+        string memory symbol,
+        string memory uri,
+        ERC20Mock underlying_
+    ) internal override returns (WrapperMock) {
+        return new ERC20ToERC7984WrapperAdvancedMock(name, symbol, uri, underlying_);
     }
 }
