@@ -37,9 +37,9 @@ abstract contract ERC7984CommonTest is NoxMock {
 
     function _getTestedContractName() internal pure virtual returns (string memory);
 
-    // ============ constructor ============
+    // ============ constructor or initialize ============
 
-    function test_Constructor() public view {
+    function test_ConstructorOrInitialize() public view {
         assertEq(token.name(), NAME);
         assertEq(token.symbol(), SYMBOL);
         assertEq(token.decimals(), 18);

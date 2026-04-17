@@ -15,6 +15,8 @@ contract ERC7984AdvancedTest is ERC7984CommonTest {
         return "ERC7984Advanced";
     }
 
+    // ============ primitives assertions ============
+
     function _assertUsedPrimitivesForMint() internal virtual override {
         vm.expectCall(noxCompute, abi.encodeWithSelector(INoxCompute.mint.selector));
     }

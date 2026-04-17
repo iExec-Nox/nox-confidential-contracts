@@ -16,6 +16,8 @@ contract ERC7984Test is ERC7984CommonTest {
         return "ERC7984Mock";
     }
 
+    // ============ primitives assertions ============
+
     function _assertUsedPrimitivesForMint() internal override {
         _expectSafeAddCall();
         _expectAddCall();

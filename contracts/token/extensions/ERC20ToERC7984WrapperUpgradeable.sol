@@ -12,6 +12,5 @@ abstract contract ERC20ToERC7984WrapperUpgradeable is ERC20ToERC7984Wrapper, Ini
     // The constructor is required here to initialize immutable variables.
     constructor(IERC20 underlying) ERC20ToERC7984Wrapper(underlying) {}
 
-    // TODO check if this is required.
     function __ERC20ToERC7984WrapperUpgradeable_init() internal onlyInitializing {}
 }
