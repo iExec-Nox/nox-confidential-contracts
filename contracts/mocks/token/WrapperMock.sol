@@ -54,7 +54,10 @@ contract ERC20ToERC7984WrapperAdvancedMock is WrapperMock, ERC20ToERC7984Wrapper
 
 /// @dev Implementation of {ERC20ToERC7984WrapperUpgradeable} for testing.
 contract ERC20ToERC7984WrapperUpgradeableMock is WrapperMock, ERC20ToERC7984WrapperUpgradeable {
-    constructor(IERC20 underlying) ERC20ToERC7984WrapperUpgradeable(underlying) {}
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor(IERC20 underlying) ERC20ToERC7984WrapperUpgradeable(underlying) {
+        _disableInitializers();
+    }
 
     function initialize(
         string memory name,
@@ -70,7 +73,10 @@ contract ERC20ToERC7984WrapperAdvancedUpgradeableMock is
     WrapperMock,
     ERC20ToERC7984WrapperAdvancedUpgradeable
 {
-    constructor(IERC20 underlying) ERC20ToERC7984WrapperAdvancedUpgradeable(underlying) {}
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor(IERC20 underlying) ERC20ToERC7984WrapperAdvancedUpgradeable(underlying) {
+        _disableInitializers();
+    }
 
     function initialize(
         string memory name,

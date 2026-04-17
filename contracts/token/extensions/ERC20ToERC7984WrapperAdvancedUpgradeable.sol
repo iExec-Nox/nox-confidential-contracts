@@ -14,10 +14,7 @@ abstract contract ERC20ToERC7984WrapperAdvancedUpgradeable is
     Initializable
 {
     // The constructor is required here to initialize immutable variables.
-    /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor(IERC20 underlying) ERC20ToERC7984WrapperBase(underlying) {
-        _disableInitializers();
-    }
+    constructor(IERC20 underlying) ERC20ToERC7984WrapperBase(underlying) {}
 
     function __ERC20ToERC7984WrapperAdvancedUpgradeable_init(
         string memory name,

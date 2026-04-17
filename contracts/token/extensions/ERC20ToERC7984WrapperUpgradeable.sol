@@ -11,10 +11,7 @@ import {ERC20ToERC7984WrapperBase} from "./ERC20ToERC7984WrapperBase.sol";
  */
 abstract contract ERC20ToERC7984WrapperUpgradeable is ERC20ToERC7984WrapperBase, Initializable {
     // The constructor is required here to initialize immutable variables.
-    /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor(IERC20 underlying) ERC20ToERC7984WrapperBase(underlying) {
-        _disableInitializers();
-    }
+    constructor(IERC20 underlying) ERC20ToERC7984WrapperBase(underlying) {}
 
     function __ERC20ToERC7984WrapperUpgradeable_init(
         string memory name,
