@@ -8,7 +8,7 @@ import {
 import {WrapperCommonTest} from "./WrapperCommon.sol";
 
 contract ERC20ToERC7984WrapperAdvancedTest is WrapperCommonTest {
-    function _getTokenInstance() internal override returns (WrapperMock) {
+    function _getTestedContractInstance() internal override returns (WrapperMock) {
         return new ERC20ToERC7984WrapperAdvancedMock(NAME, SYMBOL, URI, underlying6);
     }
 

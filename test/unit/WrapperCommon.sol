@@ -34,7 +34,7 @@ abstract contract WrapperCommonTest is NoxMock {
     function setUp() public {
         underlying6 = new ERC20Mock("USD Coin", "USDC", 6);
         underlying18 = new ERC20Mock("DAI Stablecoin", "DAI", 18);
-        wrapper = _getTokenInstance();
+        wrapper = _getTestedContractInstance();
 
         vm.label(address(underlying6), "USDC");
         vm.label(address(underlying18), "DAI");
@@ -45,7 +45,7 @@ abstract contract WrapperCommonTest is NoxMock {
         vm.label(noxCompute, "NoxCompute");
     }
 
-    function _getTokenInstance() internal virtual returns (WrapperMock);
+    function _getTestedContractInstance() internal virtual returns (WrapperMock);
 
     function _getTestedContractName() internal pure virtual returns (string memory);
 

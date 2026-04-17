@@ -24,7 +24,7 @@ abstract contract ERC7984CommonTest is NoxMock {
     string internal constant CONTRACT_URI = "https://example.com/contract.json";
 
     function setUp() public {
-        token = _getTokenInstance();
+        token = _getTestedContractInstance();
         receiver = new ERC7984ReceiverMock();
         vm.label(address(token), _getTestedContractName());
         vm.label(address(receiver), "ERC7984ReceiverMock");
@@ -33,7 +33,7 @@ abstract contract ERC7984CommonTest is NoxMock {
         vm.label(operator, "operator");
     }
 
-    function _getTokenInstance() internal virtual returns (TokenMock);
+    function _getTestedContractInstance() internal virtual returns (TokenMock);
 
     function _getTestedContractName() internal pure virtual returns (string memory);
 
