@@ -7,8 +7,8 @@ import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
 import {IERC20ToERC7984Wrapper} from "../../interfaces/IERC20ToERC7984Wrapper.sol";
 import {ERC20ToERC7984WrapperRaw} from "../../token/extensions/ERC20ToERC7984WrapperRaw.sol";
 import {ERC20ToERC7984WrapperOptimized} from "../../token/extensions/ERC20ToERC7984WrapperOptimized.sol";
-import {ERC20ToERC7984WrapperRawUpgradeable} from "../../token/extensions/ERC20ToERC7984WrapperRawUpgradeable.sol";
-import {ERC20ToERC7984WrapperOptimizedUpgradeable} from "../../token/extensions/ERC20ToERC7984WrapperOptimizedUpgradeable.sol";
+import {ERC20ToERC7984WrapperRawUpgradeable} from "../../upgradeable/ERC20ToERC7984WrapperRawUpgradeable.sol";
+import {ERC20ToERC7984WrapperOptimizedUpgradeable} from "../../upgradeable/ERC20ToERC7984WrapperOptimizedUpgradeable.sol";
 
 /// @dev Minimal ERC-20 with a public mint function, used for testing.
 contract ERC20Mock is ERC20 {

@@ -5,8 +5,8 @@ import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol"
 import {IERC7984} from "../../interfaces/IERC7984.sol";
 import {ERC7984Raw} from "../../token/ERC7984Raw.sol";
 import {ERC7984Optimized} from "../../token/ERC7984Optimized.sol";
-import {ERC7984RawUpgradeable} from "../../token/ERC7984RawUpgradeable.sol";
-import {ERC7984OptimizedUpgradeable} from "../../token/ERC7984OptimizedUpgradeable.sol";
+import {ERC7984RawUpgradeable} from "../../upgradeable/ERC7984RawUpgradeable.sol";
+import {ERC7984OptimizedUpgradeable} from "../../upgradeable/ERC7984OptimizedUpgradeable.sol";
 
 /**
  * @dev Common interface for all ERC7984 test implementations (raw, optimized).

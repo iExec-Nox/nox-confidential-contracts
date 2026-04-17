@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 
 import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
-import {ERC7984Base} from "./ERC7984Base.sol";
+import {ERC7984Base} from "../token/ERC7984Base.sol";
 
 /**
  * @notice Upgradeable version of {ERC7984Raw}.
