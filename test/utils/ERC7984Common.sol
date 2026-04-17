@@ -9,8 +9,7 @@ import {ERC7984ReceiverMock} from "../../contracts/mocks/token/ERC7984ReceiverMo
 import {TokenMock} from "../../contracts/mocks/token/TokenMock.sol";
 import {NoxMock} from "../utils/NoxMock.sol";
 
-// Not putting this file inside "unit" folder to avoir running it
-// as a test file.
+// TODO: fix test scope path to avoid running duplicate tests
 abstract contract ERC7984CommonTest is NoxMock {
     TokenMock internal token;
     ERC7984ReceiverMock internal receiver;

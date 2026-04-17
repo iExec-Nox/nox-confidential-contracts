@@ -12,8 +12,7 @@ import {ERC20Mock, WrapperMock} from "../../contracts/mocks/token/WrapperMock.so
 import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {NoxMock} from "../utils/NoxMock.sol";
 
-// Not putting this file inside "unit" folder to avoir running it
-// as a test file.
+// TODO: fix test scope path to avoid running duplicate tests
 abstract contract WrapperCommonTest is NoxMock {
     string internal constant NAME = "Wrapped Nox";
     string internal constant SYMBOL = "wNOX";
