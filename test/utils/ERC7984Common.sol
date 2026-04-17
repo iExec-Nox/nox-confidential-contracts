@@ -9,8 +9,6 @@ import {ERC7984ReceiverMock} from "../../contracts/mocks/token/ERC7984ReceiverMo
 import {TokenMock} from "../../contracts/mocks/token/TokenMock.sol";
 import {NoxMock} from "../utils/NoxMock.sol";
 
-// TODO Prevent tests in this contract from running since they are already
-// running in derived test contracts.
 abstract contract ERC7984CommonTest is NoxMock {
     TokenMock internal token;
     ERC7984ReceiverMock internal receiver;

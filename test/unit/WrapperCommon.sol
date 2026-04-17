@@ -16,8 +16,6 @@ import {
 import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {NoxMock} from "../utils/NoxMock.sol";
 
-// TODO Prevent tests in this contract from running since they are already
-// running in derived test contracts.
 abstract contract WrapperCommonTest is NoxMock {
     string internal constant NAME = "Wrapped Nox";
     string internal constant SYMBOL = "wNOX";
