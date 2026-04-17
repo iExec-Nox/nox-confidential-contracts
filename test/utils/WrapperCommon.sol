@@ -8,11 +8,7 @@ import {IERC20ToERC7984Wrapper} from "../../contracts/interfaces/IERC20ToERC7984
 import {ERC7984Base} from "../../contracts/token/ERC7984Base.sol";
 import {ERC20ToERC7984Wrapper} from "../../contracts/token/extensions/ERC20ToERC7984Wrapper.sol";
 import {ERC20ToERC7984WrapperBase} from "../../contracts/token/extensions/ERC20ToERC7984WrapperBase.sol";
-import {
-    ERC20Mock,
-    ERC20ToERC7984WrapperMock,
-    WrapperMock
-} from "../../contracts/mocks/token/WrapperMock.sol";
+import {ERC20Mock, WrapperMock} from "../../contracts/mocks/token/WrapperMock.sol";
 import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {NoxMock} from "../utils/NoxMock.sol";
 
@@ -49,6 +45,8 @@ abstract contract WrapperCommonTest is NoxMock {
 
     function _getTestedContractName() internal pure virtual returns (string memory);
 
+    function _newWrapperFor(ERC20Mock underlying_) internal virtual returns (WrapperMock);
+
     // ============ constructor ============
 
     function test_Constructor_6DecimalUnderlying() public view {
@@ -57,12 +55,7 @@ abstract contract WrapperCommonTest is NoxMock {
     }
 
     function test_Constructor_18DecimalUnderlying() public {
-        ERC20ToERC7984WrapperMock w18 = new ERC20ToERC7984WrapperMock(
-            "W18",
-            "w18",
-            "",
-            underlying18
-        );
+        WrapperMock w18 = _newWrapperFor(underlying18);
         assertEq(w18.decimals(), 18);
     }
 
@@ -103,12 +96,7 @@ abstract contract WrapperCommonTest is NoxMock {
 
     function test_Wrap_18DecimalUnderlying() public {
         _mockNoxPrimitives();
-        ERC20ToERC7984WrapperMock w18 = new ERC20ToERC7984WrapperMock(
-            "W18",
-            "w18",
-            "",
-            underlying18
-        );
+        WrapperMock w18 = _newWrapperFor(underlying18);
         uint256 amount = 1.5e18;
 
         underlying18.mint(user1, amount);
