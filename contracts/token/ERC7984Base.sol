@@ -15,7 +15,7 @@ import {
 
 /**
  * @dev Partial implementation of {IERC7984}.
- * @dev Use {ERC7984} or {ERC7984Advanced} for a complete implementation.
+ * @dev Use {ERC7984Raw} or {ERC7984Advanced} for a complete implementation.
  *
  * This contract implements a fungible token where balances and transfers are encrypted using the Nox TEE,
  * providing confidentiality to users. Token amounts are stored as encrypted, unsigned integers (`euint256`)

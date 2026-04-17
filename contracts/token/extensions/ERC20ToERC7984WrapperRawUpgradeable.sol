@@ -7,13 +7,13 @@ import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol"
 import {ERC20ToERC7984WrapperBase} from "./ERC20ToERC7984WrapperBase.sol";
 
 /**
- * @dev Upgradeable implementation of {ERC20ToERC7984Wrapper}.
+ * @dev Upgradeable implementation of {ERC20ToERC7984WrapperRaw}.
  */
-abstract contract ERC20ToERC7984WrapperUpgradeable is ERC20ToERC7984WrapperBase, Initializable {
+abstract contract ERC20ToERC7984WrapperRawUpgradeable is ERC20ToERC7984WrapperBase, Initializable {
     // The constructor is required here to initialize immutable variables.
     constructor(IERC20 underlying) ERC20ToERC7984WrapperBase(underlying) {}
 
-    function __ERC20ToERC7984WrapperUpgradeable_init(
+    function __ERC20ToERC7984WrapperRaw_init(
         string memory name,
         string memory symbol,
         string memory contractURI

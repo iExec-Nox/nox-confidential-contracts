@@ -6,9 +6,9 @@ import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol"
 import {ERC20ToERC7984WrapperBase} from "./ERC20ToERC7984WrapperBase.sol";
 
 /**
- * @dev Implementation of {IERC20ToERC7984Wrapper} using basic Nox primitives.
+ * @dev Implementation of {IERC20ToERC7984Wrapper} using raw Nox primitives.
  */
-abstract contract ERC20ToERC7984Wrapper is ERC20ToERC7984WrapperBase {
+abstract contract ERC20ToERC7984WrapperRaw is ERC20ToERC7984WrapperBase {
     constructor(
         string memory name,
         string memory symbol,

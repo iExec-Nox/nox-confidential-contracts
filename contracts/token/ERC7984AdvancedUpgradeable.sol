@@ -9,7 +9,7 @@ import {ERC7984Base} from "./ERC7984Base.sol";
 /**
  * @notice Upgradeable version of {ERC7984Advanced}.
  */
-abstract contract ERC7984UpgradeableAdvanced is ERC7984Base, Initializable {
+abstract contract ERC7984AdvancedUpgradeable is ERC7984Base, Initializable {
     function __ERC7984Advanced_init(
         string memory name,
         string memory symbol,
