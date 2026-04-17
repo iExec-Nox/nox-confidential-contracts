@@ -86,6 +86,6 @@ contract ERC20ToERC7984WrapperOptimizedUpgradeableMock is
         string memory symbol,
         string memory contractURI
     ) external initializer {
-        __ERC20ToERC7984WrapperOptimizedUpgradeable_init(name, symbol, contractURI);
+        __ERC20ToERC7984WrapperOptimized_init(name, symbol, contractURI);
     }
 }

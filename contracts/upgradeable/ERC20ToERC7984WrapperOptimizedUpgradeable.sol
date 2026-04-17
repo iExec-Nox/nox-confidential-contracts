@@ -16,7 +16,7 @@ abstract contract ERC20ToERC7984WrapperOptimizedUpgradeable is
     // The constructor is required here to initialize immutable variables.
     constructor(IERC20 underlying) ERC20ToERC7984WrapperBase(underlying) {}
 
-    function __ERC20ToERC7984WrapperOptimizedUpgradeable_init(
+    function __ERC20ToERC7984WrapperOptimized_init(
         string memory name,
         string memory symbol,
         string memory contractURI
