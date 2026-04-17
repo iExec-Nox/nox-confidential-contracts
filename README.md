@@ -29,7 +29,7 @@
 - **ERC7984**: a gas-efficient confidential fungible token standard ([ERC-7984](https://eips.ethereum.org/EIPS/eip-7984)) implementation.
 - **ERC7984Raw**: the same interface using less gas-efficient but more flexible raw Nox primitives.
 - **ERC20ToERC7984Wrapper**: wraps existing ERC-20 tokens into confidential ERC-7984 tokens.
-- **ERC20ToERC7984WrapperRaw**: raw-primitives-using variant of the wrapper.
+- **ERC20ToERC7984WrapperRaw**: wrapper variant using raw Nox primitives..
 - **ERC7984Utils**: shared utility library for confidential token operations.
 
 ## Prerequisites
