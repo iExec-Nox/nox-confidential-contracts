@@ -16,6 +16,8 @@ import {
 import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {NoxMock} from "../utils/NoxMock.sol";
 
+// Not putting this file inside "unit" folder to avoir running it
+// as a test file.
 abstract contract WrapperCommonTest is NoxMock {
     string internal constant NAME = "Wrapped Nox";
     string internal constant SYMBOL = "wNOX";
