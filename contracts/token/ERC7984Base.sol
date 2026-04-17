@@ -14,14 +14,14 @@ import {
 } from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 
 /**
- * @dev Reference implementation for {IERC7984}.
+ * @dev Partial implementation of {IERC7984}.
+ * @dev Use {ERC7984} or {ERC7984Advanced} for a complete implementation.
  *
  * This contract implements a fungible token where balances and transfers are encrypted using the Nox TEE,
  * providing confidentiality to users. Token amounts are stored as encrypted, unsigned integers (`euint256`)
  * that can only be decrypted by authorized parties.
  *
  * Key features:
- *
  * - All balances are encrypted
  * - Transfers happen without revealing amounts
  * - Support for operators (delegated transfer capabilities with time bounds)
@@ -321,6 +321,102 @@ abstract contract ERC7984Base is IERC7984, ERC165 {
     }
 
     /**
+     * @dev Inheriting contracts must implement this function to handle transfers/mint/burn logic.
+     * @dev Inheriting contracts can choose to implement this function using `_updateWithAdvancedPrimitives`
+     * or `_updateWithBasicPrimitives`, or implement a completely custom logic.
+     * @dev Putting both implementations in this base contract hugely simplifies inheritance in derived
+     * contracts. The disadvantage is a bit of unused code but we consider it worth it in this context.
+     * @param from The from address
+     * @param to The to address
+     * @param amount The encrypted amount
+     */
+    function _update(
+        address from,
+        address to,
+        euint256 amount
+    ) internal virtual returns (euint256 transferred);
+
+    /**
+     * @dev This function provides an implementation of the `update` function using advanced primitives.
+     * @dev Transfers `amount` from `from` to `to`, updating balances and total supply.
+     * All customizations to transfers, mints, and burns should be done by overriding this function.
+     *
+     * - `from == address(0)` → mint: {Nox.mint} updates recipient balance and total supply.
+     * - `to == address(0)` → burn: {Nox.burn} updates sender balance and total supply.
+     * - Both non-zero → transfer: {Nox.transfer} updates sender and recipient balances.
+     *
+     * For burn/transfer, the sender balance must be initialized.
+     *
+     * The actually transferred amount may be less than `amount` when the operation would overflow or underflow.
+     * In that case success is false (encrypted) and the transferred amount is encrypted 0.
+     *
+     * Emits a {ConfidentialTransfer} event.
+     */
+    function _updateWithAdvancedPrimitives(
+        address from,
+        address to,
+        euint256 amount
+    ) internal virtual returns (euint256 transferred) {
+        ERC7984Storage storage $ = _getERC7984Storage();
+        ebool success;
+
+        // Mint
+        if (from == address(0)) {
+            euint256 newToBalance;
+            euint256 newTotalSupply;
+            (success, newToBalance, newTotalSupply) = Nox.mint(
+                $._balances[to],
+                amount,
+                $._totalSupply
+            );
+            $._balances[to] = newToBalance;
+            $._totalSupply = newTotalSupply;
+            Nox.allowThis(newToBalance);
+            Nox.allow(newToBalance, to);
+        }
+
+        // Burn
+        if (to == address(0)) {
+            euint256 fromBalance = $._balances[from];
+            require(Nox.isInitialized(fromBalance), ERC7984ZeroBalance(from));
+            euint256 newFromBalance;
+            euint256 newTotalSupply;
+            (success, newFromBalance, newTotalSupply) = Nox.burn(
+                fromBalance,
+                amount,
+                $._totalSupply
+            );
+            $._totalSupply = newTotalSupply;
+            $._balances[from] = newFromBalance;
+            Nox.allowThis(newFromBalance);
+            Nox.allow(newFromBalance, from);
+        }
+
+        // Transfer
+        if (from != address(0) && to != address(0)) {
+            euint256 fromBalance = $._balances[from];
+            require(Nox.isInitialized(fromBalance), ERC7984ZeroBalance(from));
+            euint256 newFromBalance;
+            euint256 newToBalance;
+            (success, newFromBalance, newToBalance) = Nox.transfer(
+                fromBalance,
+                $._balances[to],
+                amount
+            );
+            $._balances[from] = newFromBalance;
+            $._balances[to] = newToBalance;
+            Nox.allowThis(newFromBalance);
+            Nox.allow(newFromBalance, from);
+            Nox.allowThis(newToBalance);
+            Nox.allow(newToBalance, to);
+        }
+
+        transferred = Nox.select(success, amount, Nox.toEuint256(0));
+        emit ConfidentialTransfer(from, to, transferred);
+    }
+
+    /**
+     * @dev this function provides an implementation of the `update` function using basic primitives.
      * @dev Transfers `amount` from `from` to `to`, updating balances and total supply.
      * All customizations to transfers, mints, and burns should be done by overriding this function.
      *
@@ -333,7 +429,7 @@ abstract contract ERC7984Base is IERC7984, ERC165 {
      *
      * Emits a {ConfidentialTransfer} event.
      */
-    function _update(
+    function _updateWithBasicPrimitives(
         address from,
         address to,
         euint256 amount

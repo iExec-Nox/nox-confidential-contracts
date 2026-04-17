@@ -9,16 +9,16 @@ import {ERC7984Advanced} from "../../token/ERC7984Advanced.sol";
 /**
  * @dev Common interface for all ERC7984 test implementations (basic, advanced).
  */
-interface IERC7984TestableMock is IERC7984 {
+interface TokenMock is IERC7984 {
     function mint(address to, euint256 amount) external returns (euint256);
     function burn(address from, euint256 amount) external returns (euint256);
     function transfer(address from, address to, euint256 amount) external returns (euint256);
 }
 
 /**
- * @dev Implementation of {ERC7984} for testing purposes.
+ * @dev Mock implementation of {ERC7984}.
  */
-contract ERC7984Mock is IERC7984TestableMock, ERC7984 {
+contract ERC7984Mock is TokenMock, ERC7984 {
     constructor(
         string memory name,
         string memory symbol,
@@ -43,9 +43,9 @@ contract ERC7984Mock is IERC7984TestableMock, ERC7984 {
 }
 
 /**
- * @dev Implementation of {ERC7984Advanced} for testing purposes.
+ * @dev Mock implementation of {ERC7984Advanced}.
  */
-contract ERC7984AdvancedMock is IERC7984TestableMock, ERC7984Advanced {
+contract ERC7984AdvancedMock is TokenMock, ERC7984Advanced {
     constructor(
         string memory name,
         string memory symbol,

@@ -7,22 +7,25 @@ import {IERC7984} from "../../contracts/interfaces/IERC7984.sol";
 import {IERC20ToERC7984Wrapper} from "../../contracts/interfaces/IERC20ToERC7984Wrapper.sol";
 import {ERC7984Base} from "../../contracts/token/ERC7984Base.sol";
 import {ERC20ToERC7984Wrapper} from "../../contracts/token/extensions/ERC20ToERC7984Wrapper.sol";
+import {ERC20ToERC7984WrapperBase} from "../../contracts/token/extensions/ERC20ToERC7984WrapperBase.sol";
 import {
     ERC20Mock,
     ERC20ToERC7984WrapperMock,
-    IERC20ToERC7984WrapperTestableMock
-} from "../../contracts/mocks/token/ERC20ToERC7984WrapperMock.sol";
+    WrapperMock
+} from "../../contracts/mocks/token/WrapperMock.sol";
 import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {NoxMock} from "../utils/NoxMock.sol";
 
-contract ERC20ToERC7984WrapperTest is NoxMock {
+// TODO Prevent tests in this contract from running since they are already
+// running in derived test contracts.
+abstract contract WrapperCommonTest is NoxMock {
     string internal constant NAME = "Wrapped Nox";
     string internal constant SYMBOL = "wNOX";
     string internal constant URI = "https://example.com";
 
     ERC20Mock internal underlying6;
     ERC20Mock internal underlying18;
-    IERC20ToERC7984WrapperTestableMock internal wrapper;
+    WrapperMock internal wrapper;
 
     address internal user1 = makeAddr("user1");
     address internal user2 = makeAddr("user2");
@@ -42,21 +45,9 @@ contract ERC20ToERC7984WrapperTest is NoxMock {
         vm.label(noxCompute, "NoxCompute");
     }
 
-    /**
-     * @dev Returns an instance of the token contract to be tested.
-     * Can be overridden by derived test contracts to test different implementations
-     * of the same interface IERC7984.
-     */
-    function _getTokenInstance() internal virtual returns (IERC20ToERC7984WrapperTestableMock) {
-        return new ERC20ToERC7984WrapperMock(NAME, SYMBOL, URI, underlying6);
-    }
+    function _getTokenInstance() internal virtual returns (WrapperMock);
 
-    /**
-     * Override to change tested contract name used in vm.label().
-     */
-    function _getTestedContractName() internal pure virtual returns (string memory) {
-        return "ERC20ToERC7984Wrapper";
-    }
+    function _getTestedContractName() internal pure virtual returns (string memory);
 
     // ============ constructor ============
 
@@ -134,7 +125,10 @@ contract ERC20ToERC7984WrapperTest is NoxMock {
 
     function test_RevertWhen_OnTransferReceived_UnauthorizedCaller() public {
         vm.expectRevert(
-            abi.encodeWithSelector(ERC20ToERC7984Wrapper.ERC7984UnauthorizedCaller.selector, user1)
+            abi.encodeWithSelector(
+                ERC20ToERC7984WrapperBase.ERC7984UnauthorizedCaller.selector,
+                user1
+            )
         );
         vm.prank(user1);
         wrapper.onTransferReceived(user1, user1, 100e6, "");
@@ -220,7 +214,7 @@ contract ERC20ToERC7984WrapperTest is NoxMock {
 
         vm.expectRevert(
             abi.encodeWithSelector(
-                ERC20ToERC7984Wrapper.InvalidUnwrapRequest.selector,
+                ERC20ToERC7984WrapperBase.InvalidUnwrapRequest.selector,
                 invalidRequestId
             )
         );
