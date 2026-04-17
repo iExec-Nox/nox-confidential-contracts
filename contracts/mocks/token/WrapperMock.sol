@@ -39,7 +39,7 @@ contract ERC20ToERC7984WrapperMock is WrapperMock, ERC20ToERC7984Wrapper {
         string memory symbol,
         string memory contractURI,
         IERC20 underlying
-    ) ERC20ToERC7984Wrapper(underlying) {}
+    ) ERC20ToERC7984Wrapper(name, symbol, contractURI, underlying) {}
 }
 
 /// @dev Implementation of {ERC20ToERC7984WrapperAdvanced} for testing.
@@ -49,17 +49,19 @@ contract ERC20ToERC7984WrapperAdvancedMock is WrapperMock, ERC20ToERC7984Wrapper
         string memory symbol,
         string memory contractURI,
         IERC20 underlying
-    ) ERC20ToERC7984WrapperAdvanced(underlying) {}
+    ) ERC20ToERC7984WrapperAdvanced(name, symbol, contractURI, underlying) {}
 }
 
 /// @dev Implementation of {ERC20ToERC7984WrapperUpgradeable} for testing.
 contract ERC20ToERC7984WrapperUpgradeableMock is WrapperMock, ERC20ToERC7984WrapperUpgradeable {
-    constructor(IERC20 underlying) ERC20ToERC7984WrapperUpgradeable(underlying) {
-        _disableInitializers();
-    }
+    constructor(IERC20 underlying) ERC20ToERC7984WrapperUpgradeable(underlying) {}
 
-    function initialize() external initializer {
-        __ERC20ToERC7984WrapperUpgradeable_init();
+    function initialize(
+        string memory name,
+        string memory symbol,
+        string memory contractURI
+    ) external initializer {
+        __ERC20ToERC7984WrapperUpgradeable_init(name, symbol, contractURI);
     }
 }
 
@@ -68,11 +70,13 @@ contract ERC20ToERC7984WrapperAdvancedUpgradeableMock is
     WrapperMock,
     ERC20ToERC7984WrapperAdvancedUpgradeable
 {
-    constructor(IERC20 underlying) ERC20ToERC7984WrapperAdvancedUpgradeable(underlying) {
-        _disableInitializers();
-    }
+    constructor(IERC20 underlying) ERC20ToERC7984WrapperAdvancedUpgradeable(underlying) {}
 
-    function initialize() external initializer {
-        __ERC20ToERC7984WrapperAdvancedUpgradeable_init();
+    function initialize(
+        string memory name,
+        string memory symbol,
+        string memory contractURI
+    ) external initializer {
+        __ERC20ToERC7984WrapperAdvancedUpgradeable_init(name, symbol, contractURI);
     }
 }

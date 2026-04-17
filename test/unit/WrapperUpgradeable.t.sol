@@ -20,9 +20,9 @@ contract ERC20ToERC7984WrapperUpgradeableTest is WrapperCommonTest {
     }
 
     function _newWrapperInstance(
-        string memory, // TODO
-        string memory,
-        string memory,
+        string memory name,
+        string memory symbol,
+        string memory contractURI,
         ERC20Mock underlying_
     ) internal override returns (WrapperMock) {
         ERC20ToERC7984WrapperUpgradeableMock impl = new ERC20ToERC7984WrapperUpgradeableMock(
@@ -30,7 +30,10 @@ contract ERC20ToERC7984WrapperUpgradeableTest is WrapperCommonTest {
         );
         ERC1967Proxy proxy = new ERC1967Proxy(
             address(impl),
-            abi.encodeCall(ERC20ToERC7984WrapperUpgradeableMock.initialize, ())
+            abi.encodeCall(
+                ERC20ToERC7984WrapperUpgradeableMock.initialize,
+                (name, symbol, contractURI)
+            )
         );
         return WrapperMock(address(proxy));
     }
@@ -39,6 +42,6 @@ contract ERC20ToERC7984WrapperUpgradeableTest is WrapperCommonTest {
 
     function test_CannotInitializeTwice() public {
         vm.expectRevert(Initializable.InvalidInitialization.selector);
-        ERC20ToERC7984WrapperUpgradeableMock(address(wrapper)).initialize();
+        ERC20ToERC7984WrapperUpgradeableMock(address(wrapper)).initialize(NAME, SYMBOL, URI);
     }
 }
