@@ -213,7 +213,7 @@ abstract contract ERC20ToERC7984WrapperBase is
 
     /**
      * Inheriting contracts must implement this function to choose which implementation
-     * to use (basic or advanced primitives).
+     * to use (raw or optimized primitives).
      */
     function _update(
         address from,

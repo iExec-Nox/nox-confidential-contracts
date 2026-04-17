@@ -26,10 +26,10 @@
 
 **nox-confidential-contracts** provides production-ready Solidity implementations for confidential tokens on the Nox protocol:
 
-- **ERC7984**: a confidential fungible token standard ([ERC-7984](https://eips.ethereum.org/EIPS/eip-7984)) implementation.
-- **ERC7984Advanced**: the same interface using more gas-efficient Nox primitives.
+- **ERC7984**: a gas-efficient confidential fungible token standard ([ERC-7984](https://eips.ethereum.org/EIPS/eip-7984)) implementation.
+- **ERC7984Raw**: the same interface using less gas-efficient but more flexible raw Nox primitives.
 - **ERC20ToERC7984Wrapper**: wraps existing ERC-20 tokens into confidential ERC-7984 tokens.
-- **ERC20ToERC7984WrapperAdvanced**: more gas-efficient variant of the wrapper.
+- **ERC20ToERC7984WrapperRaw**: raw-primitives-using variant of the wrapper.
 - **ERC7984Utils**: shared utility library for confidential token operations.
 
 ## Prerequisites
