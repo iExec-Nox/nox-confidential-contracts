@@ -7,28 +7,28 @@ import {INoxCompute} from "@iexec-nox/nox-protocol-contracts/contracts/interface
 import {ERC7984CommonTest} from "../../utils/ERC7984Common.sol";
 import {
     TokenMock,
-    ERC7984UpgradeableAdvancedMock
+    ERC7984OptimizedUpgradeableMock
 } from "../../../contracts/mocks/token/TokenMock.sol";
 
-contract ERC7984UpgradeableAdvancedTest is ERC7984CommonTest {
+contract ERC7984OptimizedUpgradeableTest is ERC7984CommonTest {
     function _getTestedContractInstance() internal override returns (TokenMock) {
-        ERC7984UpgradeableAdvancedMock impl = new ERC7984UpgradeableAdvancedMock();
+        ERC7984OptimizedUpgradeableMock impl = new ERC7984OptimizedUpgradeableMock();
         ERC1967Proxy proxy = new ERC1967Proxy(
             address(impl),
-            abi.encodeCall(ERC7984UpgradeableAdvancedMock.initialize, (NAME, SYMBOL, CONTRACT_URI))
+            abi.encodeCall(ERC7984OptimizedUpgradeableMock.initialize, (NAME, SYMBOL, CONTRACT_URI))
         );
         return TokenMock(address(proxy));
     }
 
     function _getTestedContractName() internal pure override returns (string memory) {
-        return "ERC7984UpgradeableAdvanced";
+        return "ERC7984OptimizedUpgradeable";
     }
 
     // ============ initialize ============
 
     function test_CannotInitializeTwice() public {
         vm.expectRevert(Initializable.InvalidInitialization.selector);
-        ERC7984UpgradeableAdvancedMock(address(token)).initialize(NAME, SYMBOL, CONTRACT_URI);
+        ERC7984OptimizedUpgradeableMock(address(token)).initialize(NAME, SYMBOL, CONTRACT_URI);
     }
 
     // ============ primitives ============

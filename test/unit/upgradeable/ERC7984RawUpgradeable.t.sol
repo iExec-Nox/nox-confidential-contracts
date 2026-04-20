@@ -1,22 +1,34 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
+import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import {INoxCompute} from "@iexec-nox/nox-protocol-contracts/contracts/interfaces/INoxCompute.sol";
 import {ERC7984CommonTest} from "../../utils/ERC7984Common.sol";
-import {TokenMock} from "../../../contracts/mocks/token/TokenMock.sol";
-import {ERC7984Mock} from "../../../contracts/mocks/token/TokenMock.sol";
+import {TokenMock, ERC7984RawUpgradeableMock} from "../../../contracts/mocks/token/TokenMock.sol";
 
-contract ERC7984Test is ERC7984CommonTest {
+contract ERC7984RawUpgradeableTest is ERC7984CommonTest {
     function _getTestedContractInstance() internal override returns (TokenMock) {
-        return new ERC7984Mock(NAME, SYMBOL, CONTRACT_URI);
+        ERC7984RawUpgradeableMock impl = new ERC7984RawUpgradeableMock();
+        ERC1967Proxy proxy = new ERC1967Proxy(
+            address(impl),
+            abi.encodeCall(ERC7984RawUpgradeableMock.initialize, (NAME, SYMBOL, CONTRACT_URI))
+        );
+        return TokenMock(address(proxy));
     }
 
     function _getTestedContractName() internal pure override returns (string memory) {
-        return "ERC7984Mock";
+        return "ERC7984RawUpgradeable";
     }
 
-    // ============ primitives assertions ============
+    // ============ initialize ============
+
+    function test_CannotInitializeTwice() public {
+        vm.expectRevert(Initializable.InvalidInitialization.selector);
+        ERC7984RawUpgradeableMock(address(token)).initialize(NAME, SYMBOL, CONTRACT_URI);
+    }
+
+    // ============ primitives ============
 
     function _assertUsedPrimitivesForMint() internal override {
         _expectSafeAddCall();

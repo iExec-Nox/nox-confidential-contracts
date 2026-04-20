@@ -4,19 +4,16 @@ pragma solidity ^0.8.28;
 import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
 import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
-import {ERC20ToERC7984WrapperBase} from "./ERC20ToERC7984WrapperBase.sol";
+import {ERC20ToERC7984WrapperBase} from "../token/extensions/ERC20ToERC7984WrapperBase.sol";
 
 /**
- * @dev Upgradeable implementation of {ERC20ToERC7984WrapperAdvanced}.
+ * @dev Upgradeable implementation of {ERC20ToERC7984WrapperRaw}.
  */
-abstract contract ERC20ToERC7984WrapperAdvancedUpgradeable is
-    ERC20ToERC7984WrapperBase,
-    Initializable
-{
+abstract contract ERC20ToERC7984WrapperRawUpgradeable is ERC20ToERC7984WrapperBase, Initializable {
     // The constructor is required here to initialize immutable variables.
     constructor(IERC20 underlying) ERC20ToERC7984WrapperBase(underlying) {}
 
-    function __ERC20ToERC7984WrapperAdvancedUpgradeable_init(
+    function __ERC20ToERC7984WrapperRaw_init(
         string memory name,
         string memory symbol,
         string memory contractURI
@@ -30,6 +27,6 @@ abstract contract ERC20ToERC7984WrapperAdvancedUpgradeable is
         address to,
         euint256 amount
     ) internal virtual override returns (euint256 transferred) {
-        transferred = _updateWithAdvancedPrimitives(from, to, amount);
+        transferred = _updateWithRawPrimitives(from, to, amount);
     }
 }

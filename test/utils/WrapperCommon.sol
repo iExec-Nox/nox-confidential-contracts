@@ -6,7 +6,6 @@ import {IERC1363Receiver} from "@openzeppelin/contracts/interfaces/IERC1363Recei
 import {IERC7984} from "../../contracts/interfaces/IERC7984.sol";
 import {IERC20ToERC7984Wrapper} from "../../contracts/interfaces/IERC20ToERC7984Wrapper.sol";
 import {ERC7984Base} from "../../contracts/token/ERC7984Base.sol";
-import {ERC20ToERC7984Wrapper} from "../../contracts/token/extensions/ERC20ToERC7984Wrapper.sol";
 import {ERC20ToERC7984WrapperBase} from "../../contracts/token/extensions/ERC20ToERC7984WrapperBase.sol";
 import {ERC20Mock, WrapperMock} from "../../contracts/mocks/token/WrapperMock.sol";
 import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
