@@ -8,16 +8,11 @@ import {IERC20ToERC7984Wrapper} from "../../contracts/interfaces/IERC20ToERC7984
 import {ERC7984Base} from "../../contracts/token/ERC7984Base.sol";
 import {ERC20ToERC7984Wrapper} from "../../contracts/token/extensions/ERC20ToERC7984Wrapper.sol";
 import {ERC20ToERC7984WrapperBase} from "../../contracts/token/extensions/ERC20ToERC7984WrapperBase.sol";
-import {
-    ERC20Mock,
-    ERC20ToERC7984WrapperMock,
-    WrapperMock
-} from "../../contracts/mocks/token/WrapperMock.sol";
+import {ERC20Mock, WrapperMock} from "../../contracts/mocks/token/WrapperMock.sol";
 import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {NoxMock} from "../utils/NoxMock.sol";
 
-// TODO Prevent tests in this contract from running since they are already
-// running in derived test contracts.
+// TODO: fix test scope path to avoid running duplicate tests
 abstract contract WrapperCommonTest is NoxMock {
     string internal constant NAME = "Wrapped Nox";
     string internal constant SYMBOL = "wNOX";
@@ -34,7 +29,7 @@ abstract contract WrapperCommonTest is NoxMock {
     function setUp() public {
         underlying6 = new ERC20Mock("USD Coin", "USDC", 6);
         underlying18 = new ERC20Mock("DAI Stablecoin", "DAI", 18);
-        wrapper = _getTokenInstance();
+        wrapper = _getTestedContractInstance();
 
         vm.label(address(underlying6), "USDC");
         vm.label(address(underlying18), "DAI");
@@ -45,9 +40,16 @@ abstract contract WrapperCommonTest is NoxMock {
         vm.label(noxCompute, "NoxCompute");
     }
 
-    function _getTokenInstance() internal virtual returns (WrapperMock);
+    function _getTestedContractInstance() internal virtual returns (WrapperMock);
 
     function _getTestedContractName() internal pure virtual returns (string memory);
+
+    function _newWrapperInstance(
+        string memory name,
+        string memory symbol,
+        string memory uri,
+        ERC20Mock underlying_
+    ) internal virtual returns (WrapperMock);
 
     // ============ constructor ============
 
@@ -57,12 +59,7 @@ abstract contract WrapperCommonTest is NoxMock {
     }
 
     function test_Constructor_18DecimalUnderlying() public {
-        ERC20ToERC7984WrapperMock w18 = new ERC20ToERC7984WrapperMock(
-            "W18",
-            "w18",
-            "",
-            underlying18
-        );
+        WrapperMock w18 = _newWrapperInstance("W18", "W18", URI, underlying18);
         assertEq(w18.decimals(), 18);
     }
 
@@ -103,12 +100,7 @@ abstract contract WrapperCommonTest is NoxMock {
 
     function test_Wrap_18DecimalUnderlying() public {
         _mockNoxPrimitives();
-        ERC20ToERC7984WrapperMock w18 = new ERC20ToERC7984WrapperMock(
-            "W18",
-            "w18",
-            "",
-            underlying18
-        );
+        WrapperMock w18 = _newWrapperInstance("W18", "W18", URI, underlying18);
         uint256 amount = 1.5e18;
 
         underlying18.mint(user1, amount);

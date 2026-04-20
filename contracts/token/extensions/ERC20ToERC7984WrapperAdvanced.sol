@@ -9,7 +9,14 @@ import {ERC20ToERC7984WrapperBase} from "./ERC20ToERC7984WrapperBase.sol";
  * @dev Implementation of {IERC20ToERC7984Wrapper} using advanced Nox primitives.
  */
 abstract contract ERC20ToERC7984WrapperAdvanced is ERC20ToERC7984WrapperBase {
-    constructor(IERC20 underlying) ERC20ToERC7984WrapperBase(underlying) {}
+    constructor(
+        string memory name,
+        string memory symbol,
+        string memory contractURI,
+        IERC20 underlying
+    ) ERC20ToERC7984WrapperBase(underlying) {
+        __ERC7984Base_init(name, symbol, contractURI);
+    }
 
     function _update(
         address from,

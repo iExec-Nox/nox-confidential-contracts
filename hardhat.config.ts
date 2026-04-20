@@ -28,6 +28,13 @@ export default defineConfig({
         // Required for Hardhat to compile and link the Nox library used in Solidity tests.
         npmFilesToBuild: ["@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol"],
     },
+    // TODO this config prevents tests in ERC7984Common from running unnecessarily but it
+    // breaks coverage task.
+    // paths: {
+    //     tests: {
+    //         solidity: "test/unit",
+    //     },
+    // },
     networks: {
         hardhatMainnet: {
             type: "edr-simulated",

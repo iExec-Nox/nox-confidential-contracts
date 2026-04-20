@@ -1,15 +1,28 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {ERC20ToERC7984WrapperMock, WrapperMock} from "../../contracts/mocks/token/WrapperMock.sol";
-import {WrapperCommonTest} from "./WrapperCommon.sol";
+import {
+    ERC20Mock,
+    ERC20ToERC7984WrapperMock,
+    WrapperMock
+} from "../../contracts/mocks/token/WrapperMock.sol";
+import {WrapperCommonTest} from "../utils/WrapperCommon.sol";
 
 contract ERC20ToERC7984WrapperTest is WrapperCommonTest {
-    function _getTokenInstance() internal override returns (WrapperMock) {
-        return new ERC20ToERC7984WrapperMock(NAME, SYMBOL, URI, underlying6);
+    function _getTestedContractInstance() internal override returns (WrapperMock) {
+        return _newWrapperInstance(NAME, SYMBOL, URI, underlying6);
     }
 
     function _getTestedContractName() internal pure override returns (string memory) {
         return "ERC20ToERC7984Wrapper";
+    }
+
+    function _newWrapperInstance(
+        string memory name,
+        string memory symbol,
+        string memory uri,
+        ERC20Mock underlying_
+    ) internal override returns (WrapperMock) {
+        return new ERC20ToERC7984WrapperMock(name, symbol, uri, underlying_);
     }
 }

@@ -7,6 +7,8 @@ import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
 import {IERC20ToERC7984Wrapper} from "../../interfaces/IERC20ToERC7984Wrapper.sol";
 import {ERC20ToERC7984Wrapper} from "../../token/extensions/ERC20ToERC7984Wrapper.sol";
 import {ERC20ToERC7984WrapperAdvanced} from "../../token/extensions/ERC20ToERC7984WrapperAdvanced.sol";
+import {ERC20ToERC7984WrapperUpgradeable} from "../../token/extensions/ERC20ToERC7984WrapperUpgradeable.sol";
+import {ERC20ToERC7984WrapperAdvancedUpgradeable} from "../../token/extensions/ERC20ToERC7984WrapperAdvancedUpgradeable.sol";
 
 /// @dev Minimal ERC-20 with a public mint function, used for testing.
 contract ERC20Mock is ERC20 {
@@ -37,7 +39,7 @@ contract ERC20ToERC7984WrapperMock is WrapperMock, ERC20ToERC7984Wrapper {
         string memory symbol,
         string memory contractURI,
         IERC20 underlying
-    ) ERC20ToERC7984Wrapper(underlying) {}
+    ) ERC20ToERC7984Wrapper(name, symbol, contractURI, underlying) {}
 }
 
 /// @dev Implementation of {ERC20ToERC7984WrapperAdvanced} for testing.
@@ -47,5 +49,40 @@ contract ERC20ToERC7984WrapperAdvancedMock is WrapperMock, ERC20ToERC7984Wrapper
         string memory symbol,
         string memory contractURI,
         IERC20 underlying
-    ) ERC20ToERC7984WrapperAdvanced(underlying) {}
+    ) ERC20ToERC7984WrapperAdvanced(name, symbol, contractURI, underlying) {}
+}
+
+/// @dev Implementation of {ERC20ToERC7984WrapperUpgradeable} for testing.
+contract ERC20ToERC7984WrapperUpgradeableMock is WrapperMock, ERC20ToERC7984WrapperUpgradeable {
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor(IERC20 underlying) ERC20ToERC7984WrapperUpgradeable(underlying) {
+        _disableInitializers();
+    }
+
+    function initialize(
+        string memory name,
+        string memory symbol,
+        string memory contractURI
+    ) external initializer {
+        __ERC20ToERC7984WrapperUpgradeable_init(name, symbol, contractURI);
+    }
+}
+
+/// @dev Implementation of {ERC20ToERC7984WrapperAdvancedUpgradeable} for testing.
+contract ERC20ToERC7984WrapperAdvancedUpgradeableMock is
+    WrapperMock,
+    ERC20ToERC7984WrapperAdvancedUpgradeable
+{
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor(IERC20 underlying) ERC20ToERC7984WrapperAdvancedUpgradeable(underlying) {
+        _disableInitializers();
+    }
+
+    function initialize(
+        string memory name,
+        string memory symbol,
+        string memory contractURI
+    ) external initializer {
+        __ERC20ToERC7984WrapperAdvancedUpgradeable_init(name, symbol, contractURI);
+    }
 }

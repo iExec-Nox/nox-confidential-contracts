@@ -9,8 +9,7 @@ import {ERC7984ReceiverMock} from "../../contracts/mocks/token/ERC7984ReceiverMo
 import {TokenMock} from "../../contracts/mocks/token/TokenMock.sol";
 import {NoxMock} from "../utils/NoxMock.sol";
 
-// TODO Prevent tests in this contract from running since they are already
-// running in derived test contracts.
+// TODO: fix test scope path to avoid running duplicate tests
 abstract contract ERC7984CommonTest is NoxMock {
     TokenMock internal token;
     ERC7984ReceiverMock internal receiver;
@@ -24,7 +23,7 @@ abstract contract ERC7984CommonTest is NoxMock {
     string internal constant CONTRACT_URI = "https://example.com/contract.json";
 
     function setUp() public {
-        token = _getTokenInstance();
+        token = _getTestedContractInstance();
         receiver = new ERC7984ReceiverMock();
         vm.label(address(token), _getTestedContractName());
         vm.label(address(receiver), "ERC7984ReceiverMock");
@@ -33,13 +32,13 @@ abstract contract ERC7984CommonTest is NoxMock {
         vm.label(operator, "operator");
     }
 
-    function _getTokenInstance() internal virtual returns (TokenMock);
+    function _getTestedContractInstance() internal virtual returns (TokenMock);
 
     function _getTestedContractName() internal pure virtual returns (string memory);
 
-    // ============ constructor ============
+    // ============ constructor or initialize ============
 
-    function test_Constructor() public view {
+    function test_ConstructorOrInitialize() public view {
         assertEq(token.name(), NAME);
         assertEq(token.symbol(), SYMBOL);
         assertEq(token.decimals(), 18);
