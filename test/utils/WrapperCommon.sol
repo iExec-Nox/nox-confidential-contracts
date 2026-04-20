@@ -7,7 +7,7 @@ import {IERC7984} from "../../contracts/interfaces/IERC7984.sol";
 import {IERC20ToERC7984Wrapper} from "../../contracts/interfaces/IERC20ToERC7984Wrapper.sol";
 import {ERC7984Base} from "../../contracts/token/ERC7984Base.sol";
 import {ERC20ToERC7984WrapperBase} from "../../contracts/token/extensions/ERC20ToERC7984WrapperBase.sol";
-import {ERC20Mock, WrapperMock} from "../../contracts/mocks/token/WrapperMock.sol";
+import {ERC20Mock, WrapperTestMock} from "../../contracts/mocks/token/WrapperTestMock.sol";
 import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {NoxMock} from "../utils/NoxMock.sol";
 
@@ -19,7 +19,7 @@ abstract contract WrapperCommonTest is NoxMock {
 
     ERC20Mock internal underlying6;
     ERC20Mock internal underlying18;
-    WrapperMock internal wrapper;
+    WrapperTestMock internal wrapper;
 
     address internal user1 = makeAddr("user1");
     address internal user2 = makeAddr("user2");
@@ -39,7 +39,7 @@ abstract contract WrapperCommonTest is NoxMock {
         vm.label(noxCompute, "NoxCompute");
     }
 
-    function _getTestedContractInstance() internal virtual returns (WrapperMock);
+    function _getTestedContractInstance() internal virtual returns (WrapperTestMock);
 
     function _getTestedContractName() internal pure virtual returns (string memory);
 
@@ -48,7 +48,7 @@ abstract contract WrapperCommonTest is NoxMock {
         string memory symbol,
         string memory uri,
         ERC20Mock underlying_
-    ) internal virtual returns (WrapperMock);
+    ) internal virtual returns (WrapperTestMock);
 
     // ============ constructor ============
 
@@ -58,7 +58,7 @@ abstract contract WrapperCommonTest is NoxMock {
     }
 
     function test_Constructor_18DecimalUnderlying() public {
-        WrapperMock w18 = _newWrapperInstance("W18", "W18", URI, underlying18);
+        WrapperTestMock w18 = _newWrapperInstance("W18", "W18", URI, underlying18);
         assertEq(w18.decimals(), 18);
     }
 
@@ -99,7 +99,7 @@ abstract contract WrapperCommonTest is NoxMock {
 
     function test_Wrap_18DecimalUnderlying() public {
         _mockNoxPrimitives();
-        WrapperMock w18 = _newWrapperInstance("W18", "W18", URI, underlying18);
+        WrapperTestMock w18 = _newWrapperInstance("W18", "W18", URI, underlying18);
         uint256 amount = 1.5e18;
 
         underlying18.mint(user1, amount);

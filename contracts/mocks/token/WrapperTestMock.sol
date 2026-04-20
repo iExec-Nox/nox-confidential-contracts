@@ -30,10 +30,10 @@ contract ERC20Mock is ERC20 {
 /**
  * @dev Common interface for all {ERC20ToERC7984Wrapper} test implementations (raw, optimized).
  */
-interface WrapperMock is IERC20ToERC7984Wrapper, IERC1363Receiver {}
+interface WrapperTestMock is IERC20ToERC7984Wrapper, IERC1363Receiver {}
 
 /// @dev Implementation of {ERC20ToERC7984WrapperRaw} for testing.
-contract ERC20ToERC7984WrapperRawMock is WrapperMock, ERC20ToERC7984WrapperRaw {
+contract ERC20ToERC7984WrapperRawMock is WrapperTestMock, ERC20ToERC7984WrapperRaw {
     constructor(
         string memory name,
         string memory symbol,
@@ -43,7 +43,7 @@ contract ERC20ToERC7984WrapperRawMock is WrapperMock, ERC20ToERC7984WrapperRaw {
 }
 
 /// @dev Implementation of {ERC20ToERC7984Wrapper} for testing.
-contract ERC20ToERC7984WrapperMock is WrapperMock, ERC20ToERC7984Wrapper {
+contract ERC20ToERC7984WrapperMock is WrapperTestMock, ERC20ToERC7984Wrapper {
     constructor(
         string memory name,
         string memory symbol,
@@ -54,7 +54,7 @@ contract ERC20ToERC7984WrapperMock is WrapperMock, ERC20ToERC7984Wrapper {
 
 /// @dev Implementation of {ERC20ToERC7984WrapperRawUpgradeable} for testing.
 contract ERC20ToERC7984WrapperRawUpgradeableMock is
-    WrapperMock,
+    WrapperTestMock,
     ERC20ToERC7984WrapperRawUpgradeable
 {
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -72,7 +72,7 @@ contract ERC20ToERC7984WrapperRawUpgradeableMock is
 }
 
 /// @dev Implementation of {ERC20ToERC7984WrapperUpgradeable} for testing.
-contract ERC20ToERC7984WrapperUpgradeableMock is WrapperMock, ERC20ToERC7984WrapperUpgradeable {
+contract ERC20ToERC7984WrapperUpgradeableMock is WrapperTestMock, ERC20ToERC7984WrapperUpgradeable {
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor(IERC20 underlying) ERC20ToERC7984WrapperUpgradeable(underlying) {
         _disableInitializers();

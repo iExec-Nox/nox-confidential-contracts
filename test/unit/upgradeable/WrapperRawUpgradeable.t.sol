@@ -6,12 +6,12 @@ import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.s
 import {WrapperCommonTest} from "../../utils/WrapperCommon.sol";
 import {
     ERC20Mock,
-    WrapperMock,
+    WrapperTestMock,
     ERC20ToERC7984WrapperRawUpgradeableMock
-} from "../../../contracts/mocks/token/WrapperMock.sol";
+} from "../../../contracts/mocks/token/WrapperTestMock.sol";
 
 contract ERC20ToERC7984WrapperRawUpgradeableTest is WrapperCommonTest {
-    function _getTestedContractInstance() internal override returns (WrapperMock) {
+    function _getTestedContractInstance() internal override returns (WrapperTestMock) {
         return _newWrapperInstance(NAME, SYMBOL, URI, underlying6);
     }
 
@@ -24,7 +24,7 @@ contract ERC20ToERC7984WrapperRawUpgradeableTest is WrapperCommonTest {
         string memory symbol,
         string memory contractURI,
         ERC20Mock underlying_
-    ) internal override returns (WrapperMock) {
+    ) internal override returns (WrapperTestMock) {
         ERC20ToERC7984WrapperRawUpgradeableMock impl = new ERC20ToERC7984WrapperRawUpgradeableMock(
             underlying_
         );
@@ -35,7 +35,7 @@ contract ERC20ToERC7984WrapperRawUpgradeableTest is WrapperCommonTest {
                 (name, symbol, contractURI)
             )
         );
-        return WrapperMock(address(proxy));
+        return WrapperTestMock(address(proxy));
     }
 
     // ============ initialize ============
