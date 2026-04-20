@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MIT
-// Inspired by OpenZeppelin Contracts (contracts/token/ERC7984/ERC7984.sol)
 pragma solidity ^0.8.28;
 
 import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
