@@ -5,30 +5,27 @@ import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.s
 import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import {INoxCompute} from "@iexec-nox/nox-protocol-contracts/contracts/interfaces/INoxCompute.sol";
 import {ERC7984CommonTest} from "../../utils/ERC7984Common.sol";
-import {
-    TokenMock,
-    ERC7984OptimizedUpgradeableMock
-} from "../../../contracts/mocks/token/TokenMock.sol";
+import {TokenMock, ERC7984UpgradeableMock} from "../../../contracts/mocks/token/TokenMock.sol";
 
-contract ERC7984OptimizedUpgradeableTest is ERC7984CommonTest {
+contract ERC7984UpgradeableTest is ERC7984CommonTest {
     function _getTestedContractInstance() internal override returns (TokenMock) {
-        ERC7984OptimizedUpgradeableMock impl = new ERC7984OptimizedUpgradeableMock();
+        ERC7984UpgradeableMock impl = new ERC7984UpgradeableMock();
         ERC1967Proxy proxy = new ERC1967Proxy(
             address(impl),
-            abi.encodeCall(ERC7984OptimizedUpgradeableMock.initialize, (NAME, SYMBOL, CONTRACT_URI))
+            abi.encodeCall(ERC7984UpgradeableMock.initialize, (NAME, SYMBOL, CONTRACT_URI))
         );
         return TokenMock(address(proxy));
     }
 
     function _getTestedContractName() internal pure override returns (string memory) {
-        return "ERC7984OptimizedUpgradeable";
+        return "ERC7984Upgradeable";
     }
 
     // ============ initialize ============
 
     function test_CannotInitializeTwice() public {
         vm.expectRevert(Initializable.InvalidInitialization.selector);
-        ERC7984OptimizedUpgradeableMock(address(token)).initialize(NAME, SYMBOL, CONTRACT_URI);
+        ERC7984UpgradeableMock(address(token)).initialize(NAME, SYMBOL, CONTRACT_URI);
     }
 
     // ============ primitives ============
