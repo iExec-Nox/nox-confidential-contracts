@@ -1,16 +1,19 @@
 // SPDX-License-Identifier: MIT
-// Inspired by OpenZeppelin Contracts (contracts/token/ERC7984/ERC7984.sol)
 pragma solidity ^0.8.28;
 
+import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
 import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
-import {ERC7984Base} from "../token/ERC7984Base.sol";
+import {ERC20ToERC7984WrapperBase} from "../token/extensions/ERC20ToERC7984WrapperBase.sol";
 
 /**
- * @notice Upgradeable version of {ERC7984Optimized}.
+ * @dev Upgradeable implementation of {ERC20ToERC7984Wrapper}.
  */
-abstract contract ERC7984OptimizedUpgradeable is ERC7984Base, Initializable {
-    function __ERC7984Optimized_init(
+abstract contract ERC20ToERC7984WrapperUpgradeable is ERC20ToERC7984WrapperBase, Initializable {
+    // The constructor is required here to initialize immutable variables.
+    constructor(IERC20 underlying) ERC20ToERC7984WrapperBase(underlying) {}
+
+    function __ERC20ToERC7984Wrapper_init(
         string memory name,
         string memory symbol,
         string memory contractURI
@@ -18,7 +21,7 @@ abstract contract ERC7984OptimizedUpgradeable is ERC7984Base, Initializable {
         __ERC7984Base_init(name, symbol, contractURI);
     }
 
-    /// @inheritdoc ERC7984Base
+    /// @inheritdoc ERC20ToERC7984WrapperBase
     function _update(
         address from,
         address to,

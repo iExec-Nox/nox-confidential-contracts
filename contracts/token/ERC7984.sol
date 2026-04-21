@@ -7,7 +7,7 @@ import {ERC7984Base} from "./ERC7984Base.sol";
 /**
  * @dev Reference implementation for {IERC7984} using optimized Nox primitives.
  */
-abstract contract ERC7984Optimized is ERC7984Base {
+abstract contract ERC7984 is ERC7984Base {
     constructor(string memory name, string memory symbol, string memory contractURI) {
         __ERC7984Base_init(name, symbol, contractURI);
     }

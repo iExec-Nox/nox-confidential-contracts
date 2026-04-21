@@ -8,7 +8,7 @@ import {ERC20ToERC7984WrapperBase} from "./ERC20ToERC7984WrapperBase.sol";
 /**
  * @dev Implementation of {IERC20ToERC7984Wrapper} using optimized Nox primitives.
  */
-abstract contract ERC20ToERC7984WrapperOptimized is ERC20ToERC7984WrapperBase {
+abstract contract ERC20ToERC7984Wrapper is ERC20ToERC7984WrapperBase {
     constructor(
         string memory name,
         string memory symbol,

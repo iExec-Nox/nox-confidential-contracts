@@ -3,18 +3,18 @@ pragma solidity ^0.8.28;
 
 import {
     ERC20Mock,
-    ERC20ToERC7984WrapperOptimizedMock,
-    WrapperMock
-} from "../../../../contracts/mocks/token/WrapperMock.sol";
+    WrapperMock,
+    WrapperTestMock
+} from "../../../../contracts/mocks/token/WrapperTestMock.sol";
 import {WrapperCommonTest} from "../../../utils/WrapperCommon.sol";
 
-contract ERC20ToERC7984WrapperOptimizedTest is WrapperCommonTest {
-    function _getTestedContractInstance() internal override returns (WrapperMock) {
+contract WrapperTest is WrapperCommonTest {
+    function _getTestedContractInstance() internal override returns (WrapperTestMock) {
         return _newWrapperInstance(NAME, SYMBOL, URI, underlying6);
     }
 
     function _getTestedContractName() internal pure override returns (string memory) {
-        return "ERC20ToERC7984WrapperOptimized";
+        return "ERC20ToERC7984Wrapper";
     }
 
     function _newWrapperInstance(
@@ -22,7 +22,7 @@ contract ERC20ToERC7984WrapperOptimizedTest is WrapperCommonTest {
         string memory symbol,
         string memory uri,
         ERC20Mock underlying_
-    ) internal override returns (WrapperMock) {
-        return new ERC20ToERC7984WrapperOptimizedMock(name, symbol, uri, underlying_);
+    ) internal override returns (WrapperTestMock) {
+        return new WrapperMock(name, symbol, uri, underlying_);
     }
 }

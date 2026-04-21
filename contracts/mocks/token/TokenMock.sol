@@ -4,9 +4,9 @@ pragma solidity ^0.8.28;
 import {euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
 import {IERC7984} from "../../interfaces/IERC7984.sol";
 import {ERC7984Raw} from "../../token/ERC7984Raw.sol";
-import {ERC7984Optimized} from "../../token/ERC7984Optimized.sol";
+import {ERC7984} from "../../token/ERC7984.sol";
 import {ERC7984RawUpgradeable} from "../../upgradeable/ERC7984RawUpgradeable.sol";
-import {ERC7984OptimizedUpgradeable} from "../../upgradeable/ERC7984OptimizedUpgradeable.sol";
+import {ERC7984Upgradeable} from "../../upgradeable/ERC7984Upgradeable.sol";
 
 /**
  * @dev Common interface for all ERC7984 test implementations (raw, optimized).
@@ -45,14 +45,14 @@ contract ERC7984RawMock is TokenMock, ERC7984Raw {
 }
 
 /**
- * @dev Mock implementation of {ERC7984Optimized}.
+ * @dev Mock implementation of {ERC7984}.
  */
-contract ERC7984OptimizedMock is TokenMock, ERC7984Optimized {
+contract ERC7984Mock is TokenMock, ERC7984 {
     constructor(
         string memory name,
         string memory symbol,
         string memory contractURI
-    ) ERC7984Optimized(name, symbol, contractURI) {}
+    ) ERC7984(name, symbol, contractURI) {}
 
     function mint(address to, euint256 amount) external override returns (euint256) {
         return _mint(to, amount);
@@ -106,9 +106,9 @@ contract ERC7984RawUpgradeableMock is TokenMock, ERC7984RawUpgradeable {
 }
 
 /**
- * @dev Mock implementation of {ERC7984OptimizedUpgradeable}.
+ * @dev Mock implementation of {ERC7984Upgradeable}.
  */
-contract ERC7984OptimizedUpgradeableMock is TokenMock, ERC7984OptimizedUpgradeable {
+contract ERC7984UpgradeableMock is TokenMock, ERC7984Upgradeable {
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
@@ -119,7 +119,7 @@ contract ERC7984OptimizedUpgradeableMock is TokenMock, ERC7984OptimizedUpgradeab
         string memory symbol,
         string memory contractURI
     ) external initializer {
-        __ERC7984Optimized_init(name, symbol, contractURI);
+        __ERC7984_init(name, symbol, contractURI);
     }
 
     function mint(address to, euint256 amount) external override returns (euint256) {
