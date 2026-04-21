@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.2.0](https://github.com/iExec-Nox/nox-confidential-contracts/compare/v0.1.0...v0.2.0) (2026-04-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* Make optimized contracts as the default for token and wrapper ([#29](https://github.com/iExec-Nox/nox-confidential-contracts/issues/29))
+* Rename "advanced" and "basic" contracts to use "optimized" and "raw" ([#28](https://github.com/iExec-Nox/nox-confidential-contracts/issues/28))
+
+### 🚀 Added
+
+* Add missing upgradeable contracts and refactor inheritance  ([#24](https://github.com/iExec-Nox/nox-confidential-contracts/issues/24)) ([73fa08c](https://github.com/iExec-Nox/nox-confidential-contracts/commit/73fa08c2ec7270c48edb01bd45bd792b699b42b0))
+
+
+### ✍️ Changed
+
+* Fix upgradeable wrapper initialization and add tests ([#26](https://github.com/iExec-Nox/nox-confidential-contracts/issues/26)) ([29903fb](https://github.com/iExec-Nox/nox-confidential-contracts/commit/29903fb6d266cfa9c7416768c098f77a5d284242))
+* Make optimized contracts as the default for token and wrapper ([#29](https://github.com/iExec-Nox/nox-confidential-contracts/issues/29)) ([445ec98](https://github.com/iExec-Nox/nox-confidential-contracts/commit/445ec98ff240a4526c23c6b0dc3ff1a13885882e))
+* Rename "advanced" and "basic" contracts to use "optimized" and "raw" ([#28](https://github.com/iExec-Nox/nox-confidential-contracts/issues/28)) ([8ca08ef](https://github.com/iExec-Nox/nox-confidential-contracts/commit/8ca08eff7689d32e61114776bb92b1bd7978f44c))
+
+
+### 📋 Misc
+
+* Refactor test files hiararchy ([#27](https://github.com/iExec-Nox/nox-confidential-contracts/issues/27)) ([a83001a](https://github.com/iExec-Nox/nox-confidential-contracts/commit/a83001a76a9a9e0d7457f9afbd6c7c4780b3141e))
+
 ## 0.1.0 (2026-04-09)
 
 This first release introduces the ERC7984 confidential token standard and its ecosystem. It covers the base implementation, transfer and `transferAndCall` support, an ERC20 wrapper with wrap/unwrap flows, advanced compute primitives integration, and an upgradeable contract variant. The project is licensed under MIT in alignment with other Nox repositories.
