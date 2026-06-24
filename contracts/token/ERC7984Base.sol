@@ -373,6 +373,7 @@ abstract contract ERC7984Base is IERC7984, ERC165 {
             $._totalSupply = newTotalSupply;
             Nox.allowThis(newToBalance);
             Nox.allow(newToBalance, to);
+            Nox.allowThis(newTotalSupply);
         }
 
         // Burn
@@ -390,6 +391,7 @@ abstract contract ERC7984Base is IERC7984, ERC165 {
             $._balances[from] = newFromBalance;
             Nox.allowThis(newFromBalance);
             Nox.allow(newFromBalance, from);
+            Nox.allowThis(newTotalSupply);
         }
 
         // Transfer

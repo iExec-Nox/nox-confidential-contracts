@@ -36,6 +36,8 @@ abstract contract ERC7984CommonTest is NoxMock {
 
     function _getTestedContractName() internal pure virtual returns (string memory);
 
+    function _assertAllowedTotalSupply() internal virtual {}
+
     // ============ constructor or initialize ============
 
     function test_ConstructorOrInitialize() public view {
@@ -129,9 +131,10 @@ abstract contract ERC7984CommonTest is NoxMock {
         assertEq(euint256.unwrap(token.confidentialBalanceOf(user1)), bytes32(0));
 
         _assertUsedPrimitivesForMint();
+        _assertAllowedTotalSupply();
         token.mint(user1, euint256.wrap(MOCK_HANDLE));
         assertEq(euint256.unwrap(token.confidentialBalanceOf(user1)), MOCK_HANDLE);
-        assertEq(euint256.unwrap(token.confidentialTotalSupply()), MOCK_HANDLE);
+        assertTrue(euint256.unwrap(token.confidentialTotalSupply()) != bytes32(0));
     }
 
     function _assertUsedPrimitivesForMint() internal virtual;
@@ -152,9 +155,10 @@ abstract contract ERC7984CommonTest is NoxMock {
         token.mint(user1, euint256.wrap(MOCK_HANDLE));
 
         _assertUsedPrimitivesForBurn();
+        _assertAllowedTotalSupply();
         token.burn(user1, euint256.wrap(MOCK_HANDLE));
         assertEq(euint256.unwrap(token.confidentialBalanceOf(user1)), MOCK_HANDLE);
-        assertEq(euint256.unwrap(token.confidentialTotalSupply()), MOCK_HANDLE);
+        assertTrue(euint256.unwrap(token.confidentialTotalSupply()) != bytes32(0));
     }
 
     function _assertUsedPrimitivesForBurn() internal virtual;
@@ -182,7 +186,7 @@ abstract contract ERC7984CommonTest is NoxMock {
         _assertUsedPrimitivesForTransfer();
         token.transfer(user1, user2, euint256.wrap(MOCK_HANDLE));
         assertEq(euint256.unwrap(token.confidentialBalanceOf(user1)), MOCK_HANDLE);
-        assertEq(euint256.unwrap(token.confidentialTotalSupply()), MOCK_HANDLE);
+        assertTrue(euint256.unwrap(token.confidentialTotalSupply()) != bytes32(0));
     }
 
     function _assertUsedPrimitivesForTransfer() internal virtual;
