@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/iExec-Nox/nox-confidential-contracts/compare/v0.2.0...v0.2.1) (2026-06-24)
+
+
+### ✍️ Changed
+
+* missing allowance for totalSuply ([#31](https://github.com/iExec-Nox/nox-confidential-contracts/issues/31)) ([50bcc85](https://github.com/iExec-Nox/nox-confidential-contracts/commit/50bcc85c5f827d4e09510fae19e839ca6ed25133))
+
 ## [0.2.0](https://github.com/iExec-Nox/nox-confidential-contracts/compare/v0.1.0...v0.2.0) (2026-06-03)
 
 
