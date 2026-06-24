@@ -36,6 +36,12 @@ contract ERC7984RawTest is ERC7984CommonTest {
         _expectSelectCall();
     }
 
+    // ============ ACL assertions ============
+
+    function _assertAllowedTotalSupply() internal override {
+        _expectRawAllowThisOnNewTotalSupply(address(token));
+    }
+
     function _expectAddCall() private {
         vm.expectCall(noxCompute, abi.encodeWithSelector(INoxCompute.add.selector));
     }

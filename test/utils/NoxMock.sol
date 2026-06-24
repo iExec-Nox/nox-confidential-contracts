@@ -4,6 +4,8 @@ pragma solidity ^0.8.28;
 import {Test} from "forge-std/Test.sol";
 import {INoxCompute} from "@iexec-nox/nox-protocol-contracts/contracts/interfaces/INoxCompute.sol";
 import {Nox, euint256} from "@iexec-nox/nox-protocol-contracts/contracts/sdk/Nox.sol";
+import {HandleUtils} from "@iexec-nox/nox-protocol-contracts/contracts/utils/HandleUtils.sol";
+import {TEEType} from "@iexec-nox/nox-protocol-contracts/contracts/utils/TypeUtils.sol";
 
 /**
  * @dev Test utility library providing mock helpers for Nox TEE primitives.
@@ -84,6 +86,25 @@ abstract contract NoxMock is Test {
             noxCompute,
             abi.encodeWithSelector(INoxCompute.allow.selector, handle, account)
         );
+    }
+
+    function _expectRawAllowThisOnNewTotalSupply(address account) internal {
+        vm.mockCall(
+            noxCompute,
+            abi.encodeWithSelector(
+                INoxCompute.select.selector,
+                MOCK_HANDLE,
+                MOCK_HANDLE,
+                HandleUtils.zeroHandle(TEEType.Uint256)
+            ),
+            abi.encode(MOCK_TOTAL_SUPPLY_HANDLE)
+        );
+        vm.mockCall(
+            noxCompute,
+            abi.encodeWithSelector(INoxCompute.sub.selector),
+            abi.encode(MOCK_TOTAL_SUPPLY_HANDLE)
+        );
+        _expectAllowThisCall(MOCK_TOTAL_SUPPLY_HANDLE, account);
     }
 
     /// @dev Mocks a specific `isAllowed` call for the given encrypted amount handle and user.
