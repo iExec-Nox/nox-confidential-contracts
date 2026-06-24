@@ -28,4 +28,10 @@ contract ERC7984Test is ERC7984CommonTest {
     function _assertUsedPrimitivesForTransfer() internal virtual override {
         vm.expectCall(noxCompute, abi.encodeWithSelector(INoxCompute.transfer.selector));
     }
+
+    // ============ ACL assertions ============
+
+    function _assertAllowedTotalSupply() internal virtual override {
+        _expectAllowThisCall(MOCK_TOTAL_SUPPLY_HANDLE, address(token));
+    }
 }

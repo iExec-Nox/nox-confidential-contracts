@@ -14,6 +14,10 @@ abstract contract NoxMock is Test {
     // Fake handle returned by mocked compute operations.
     bytes32 internal constant MOCK_HANDLE = bytes32(uint256(999));
 
+    bytes32 internal constant MOCK_TOTAL_SUPPLY_HANDLE = bytes32(
+        (uint256(1) << 200) | uint256(888)
+    );
+
     /// @dev Mocks all Nox TEE primitive calls needed for tests that exercise
     /// the real _update path or any function relying on TEE arithmetic.
     function _mockNoxPrimitives() internal {
@@ -57,17 +61,28 @@ abstract contract NoxMock is Test {
         vm.mockCall(
             noxCompute,
             abi.encodeWithSelector(INoxCompute.mint.selector),
-            abi.encode(MOCK_HANDLE, MOCK_HANDLE, MOCK_HANDLE)
+            abi.encode(MOCK_HANDLE, MOCK_HANDLE, MOCK_TOTAL_SUPPLY_HANDLE)
         );
         vm.mockCall(
             noxCompute,
             abi.encodeWithSelector(INoxCompute.burn.selector),
-            abi.encode(MOCK_HANDLE, MOCK_HANDLE, MOCK_HANDLE)
+            abi.encode(MOCK_HANDLE, MOCK_HANDLE, MOCK_TOTAL_SUPPLY_HANDLE)
         );
         vm.mockCall(
             noxCompute,
             abi.encodeWithSelector(INoxCompute.transfer.selector),
             abi.encode(MOCK_HANDLE, MOCK_HANDLE, MOCK_HANDLE)
+        );
+    }
+
+    /// @dev Asserts that `Nox.allowThis(handle)` is invoked, i.e. that
+    /// `INoxCompute.allow(handle, account)` is called for the given handle and account.
+    /// Must be called before the action expected to trigger the ACL grant. Only meaningful
+    /// for non-public handles (allowThis is skipped for public handles), see MOCK_TOTAL_SUPPLY_HANDLE.
+    function _expectAllowThisCall(bytes32 handle, address account) internal {
+        vm.expectCall(
+            noxCompute,
+            abi.encodeWithSelector(INoxCompute.allow.selector, handle, account)
         );
     }
 
