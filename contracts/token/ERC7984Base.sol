@@ -395,7 +395,7 @@ abstract contract ERC7984Base is IERC7984, ERC165 {
         }
 
         // Transfer
-        if (from != address(0) && to != address(0)) {
+        if (from != address(0) && to != address(0) && from != to) {
             euint256 fromBalance = $._balances[from];
             require(Nox.isInitialized(fromBalance), ERC7984ZeroBalance(from));
             euint256 newFromBalance;
