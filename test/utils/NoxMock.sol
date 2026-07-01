@@ -107,6 +107,19 @@ abstract contract NoxMock is Test {
         _expectAllowThisCall(MOCK_TOTAL_SUPPLY_HANDLE, account);
     }
 
+    /// @dev Overrides the mocked `transfer` primitive to return specific handles.
+    function _mockTransferReturning(
+        bytes32 success,
+        bytes32 newFromBalance,
+        bytes32 newToBalance
+    ) internal {
+        vm.mockCall(
+            noxCompute,
+            abi.encodeWithSelector(INoxCompute.transfer.selector),
+            abi.encode(success, newFromBalance, newToBalance)
+        );
+    }
+
     /// @dev Mocks a specific `isAllowed` call for the given encrypted amount handle and user.
     function _mockIsAllowedCall(euint256 amount, address user, bool allowed) internal {
         vm.mockCall(

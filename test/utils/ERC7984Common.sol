@@ -222,6 +222,42 @@ abstract contract ERC7984CommonTest is NoxMock {
 
     // TODO test_ConfidentialTransfer with encryptedAmount and proof
 
+    // TODO: Add a check that balance handles do not change on a self-transfer when the Nox
+    // primitives are not mocked (e.g. in an integration test with hardhat plugin).
+    function test_ConfidentialTransfer_SelfTransferDoesNotChangeBalance() public {
+        _mockNoxPrimitives();
+        token.mint(user1, euint256.wrap(MOCK_HANDLE));
+        assertEq(euint256.unwrap(token.confidentialBalanceOf(user1)), MOCK_HANDLE);
+
+        bytes32 newFromBalance = bytes32(uint256(0xF0));
+        bytes32 inflatedToBalance = bytes32(uint256(0x70));
+        _mockTransferReturning(MOCK_HANDLE, newFromBalance, inflatedToBalance);
+
+        euint256 amount = euint256.wrap(bytes32(uint256(1)));
+        // A self-transfer is a no-op that emits/returns `amount` unchanged.
+        vm.expectEmit(true, true, false, true);
+        emit IERC7984.ConfidentialTransfer(user1, user1, amount);
+        vm.prank(user1);
+        token.confidentialTransfer(user1, amount);
+
+        // Balance must be untouched by the self-transfer.
+        assertEq(euint256.unwrap(token.confidentialBalanceOf(user1)), MOCK_HANDLE);
+    }
+
+    function test_ConfidentialTransferFrom_SelfTransferDoesNotChangeBalance() public {
+        _mockNoxPrimitives();
+        token.mint(user1, euint256.wrap(MOCK_HANDLE));
+
+        _mockTransferReturning(MOCK_HANDLE, bytes32(uint256(0xF0)), bytes32(uint256(0x70)));
+
+        euint256 amount = euint256.wrap(bytes32(uint256(1)));
+        // user1 is always its own operator (isOperator(user1, user1) == true).
+        vm.prank(user1);
+        token.confidentialTransferFrom(user1, user1, amount);
+
+        assertEq(euint256.unwrap(token.confidentialBalanceOf(user1)), MOCK_HANDLE);
+    }
+
     function test_RevertWhen_ConfidentialTransfer_UnauthorizedUseOfEncryptedAmount() public {
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
         _mockIsAllowedCall(amount, user1, false);
