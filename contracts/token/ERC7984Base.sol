@@ -360,6 +360,9 @@ abstract contract ERC7984Base is IERC7984, ERC165 {
         ERC7984Storage storage $ = _getERC7984Storage();
         ebool success;
 
+        // Self-transfer (from == to) is a no-op: the balance handle is left untouched. Going
+        // through the transfer branch would write `balance - amount` then overwrite it with
+        // `balance + amount`, inflating the balance. Emit/return `amount` since the balance covers it.
         if (from == to) {
             emit ConfidentialTransfer(from, to, amount);
             return amount;
