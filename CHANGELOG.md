@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/iExec-Nox/nox-confidential-contracts/compare/v0.2.1...v0.2.2) (2026-07-01)
+
+
+### ✍️ Changed
+
+* prevent self-transfer from inflating balance in ERC7984 ([#33](https://github.com/iExec-Nox/nox-confidential-contracts/issues/33)) ([e3c6336](https://github.com/iExec-Nox/nox-confidential-contracts/commit/e3c633615e8e95ffce489db00c14164a41a83336))
+
 ## [0.2.1](https://github.com/iExec-Nox/nox-confidential-contracts/compare/v0.2.0...v0.2.1) (2026-06-24)
 
 
