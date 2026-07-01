@@ -107,9 +107,7 @@ abstract contract NoxMock is Test {
         _expectAllowThisCall(MOCK_TOTAL_SUPPLY_HANDLE, account);
     }
 
-    /// @dev Overrides the mocked `transfer` primitive to return specific handles. Useful to
-    /// distinguish the new sender balance from the new recipient balance, e.g. to assert that a
-    /// self-transfer does not inflate the balance by writing the recipient balance over the sender's.
+    /// @dev Overrides the mocked `transfer` primitive to return specific handles.
     function _mockTransferReturning(
         bytes32 success,
         bytes32 newFromBalance,
