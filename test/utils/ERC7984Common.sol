@@ -222,6 +222,8 @@ abstract contract ERC7984CommonTest is NoxMock {
 
     // TODO test_ConfidentialTransfer with encryptedAmount and proof
 
+    // TODO: Add a check that balance handles do not change on a self-transfer when the Nox
+    // primitives are not mocked (e.g. in an integration test with hardhat plugin).
     function test_ConfidentialTransfer_SelfTransferDoesNotChangeBalance() public {
         _mockNoxPrimitives();
         token.mint(user1, euint256.wrap(MOCK_HANDLE));
@@ -232,6 +234,7 @@ abstract contract ERC7984CommonTest is NoxMock {
         _mockTransferReturning(MOCK_HANDLE, newFromBalance, inflatedToBalance);
 
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
+        // A self-transfer is a no-op that emits/returns `amount` unchanged.
         vm.expectEmit(true, true, false, true);
         emit IERC7984.ConfidentialTransfer(user1, user1, amount);
         vm.prank(user1);
