@@ -233,7 +233,7 @@ abstract contract ERC7984CommonTest is NoxMock {
 
         euint256 amount = euint256.wrap(bytes32(uint256(1)));
         vm.expectEmit(true, true, false, true);
-        emit IERC7984.ConfidentialTransfer(user1, user1, euint256.wrap(MOCK_HANDLE));
+        emit IERC7984.ConfidentialTransfer(user1, user1, amount);
         vm.prank(user1);
         token.confidentialTransfer(user1, amount);
 

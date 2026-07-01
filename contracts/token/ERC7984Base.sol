@@ -360,6 +360,11 @@ abstract contract ERC7984Base is IERC7984, ERC165 {
         ERC7984Storage storage $ = _getERC7984Storage();
         ebool success;
 
+        if (from == to) {
+            emit ConfidentialTransfer(from, to, amount);
+            return amount;
+        }
+
         // Mint
         if (from == address(0)) {
             euint256 newToBalance;
@@ -395,7 +400,7 @@ abstract contract ERC7984Base is IERC7984, ERC165 {
         }
 
         // Transfer
-        if (from != address(0) && to != address(0) && from != to) {
+        if (from != address(0) && to != address(0)) {
             euint256 fromBalance = $._balances[from];
             require(Nox.isInitialized(fromBalance), ERC7984ZeroBalance(from));
             euint256 newFromBalance;
